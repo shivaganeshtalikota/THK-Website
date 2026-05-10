@@ -1,0 +1,22 @@
+{
+  "name": "Hari Krishna Talikota - iTDP Telangana State President",
+  "short_name": "HK Talikota",
+  "description": "Official website of Hari Krishna Talikota, iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FFD700",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
