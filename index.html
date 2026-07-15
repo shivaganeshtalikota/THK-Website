@@ -1,128 +1,154 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary Meta Tags -->
-    <title>Hari Krishna Talikota - iTDP Telangana State President | Telugu Desam Party</title>
-    <meta name="title" content="Hari Krishna Talikota - iTDP Telangana State President | Telugu Desam Party" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!--
+      ============================================================
+      IMPORTANT: these static tags are what social platforms read.
+      ============================================================
+      WhatsApp, Facebook and Telegram crawlers do NOT execute JavaScript, so the
+      per-page <Seo> component (react-helmet-async) is invisible to them — only
+      what is literally in this file produces a link preview. That makes this
+      block the source of truth for shared links.
+
+      The image below MUST be an absolute https:// URL. Relative paths silently
+      produce a preview with no image, which is what the old build did: it
+      pointed at /og-image.jpg, a file that was never created.
+    -->
+
+    <title>Hari Krishna Talikota — iTDP Telangana State President | Telugu Desam Party</title>
     <meta name="description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam. Dedicated to Telugu pride, regional development, and good governance in Telangana." />
-    <meta name="keywords" content="Hari Krishna Talikota, Talikota Harikrishna, iTDP Telangana, TDP Telangana President, Telugu Desam Party, Telangana Politics, TDP Leader, Hyderabad Politics, Telugu Pride, Kanaka Durga Temple Board" />
     <meta name="author" content="Hari Krishna Talikota" />
-    <meta name="robots" content="index, follow" />
-    <meta name="language" content="English" />
-    <meta name="revisit-after" content="7 days" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://harikrishnatalikota.com/" />
-    <meta property="og:title" content="Hari Krishna Talikota - iTDP Telangana State President" />
-    <meta property="og:description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President. Dedicated to Telugu pride, regional development, and good governance." />
-    <meta property="og:image" content="https://harikrishnatalikota.com/og-image.jpg" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <link rel="canonical" href="https://harikrishnatalikota.com/" />
+
+    <!-- Open Graph — WhatsApp / Facebook / LinkedIn / Telegram link preview -->
+    <meta property="og:type" content="profile" />
     <meta property="og:site_name" content="Hari Krishna Talikota Official" />
     <meta property="og:locale" content="en_IN" />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://harikrishnatalikota.com/" />
-    <meta property="twitter:title" content="Hari Krishna Talikota - iTDP Telangana State President" />
-    <meta property="twitter:description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President. Dedicated to Telugu pride and regional development." />
-    <meta property="twitter:image" content="https://harikrishnatalikota.com/twitter-image.jpg" />
-    <meta property="twitter:site" content="@THK_iTDP" />
-    <meta property="twitter:creator" content="@THK_iTDP" />
-    
-    <!-- Geo Tags -->
+    <meta property="og:url" content="https://harikrishnatalikota.com/" />
+    <meta property="og:title" content="Hari Krishna Talikota — iTDP Telangana State President" />
+    <meta property="og:description" content="iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam. Dedicated to Telugu pride, regional development, and good governance." />
+    <meta property="og:image" content="https://harikrishnatalikota.com/og-image.png" />
+    <meta property="og:image:secure_url" content="https://harikrishnatalikota.com/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hari Krishna Talikota — iTDP Telangana State President, Telugu Desam Party" />
+    <meta property="profile:first_name" content="Hari Krishna" />
+    <meta property="profile:last_name" content="Talikota" />
+
+    <!-- X / Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@THK_iTDP" />
+    <meta name="twitter:creator" content="@THK_iTDP" />
+    <meta name="twitter:title" content="Hari Krishna Talikota — iTDP Telangana State President" />
+    <meta name="twitter:description" content="iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam. Dedicated to Telugu pride and regional development." />
+    <meta name="twitter:image" content="https://harikrishnatalikota.com/og-image.png" />
+    <meta name="twitter:image:alt" content="Hari Krishna Talikota — iTDP Telangana State President" />
+
+    <!-- Geo signals (local/regional search) -->
     <meta name="geo.region" content="IN-TG" />
     <meta name="geo.placename" content="Hyderabad, Telangana" />
     <meta name="geo.position" content="17.385044;78.486671" />
     <meta name="ICBM" content="17.385044, 78.486671" />
-    
-    <!-- Additional Meta Tags -->
+
     <meta name="theme-color" content="#FFD700" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HK Talikota" />
     <meta name="format-detection" content="telephone=yes" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://harikrishnatalikota.com/" />
-    
-    <!-- Favicon -->
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    
-    <!-- Preconnect to external resources -->
+
+    <!-- Fonts. preconnect before the stylesheet so the handshake overlaps parse. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    
-    <!-- Structured Data - Person Schema -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" />
+    </noscript>
+
+    <!--
+      Structured data. One connected graph rather than the previous two floating
+      islands: the Person, the party, the website and the temple role all
+      reference each other by @id, which is what lets Google build a Knowledge
+      Panel and answer entity queries about him.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Hari Krishna Talikota",
-      "alternateName": "Talikota Harikrishna",
-      "jobTitle": "iTDP Telangana State President",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Telugu Desam Party",
-        "url": "https://www.telugudesam.org"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Hyderabad",
-        "addressRegion": "Telangana",
-        "addressCountry": "IN"
-      },
-      "sameAs": [
-        "https://www.instagram.com/hari_krishna_talikota/",
-        "https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/",
-        "https://x.com/THK_iTDP"
-      ],
-      "description": "iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam, dedicated to Telugu pride and regional development."
-    }
-    </script>
-    
-    <!-- Structured Data - Political Organization -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "PoliticalOrganization",
-      "name": "iTDP Telangana",
-      "parentOrganization": {
-        "@type": "PoliticalOrganization",
-        "name": "Telugu Desam Party",
-        "foundingDate": "1982-03-29",
-        "founder": {
+      "@graph": [
+        {
           "@type": "Person",
-          "name": "N.T. Rama Rao"
+          "@id": "https://harikrishnatalikota.com/#person",
+          "name": "Hari Krishna Talikota",
+          "alternateName": ["Talikota Harikrishna", "Hari TDP", "Haranna"],
+          "jobTitle": "iTDP Telangana State President",
+          "description": "iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam, dedicated to Telugu pride and regional development.",
+          "url": "https://harikrishnatalikota.com/",
+          "image": "https://harikrishnatalikota.com/og-image.png",
+          "nationality": { "@type": "Country", "name": "India" },
+          "worksFor": { "@id": "https://harikrishnatalikota.com/#party" },
+          "memberOf": { "@id": "https://harikrishnatalikota.com/#party" },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Hyderabad",
+            "addressRegion": "Telangana",
+            "addressCountry": "IN"
+          },
+          "sameAs": [
+            "https://www.instagram.com/hari_krishna_talikota/",
+            "https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/",
+            "https://x.com/THK_iTDP"
+          ]
+        },
+        {
+          "@type": "PoliticalParty",
+          "@id": "https://harikrishnatalikota.com/#party",
+          "name": "Telugu Desam Party",
+          "alternateName": "TDP",
+          "url": "https://www.telugudesam.org",
+          "foundingDate": "1982-03-29",
+          "founder": { "@type": "Person", "name": "N.T. Rama Rao" },
+          "areaServed": [
+            { "@type": "State", "name": "Telangana" },
+            { "@type": "State", "name": "Andhra Pradesh" }
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://harikrishnatalikota.com/#website",
+          "url": "https://harikrishnatalikota.com/",
+          "name": "Hari Krishna Talikota Official",
+          "inLanguage": "en-IN",
+          "publisher": { "@id": "https://harikrishnatalikota.com/#person" }
         }
-      },
-      "leader": {
-        "@type": "Person",
-        "name": "Hari Krishna Talikota"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Hyderabad",
-        "addressRegion": "Telangana",
-        "addressCountry": "IN"
-      }
+      ]
     }
     </script>
-    
-    <!-- Preload critical assets -->
-    <link rel="preload" as="style" href="/src/styles/index.css" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="font-family: system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.6;">
+        <h1 style="font-size: 1.5rem;">Hari Krishna Talikota</h1>
+        <p><strong>iTDP Telangana State President</strong> · Board Member, Sri Kanaka Durga Devasthanam</p>
+        <p>This website needs JavaScript enabled. Please turn it on, or reach the office through
+          <a href="https://x.com/THK_iTDP">@THK_iTDP</a>.</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

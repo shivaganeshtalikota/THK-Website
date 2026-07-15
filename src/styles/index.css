@@ -2,209 +2,167 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #FFD700;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #FFC700;
-}
-
-/* Smooth Scroll */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Base Styles */
-body {
-  @apply font-body text-gray-800 antialiased;
-  overflow-x: hidden;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  @apply font-heading font-bold;
-}
-
-/* Custom Utilities */
-@layer utilities {
-  .bg-gradient-tdp {
-    background: linear-gradient(to right, #FFD700, #FFC700);
+@layer base {
+  :root {
+    --nav-h: 4.5rem;
   }
-  
-  .shadow-tdp {
-    box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+
+  html {
+    scroll-behavior: smooth;
+    /* Anchor targets clear the fixed header instead of hiding under it. */
+    scroll-padding-top: calc(var(--nav-h) + 1rem);
+    -webkit-text-size-adjust: 100%;
   }
-  
-  .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-2;
+
+  body {
+    @apply bg-white font-body text-ink-700 antialiased;
+    text-rendering: optimizeLegibility;
   }
-  
-  .section-padding {
-    @apply py-16 md:py-24 px-4 md:px-8;
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-ink-900;
+    text-wrap: balance;
   }
-  
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4;
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, high-contrast focus ring. The old outline-brand ring was
+     invisible against yellow sections — this one works on any surface. */
+  :focus-visible {
+    outline: 3px solid theme('colors.ink.900');
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .on-brand :focus-visible {
+    outline-color: theme('colors.ink.950');
+  }
+
+  ::selection {
+    @apply bg-brand-500 text-ink-900;
+  }
+
+  /* Honour the OS "reduce motion" setting. The previous build animated
+     unconditionally, which is rough for vestibular sensitivity. */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-/* Custom Components */
 @layer components {
+  .container-custom {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-16 sm:py-20 lg:py-28;
+  }
+
+  /* ---- Buttons ------------------------------------------------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5
+           font-heading text-sm font-bold tracking-wide
+           transition-all duration-300 ease-out
+           active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+
   .btn-primary {
-    @apply bg-tdp-yellow text-gray-900 font-semibold py-3 px-8 rounded-full 
-           transition-all duration-300 hover:shadow-tdp hover:scale-105 
-           active:scale-95 inline-flex items-center gap-2;
+    @apply btn bg-ink-900 text-white hover:bg-ink-800 hover:shadow-lift;
   }
-  
-  .btn-secondary {
-    @apply bg-gray-900 text-white font-semibold py-3 px-8 rounded-full 
-           transition-all duration-300 hover:bg-gray-800 hover:shadow-lg 
-           active:scale-95 inline-flex items-center gap-2;
+
+  .btn-brand {
+    @apply btn bg-brand-500 text-ink-900 hover:bg-brand-400 hover:shadow-brand;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-tdp-yellow text-gray-900 font-semibold py-3 px-8 
-           rounded-full transition-all duration-300 hover:bg-tdp-yellow 
-           active:scale-95 inline-flex items-center gap-2;
+    @apply btn border-2 border-ink-900 bg-transparent text-ink-900
+           hover:bg-ink-900 hover:text-white;
   }
-  
+
+  /* On yellow surfaces the outline needs dark ink, not white. */
+  .on-brand .btn-outline {
+    @apply border-ink-900 text-ink-900 hover:bg-ink-900 hover:text-brand-500;
+  }
+
+  /* ---- Surfaces ------------------------------------------------------ */
   .card {
-    @apply bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 
-           hover:shadow-2xl hover:-translate-y-1;
+    @apply rounded-2xl border border-ink-100 bg-white p-7 shadow-card
+           transition-all duration-300 ease-out;
   }
-  
-  .section-title {
-    @apply text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900;
+
+  .card-interactive {
+    @apply card hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift;
   }
-  
-  .section-subtitle {
-    @apply text-lg md:text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto;
+
+  /* ---- Type ---------------------------------------------------------- */
+  /* brand-800, not brand-700: at 12px this is small text, and brand-700
+     measures 4.24:1 on white — under the 4.5 minimum. brand-800 is 7.2:1. */
+  .eyebrow {
+    @apply font-heading text-xs font-bold uppercase tracking-[0.18em] text-brand-800;
   }
-  
+
+  .on-brand .eyebrow,
+  .on-dark .eyebrow {
+    @apply text-ink-900;
+  }
+
+  .on-dark .eyebrow {
+    @apply text-brand-300;
+  }
+
+  .prose-body {
+    @apply max-w-prose text-lead text-ink-600;
+  }
+
+  .rule {
+    @apply h-1 w-16 rounded-full bg-brand-500;
+  }
+
   .nav-link {
-    @apply text-gray-700 hover:text-tdp-yellow transition-colors duration-300 
-           font-medium relative after:absolute after:bottom-0 after:left-0 
-           after:w-0 after:h-0.5 after:bg-tdp-yellow after:transition-all 
-           after:duration-300 hover:after:w-full;
+    @apply relative py-2 font-heading text-sm font-semibold text-ink-600
+           transition-colors duration-200
+           after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-0
+           after:rounded-full after:bg-brand-500 after:transition-all after:duration-300
+           hover:text-ink-900 hover:after:w-full;
+  }
+
+  .nav-link-active {
+    /* brand-800, not brand-500 — the old active link was unreadable on white. */
+    @apply text-brand-800 after:w-full;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100]
+           focus:rounded-lg focus:bg-ink-900 focus:px-5 focus:py-3
+           focus:font-heading focus:text-sm focus:font-bold focus:text-white;
   }
 }
 
-/* Animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  /* Subtle paper texture for yellow sections so large fills don't read flat. */
+  .bg-brand-texture {
+    background-color: theme('colors.brand.500');
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(201,154,0,0.28) 0%, transparent 50%);
   }
-  50% {
-    transform: translateY(-20px);
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(18,22,27,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(18,22,27,0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
   }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Loading Animation */
-.loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #FFD700;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Parallax Effect */
-.parallax {
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-/* Image Overlay */
-.image-overlay {
-  @apply relative overflow-hidden;
-}
-
-.image-overlay::after {
-  content: '';
-  @apply absolute inset-0 bg-gradient-to-t from-black/70 to-transparent 
-         opacity-0 transition-opacity duration-300;
-}
-
-.image-overlay:hover::after {
-  @apply opacity-100;
-}
-
-/* Responsive Typography */
-@media (max-width: 640px) {
-  .section-title {
-    @apply text-3xl;
-  }
-  
-  .section-subtitle {
-    @apply text-base;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* Accessibility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Focus Visible */
-*:focus-visible {
-  @apply outline-2 outline-offset-2 outline-tdp-yellow;
-}
-
-/* Selection */
-::selection {
-  @apply bg-tdp-yellow text-white;
-}
-
-::-moz-selection {
-  @apply bg-tdp-yellow text-white;
 }
