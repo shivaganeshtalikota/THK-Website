@@ -42,6 +42,10 @@ FALLBACK_W = 1200
 # officer and the stray hand at the edges.
 CROPS = {
     "portrait-headshot": (959, 297, 1580, 1125),   # 3:4 head and shoulders
+    # The podium frame is 3:2 landscape; the homepage hero card is portrait, so
+    # it is cut to 3:4 around him, keeping the TDP badge, the microphone and the
+    # Telangana map on the lectern in shot.
+    "hero-addressing": (573, 40, 1568, 1365),
 }
 
 # slug -> (source filename, role, english caption, telugu original)
@@ -51,6 +55,13 @@ PHOTOS = [
         "tdp-44-anniversary.jpg",
         "gallery",
         "Hari Krishna Talikota at the Telugu Desam Party 44th anniversary celebration",
+        None,
+    ),
+    (
+        "hero-addressing",
+        "addressing-itdp-telangana.jpg",
+        "portrait",
+        "Hari Krishna Talikota addressing an iTDP Telangana party meeting",
         None,
     ),
     (

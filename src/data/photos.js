@@ -18,6 +18,7 @@
 /** Absolute width list per slug, mirroring what the processor emitted. */
 const W = {
   'tdp-44-anniversary': [480, 768, 960],
+  'hero-addressing': [480, 768, 995],
   'portrait-headshot': [480, 621],
   'addressing-itdp-telangana': [480, 768, 1200, 1800, 2048],
   'with-chandrababu-naidu': [480, 768, 1200, 1800, 2048],
@@ -50,10 +51,20 @@ const photo = (slug, width, height, alt, extra = {}) => ({
 
 /** Key photos placed deliberately on specific pages. */
 export const photos = {
-  // Cropped head-and-shoulders from the greeting photograph — the only frame
-  // with him clean, front-facing and well lit. See CROPS in
-  // scripts/process-photos.py for the exact box.
+  // Homepage hero: the podium frame, cropped to portrait. It is the most
+  // clearly political image in the set — TDP yellow, the iTDP badge, and the
+  // Telangana map on the lectern all read at a glance.
   hero: photo(
+    'hero-addressing',
+    995,
+    1325,
+    'Hari Krishna Talikota addressing an iTDP Telangana party meeting'
+  ),
+
+  // Head-and-shoulders crop from the greeting photograph. Not placed on a page
+  // — it is the portrait composited into the social preview card by
+  // scripts/generate-assets.py, where a clear front-facing face matters most.
+  headshot: photo(
     'portrait-headshot',
     621,
     828,
@@ -66,10 +77,10 @@ export const photos = {
     'Hari Krishna Talikota with TDP National President N. Chandrababu Naidu'
   ),
   political: photo(
-    'addressing-itdp-telangana',
+    'medchal-constituency-meeting',
     2048,
-    1365,
-    'Hari Krishna Talikota addressing an iTDP Telangana party meeting'
+    1538,
+    'Hari Krishna Talikota speaking at an opinion-gathering programme in Medchal constituency'
   ),
   community: photo(
     'bonalu-bangaru-bonam',
