@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
-import { FaArrowRight } from 'react-icons/fa'
+import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import Icon from '../components/Icon'
 import { site, party, focusAreas } from '../data/site'
-import { photos } from '../data/photos'
+import { photos, gallery } from '../data/photos'
 
 const Political = () => {
   const schema = {
@@ -16,6 +15,7 @@ const Political = () => {
     url: `${site.url}/political`,
     about: {
       '@type': 'PoliticalParty',
+      '@id': `${site.url}/#party`,
       name: party.name,
       alternateName: party.abbr,
       url: party.url,
@@ -34,71 +34,77 @@ const Political = () => {
     ['Party colours', party.colors],
   ]
 
+  const partyPhotos = gallery.filter((g) => g.group === 'party').slice(0, 4)
+
   return (
     <>
       <Seo
-        title="Political Leadership"
-        description="Hari Krishna Talikota serves as iTDP Telangana State President, leading Telugu Desam Party's efforts for development and good governance in Telangana."
+        title="iTDP Telangana State President"
+        description="Hari Krishna Talikota serves as iTDP Telangana State President, leading the Telugu Desam Party's organisation in Telangana — development, good governance and Telugu cultural pride."
+        image={`${site.url}/photos/addressing-itdp-telangana-1200.webp`}
         schema={schema}
       />
 
       <PageHero
-        eyebrow="Political Leadership"
-        title="Leading Telangana’s development"
-        lead={`As ${site.role}, Hari Krishna Talikota leads the Telugu Desam Party's efforts in Telangana — advancing development, good governance, and Telugu pride.`}
+        eyebrow="Party Office"
+        title="iTDP Telangana State President"
+        lead="Leading the Telugu Desam Party’s efforts across Telangana — advancing development, good governance, and Telugu pride."
+        photo={photos.political}
       />
 
-      {/* ---- Intro + image ----------------------------------------------- */}
+      {/* ---- Mandate --------------------------------------------------------- */}
       <section className="section bg-white">
-        <div className="container-custom grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <Reveal>
-            <p className="eyebrow">The Mandate</p>
-            <h2 className="mt-3 text-title">Representing the citizens of Telangana</h2>
-            <div className="rule mt-6" />
-            <p className="mt-6 text-lead text-ink-600">
-              His political work focuses on representing the interests of Telangana’s
-              citizens and building a stronger, more prosperous state — creating economic
-              opportunity, improving infrastructure, and ensuring that people’s voices are
-              heard at every level of government.
-            </p>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <Picture photo={photos.political} sizes="(max-width: 1024px) 92vw, 580px" className="shadow-card ring-1 ring-ink-900/5" />
-          </Reveal>
+        <div className="container-custom">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <p className="eyebrow">The Mandate</p>
+              <h2 className="mt-5 font-display text-display">
+                Representing the citizens of Telangana
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1} className="lg:col-span-7">
+              <p className="text-lead text-ink-600">
+                His political work focuses on representing the interests of Telangana’s
+                citizens and building a stronger, more prosperous state — creating economic
+                opportunity, improving infrastructure, and ensuring that people’s voices are
+                heard at every level of government.
+              </p>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* ---- TDP heritage ------------------------------------------------- */}
-      <section className="section bg-ink-950">
-        <div className="container-custom">
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      {/* ---- TDP heritage ----------------------------------------------------- */}
+      <section className="bg-ink-950 py-24 lg:py-32">
+        <div className="on-dark container-custom">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-6">
-              <p className="font-heading text-xs font-bold uppercase tracking-[0.18em] text-brand-400">
-                About Telugu Desam Party
-              </p>
-              <h2 className="mt-3 text-title text-white">A legacy of Telugu self-respect</h2>
-              <div className="rule mt-6" />
-              <p className="mt-6 text-ink-300">{party.heritage}</p>
+              <p className="eyebrow">Telugu Desam Party</p>
+              <h2 className="mt-5 font-display text-display text-white">
+                A legacy of Telugu self-respect
+              </h2>
+              <p className="mt-8 text-lead text-white/70">{party.heritage}</p>
               <a
                 href={party.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2 py-1 font-heading text-sm font-bold text-brand-400 transition-colors hover:text-brand-300"
+                className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
-                Visit the official TDP site
+                Official TDP site
                 <span className="sr-only"> (opens in a new tab)</span>
-                <FaArrowRight aria-hidden="true" />
+                <FaArrowRight
+                  className="transition-transform duration-300 group-hover:translate-x-1.5"
+                  aria-hidden="true"
+                />
               </a>
             </Reveal>
 
             <Reveal delay={0.1} className="lg:col-span-6">
-              <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2">
+              <dl className="divide-y hairline-dark border-y hairline-dark">
                 {facts.map(([term, desc]) => (
-                  <div key={term} className="bg-ink-950 p-5">
-                    <dt className="font-heading text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-400">
-                      {term}
-                    </dt>
-                    <dd className="mt-1.5 font-heading text-sm font-bold text-white">{desc}</dd>
+                  <div key={term} className="grid grid-cols-[9rem_1fr] gap-4 py-4">
+                    <dt className="font-sans text-micro uppercase text-white/55">{term}</dt>
+                    <dd className="text-sm font-medium text-white">{desc}</dd>
                   </div>
                 ))}
               </dl>
@@ -107,58 +113,109 @@ const Political = () => {
         </div>
       </section>
 
-      {/* ---- Focus areas -------------------------------------------------- */}
+      {/* ---- Focus areas ------------------------------------------------------ */}
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">Focus Areas</p>
-            <h2 className="mt-3 text-title">
-              Comprehensive initiatives for a prosperous Telangana
+            <h2 className="mt-5 font-display text-display">
+              Initiatives for a prosperous Telangana
             </h2>
-            <div className="rule mt-6" />
           </Reveal>
 
-          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-14 border-t hairline">
             {focusAreas.map((area, i) => (
-              <Reveal key={area.slug} delay={i * 0.06} className="card h-full">
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-500 text-lg text-ink-900">
-                  <Icon name={area.icon} />
-                </span>
-                <h3 className="mt-5 font-heading text-lg font-bold text-ink-900">
-                  {area.title}
-                </h3>
-                <ul className="mt-4 space-y-2.5">
-                  {area.points.map((point) => (
-                    <li key={point} className="flex items-start gap-2.5">
-                      <span
-                        className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-brand-600"
-                        aria-hidden="true"
-                      />
-                      <span className="text-sm leading-relaxed text-ink-600">{point}</span>
-                    </li>
-                  ))}
-                </ul>
+              <Reveal
+                as="li"
+                key={area.slug}
+                delay={Math.min(i, 5) * 0.05}
+                className="border-b hairline"
+              >
+                <div className="grid gap-x-10 gap-y-4 py-9 lg:grid-cols-[4rem_18rem_1fr] lg:py-11">
+                  <span className="index-num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="font-display text-headline text-ink-900">{area.title}</h3>
+                  <ul className="space-y-2.5 lg:pt-1">
+                    {area.points.map((point) => (
+                      <li key={point} className="flex items-start gap-3 text-ink-600">
+                        <span
+                          className="mt-[0.6rem] h-px w-3 shrink-0 bg-brand-600"
+                          aria-hidden="true"
+                        />
+                        <span className="text-[0.95rem] leading-relaxed">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </Reveal>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* ---- Get involved -------------------------------------------------- */}
-      <section className="on-brand section bg-brand-texture">
-        <div className="container-custom">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-title text-ink-900">Get involved</h2>
-            <p className="mt-5 text-lead text-ink-800">
+      {/* ---- Party photographs ------------------------------------------------ */}
+      {partyPhotos.length > 0 && (
+        <section className="bg-ink-50 py-20 lg:py-28">
+          <div className="container-custom">
+            <Reveal className="flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <p className="eyebrow">In Pictures</p>
+                <h2 className="mt-5 font-display text-display">Party &amp; leadership</h2>
+              </div>
+              <Link
+                to="/media"
+                className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-800 transition-opacity hover:opacity-70"
+              >
+                Full gallery
+                <FaArrowRight
+                  className="transition-transform duration-300 group-hover:translate-x-1.5"
+                  aria-hidden="true"
+                />
+              </Link>
+            </Reveal>
+
+            <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {partyPhotos.map((item, i) => (
+                <Reveal as="li" key={item.slug} delay={i * 0.07}>
+                  <Link to="/media" className="group block">
+                    <div className="overflow-hidden">
+                      <Picture
+                        photo={item}
+                        aspect="3 / 4"
+                        rounded=""
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 22vw"
+                        imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
+                      />
+                    </div>
+                    <p className="mt-4 text-sm leading-snug text-ink-600 transition-colors group-hover:text-ink-900">
+                      {item.caption}
+                    </p>
+                  </Link>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* ---- Get involved ------------------------------------------------------ */}
+      <section className="bg-brand-500 py-24 lg:py-32">
+        <div className="on-brand container-custom">
+          <Reveal className="max-w-2xl">
+            <p className="label-rule !text-ink-800 before:!bg-ink-900/40">Get Involved</p>
+            <h2 className="mt-7 font-display text-display text-ink-900">
+              Be part of the movement
+            </h2>
+            <p className="mt-6 text-lead text-ink-800">
               Join the Telugu Desam Party and contribute to building a better Telangana.
-              Be part of a movement dedicated to Telugu pride and regional development.
             </p>
           </Reveal>
 
-          <div className="mx-auto mt-12 grid max-w-3xl gap-5 sm:grid-cols-2">
+          <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:max-w-4xl">
             {[
               {
-                title: 'Party Membership',
+                title: 'Party membership',
                 body: 'Join TDP and be part of the change you want to see in Telangana.',
                 cta: 'Join now',
               },
@@ -168,11 +225,18 @@ const Political = () => {
                 cta: 'Volunteer',
               },
             ].map((card, i) => (
-              <Reveal key={card.title} delay={i * 0.08} className="rounded-2xl bg-white p-7 shadow-card">
-                <h3 className="font-heading text-lg font-bold text-ink-900">{card.title}</h3>
-                <p className="mt-2.5 text-sm leading-relaxed text-ink-600">{card.body}</p>
-                <Link to="/contact" className="btn-primary mt-6 !px-6 !py-3">
-                  {card.cta} <FaArrowRight aria-hidden="true" />
+              <Reveal key={card.title} delay={i * 0.08} className="border-t border-ink-900/25 pt-6">
+                <h3 className="font-display text-headline text-ink-900">{card.title}</h3>
+                <p className="mt-3 leading-relaxed text-ink-800">{card.body}</p>
+                <Link
+                  to="/contact"
+                  className="group mt-6 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900 transition-opacity hover:opacity-70"
+                >
+                  {card.cta}
+                  <FaArrowRight
+                    className="transition-transform duration-300 group-hover:translate-x-1.5"
+                    aria-hidden="true"
+                  />
                 </Link>
               </Reveal>
             ))}

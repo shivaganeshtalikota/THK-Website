@@ -28,7 +28,7 @@ const Privacy = () => (
 
     <section className="section bg-white">
       <div className="container-custom">
-        <Reveal className="prose-body mx-auto space-y-8 !text-base">
+        <Reveal className="mx-auto max-w-prose space-y-9 text-ink-600">
           <Block title="Information we collect">
             <p>
               This website collects personal information only when you choose to submit it
@@ -96,7 +96,7 @@ const Privacy = () => (
 
 const Block = ({ title, children }) => (
   <div>
-    <h2 className="font-heading text-lg font-bold text-ink-900">{title}</h2>
+    <h2 className="font-display text-headline text-ink-900">{title}</h2>
     <div className="mt-3 space-y-3 text-ink-600">{children}</div>
   </div>
 )

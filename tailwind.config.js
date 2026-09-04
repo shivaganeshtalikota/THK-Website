@@ -3,12 +3,13 @@
 /**
  * Design tokens.
  *
- * The party yellow (#FFD700) is a *surface* colour, not a text colour — at
- * ~1.6:1 on white it fails WCAG badly. So the scale splits the brand in two:
- *   brand-400/500  -> fills, bars, badges (dark ink sits on top)
- *   brand-700/800  -> the same hue, dark enough to be legible AS text on white
- * Green is the party's second colour and earns a real slot here rather than
- * being dropped, which is what the previous all-yellow build did.
+ * Party yellow (#FFD700) is a *surface* colour, never text — at ~1.6:1 on white
+ * it fails WCAG badly. The brand scale splits that hue: 400/500 for fills,
+ * 700/800 for anything that has to be legible as type.
+ *
+ * Type pairs a high-contrast serif for display with a neutral grotesque for
+ * everything else. That contrast is what stops the page reading as a stock
+ * component kit — a single geometric sans at three weights is the tell.
  */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -23,7 +24,7 @@ export default {
           400: '#F7C948',
           500: '#FFD700', // the party yellow — surfaces only
           600: '#C99A00',
-          700: '#9C7500', // 4.24:1 on white — LARGE text only, fails for small
+          700: '#9C7500', // 4.24:1 on white — LARGE text only
           800: '#6F5300', // 7.21:1 on white — safe for small text
           900: '#4A3700',
         },
@@ -31,59 +32,72 @@ export default {
           50: '#F0FAF1',
           100: '#D7F2DC',
           400: '#4CAF54',
-          600: '#1F7A34', // 4.8:1 on white
+          600: '#1F7A34',
           700: '#166028',
           900: '#0B3315',
         },
         ink: {
-          50: '#F7F8F9',
-          100: '#EDEFF2',
-          200: '#DDE1E6',
-          300: '#C2C8D0',
-          400: '#8B94A1',
-          500: '#5F6875',
-          600: '#454D59',
-          700: '#333A44',
-          800: '#20252C',
-          900: '#12161B',
-          950: '#0A0D10',
+          50: '#F8F8F7',
+          100: '#EEEEEC',
+          200: '#DEDEDA',
+          300: '#C3C3BD',
+          400: '#8C8C85',
+          500: '#5F5F59',
+          600: '#464641',
+          700: '#333330',
+          800: '#1F1F1D',
+          900: '#141413',
+          950: '#0A0A09',
         },
       },
       fontFamily: {
-        heading: ['Montserrat', 'system-ui', 'sans-serif'],
-        body: ['"Open Sans"', 'system-ui', 'sans-serif'],
+        // High-contrast serif for display moments.
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        // Neutral grotesque for UI, labels and body.
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['Inter', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
+        telugu: ['"Noto Sans Telugu"', '"Noto Sans"', 'sans-serif'],
       },
       fontSize: {
-        // Fluid type — collapses the separate mobile overrides the old CSS needed.
-        'display': ['clamp(2.5rem, 1.6rem + 4.5vw, 5rem)', { lineHeight: '1.02', letterSpacing: '-0.03em', fontWeight: '800' }],
-        'title': ['clamp(2rem, 1.5rem + 2.2vw, 3.25rem)', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
-        'headline': ['clamp(1.35rem, 1.2rem + 0.8vw, 1.75rem)', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '700' }],
-        'lead': ['clamp(1.05rem, 1rem + 0.4vw, 1.3rem)', { lineHeight: '1.65' }],
+        // Wider scale contrast than a stock kit: the hero is genuinely large,
+        // and labels are genuinely small, so hierarchy reads instantly.
+        hero: ['clamp(3rem, 1.6rem + 6.4vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.035em', fontWeight: '800' }],
+        display: ['clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem)', { lineHeight: '1.0', letterSpacing: '-0.03em', fontWeight: '700' }],
+        title: ['clamp(1.9rem, 1.4rem + 2.2vw, 3.1rem)', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
+        headline: ['clamp(1.3rem, 1.15rem + 0.7vw, 1.65rem)', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '600' }],
+        lead: ['clamp(1.06rem, 1rem + 0.4vw, 1.28rem)', { lineHeight: '1.62' }],
+        micro: ['0.7rem', { lineHeight: '1.2', letterSpacing: '0.16em', fontWeight: '600' }],
       },
-      maxWidth: {
-        prose: '68ch',
-      },
+      maxWidth: { prose: '64ch' },
       boxShadow: {
-        card: '0 1px 2px rgba(18,22,27,0.04), 0 8px 24px -12px rgba(18,22,27,0.12)',
-        lift: '0 2px 4px rgba(18,22,27,0.05), 0 20px 40px -16px rgba(18,22,27,0.20)',
-        brand: '0 12px 32px -10px rgba(201,154,0,0.55)',
+        card: '0 1px 2px rgba(10,10,9,0.04), 0 8px 24px -14px rgba(10,10,9,0.14)',
+        lift: '0 2px 6px rgba(10,10,9,0.06), 0 28px 56px -24px rgba(10,10,9,0.30)',
+        frame: '0 40px 80px -40px rgba(10,10,9,0.55)',
       },
       transitionTimingFunction: {
-        out: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        out: 'cubic-bezier(0.16, 1, 0.3, 1)',
       },
       keyframes: {
-        'fade-up': {
-          from: { opacity: '0', transform: 'translateY(14px)' },
+        'rise': {
+          from: { opacity: '0', transform: 'translateY(20px)' },
           to: { opacity: '1', transform: 'none' },
         },
-        marquee: {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(-50%)' },
+        'slow-zoom': {
+          from: { transform: 'scale(1.06)' },
+          to: { transform: 'scale(1)' },
+        },
+        'wipe-up': {
+          from: { clipPath: 'inset(100% 0 0 0)' },
+          to: { clipPath: 'inset(0 0 0 0)' },
         },
       },
       animation: {
-        'fade-up': 'fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
-        marquee: 'marquee 32s linear infinite',
+        rise: 'rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both',
+        // A slow settle on the hero photograph. 2.4s and only 6% — enough to
+        // feel alive on load, not enough to read as a gimmick.
+        'slow-zoom': 'slow-zoom 2.4s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'wipe-up': 'wipe-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both',
       },
     },
   },

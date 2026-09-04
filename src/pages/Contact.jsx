@@ -98,27 +98,26 @@ const Contact = () => {
           {/* Sidebar */}
           <Reveal className="lg:col-span-4">
             <p className="eyebrow">Direct Contact</p>
-            <h2 className="mt-3 text-headline">Reach the office</h2>
-            <div className="rule mt-5" />
+            <h2 className="mt-5 font-display text-title">Reach the office</h2>
 
             <ul className="mt-8 space-y-6">
               <li className="flex gap-4">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-800 ring-1 ring-brand-200">
+                <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand-500 text-ink-900">
                   <FaMapMarkerAlt aria-hidden="true" />
                 </span>
                 <div>
-                  <h3 className="font-heading text-sm font-bold text-ink-900">Office</h3>
+                  <h3 className="font-sans text-sm font-semibold text-ink-900">Office</h3>
                   <p className="mt-0.5 text-sm text-ink-600">{contact.office.value}</p>
                 </div>
               </li>
 
               {contact.email.verified ? (
                 <li className="flex gap-4">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-800 ring-1 ring-brand-200">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand-500 text-ink-900">
                     <FaEnvelope aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
-                    <h3 className="font-heading text-sm font-bold text-ink-900">Email</h3>
+                    <h3 className="font-sans text-sm font-semibold text-ink-900">Email</h3>
                     <a
                       href={`mailto:${contact.email.value}`}
                       className="mt-0.5 block break-all text-sm text-brand-800 underline-offset-2 hover:underline"
@@ -130,7 +129,7 @@ const Contact = () => {
               ) : (
                 // Rendering an unconfirmed address/number would send constituent
                 // mail into a void. Better to show nothing than something wrong.
-                <li className="rounded-xl border border-ink-200 bg-ink-50 p-4">
+                <li className="border-l-2 border-ink-300 bg-ink-50 p-4">
                   <p className="text-xs leading-relaxed text-ink-500">
                     Direct email and phone details will be published here once confirmed by
                     the office. Until then, please use the form or the social channels below.
@@ -139,7 +138,7 @@ const Contact = () => {
               )}
             </ul>
 
-            <h3 className="mt-10 font-heading text-xs font-bold uppercase tracking-[0.14em] text-ink-500">
+            <h3 className="mt-12 font-sans text-micro uppercase text-ink-500">
               Social
             </h3>
             <ul className="mt-4 flex gap-2.5">
@@ -152,7 +151,7 @@ const Contact = () => {
                       target="_blank"
                       rel="noopener noreferrer me"
                       aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
-                      className="grid h-11 w-11 place-items-center rounded-xl bg-ink-900 text-brand-400 transition-colors hover:bg-ink-700"
+                      className="grid h-11 w-11 place-items-center bg-ink-900 text-brand-400 transition-colors hover:bg-ink-700"
                     >
                       <Glyph aria-hidden="true" />
                     </a>
@@ -164,8 +163,8 @@ const Contact = () => {
 
           {/* Form */}
           <Reveal delay={0.1} className="lg:col-span-8">
-            <div className="rounded-3xl border border-ink-100 bg-white p-7 shadow-card sm:p-10">
-              <h2 className="text-headline">Send a message</h2>
+            <div className="border hairline bg-white p-7 sm:p-10">
+              <h2 className="font-display text-title">Send a message</h2>
               <p className="mt-2 text-sm text-ink-500">
                 Fields marked with an asterisk are required.
               </p>
@@ -173,7 +172,7 @@ const Contact = () => {
               {!IS_CONFIGURED && (
                 <div
                   role="alert"
-                  className="mt-6 flex gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4"
+                  className="mt-6 flex gap-3 border-l-2 border-amber-500 bg-amber-50 p-4"
                 >
                   <FaExclamationTriangle
                     className="mt-0.5 shrink-0 text-amber-600"
@@ -260,12 +259,12 @@ const Contact = () => {
                     old silent success div never did. */}
                 <div aria-live="polite" aria-atomic="true">
                   {status.state === 'success' && (
-                    <p className="rounded-xl border border-leaf-100 bg-leaf-50 p-4 text-sm text-leaf-700">
+                    <p className="border-l-2 border-leaf-600 bg-leaf-50 p-4 text-sm text-leaf-700">
                       {status.message}
                     </p>
                   )}
                   {status.state === 'error' && (
-                    <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                    <p className="border-l-2 border-red-600 bg-red-50 p-4 text-sm text-red-800">
                       {status.message}
                     </p>
                   )}
@@ -280,15 +279,15 @@ const Contact = () => {
 }
 
 const controlClass =
-  'w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm text-ink-900 ' +
+  'w-full rounded-sm border border-ink-200 bg-white px-4 py-3.5 text-sm text-ink-900 ' +
   'placeholder:text-ink-400 transition-colors ' +
-  'focus:border-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20 ' +
+  'focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15 ' +
   'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-400'
 
 const Label = ({ htmlFor, required, children }) => (
   <label
     htmlFor={htmlFor}
-    className="mb-1.5 block font-heading text-xs font-bold text-ink-700"
+    className="mb-2 block font-sans text-xs font-semibold text-ink-700"
   >
     {children}
     {required && (

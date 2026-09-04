@@ -23,7 +23,12 @@ const Seo = ({
   const { pathname } = useLocation()
   const canonical = `${site.url}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}`
 
-  const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.role}`
+  // No `title` means the homepage, which gets the full descriptive title rather
+  // than a suffix. "Home | Hari Krishna Talikota" wastes the single most
+  // valuable string on the site — the one Google shows for his name.
+  const fullTitle = title
+    ? `${title} | ${site.name}`
+    : `${site.name} — Kanaka Durga Devasthanam Board Member`
 
   return (
     <Helmet prioritizeSeoTags>

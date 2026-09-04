@@ -6,7 +6,7 @@ import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
-import { gallery, galleryGroups } from '../data/photos'
+import { photos, gallery, galleryGroups } from '../data/photos'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter }
 
@@ -19,11 +19,11 @@ const formatDate = (iso) =>
  * that points to the live feeds is honest and still useful.
  */
 const EmptyNewsroom = () => (
-  <Reveal className="rounded-3xl border border-dashed border-ink-200 bg-ink-50 px-6 py-14 text-center">
-    <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white text-xl text-ink-400 shadow-card">
+  <Reveal className="border-y hairline py-16 text-center">
+    <span className="mx-auto grid h-12 w-12 place-items-center text-xl text-ink-500">
       <FaRegNewspaper aria-hidden="true" />
     </span>
-    <h3 className="mt-5 font-heading text-lg font-bold text-ink-900">
+    <h3 className="mt-5 font-display text-headline text-ink-900">
       Press releases will appear here
     </h3>
     <p className="mx-auto mt-2.5 max-w-md text-sm leading-relaxed text-ink-600">
@@ -35,7 +35,7 @@ const EmptyNewsroom = () => (
       href={social.find((s) => s.name === 'X')?.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="btn-primary mt-7 !px-6 !py-3"
+      className="btn-primary mt-8"
     >
       Latest on X<span className="sr-only"> (opens in a new tab)</span>
       <FaArrowRight aria-hidden="true" />
@@ -72,14 +72,14 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
       aria-label={`Photo ${index + 1} of ${items.length}: ${item.caption}`}
     >
       <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <p className="font-heading text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
+        <p className="font-sans text-micro uppercase text-brand-400">
           {index + 1} / {items.length}
         </p>
         <button
           type="button"
           onClick={onClose}
           autoFocus
-          className="grid h-11 w-11 place-items-center rounded-xl text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+          className="grid h-11 w-11 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           aria-label="Close photo viewer"
         >
           <FaXmark size={20} aria-hidden="true" />
@@ -90,7 +90,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
         <button
           type="button"
           onClick={() => onStep(-1)}
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           aria-label="Previous photo"
         >
           <FaChevronLeft aria-hidden="true" />
@@ -103,12 +103,12 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
               e.currentTarget.src = item.src
             }}
             alt={item.alt}
-            className="max-h-[62vh] w-auto max-w-full rounded-xl object-contain"
+            className="max-h-[62vh] w-auto max-w-full object-contain"
           />
           <figcaption className="max-w-2xl px-2 text-center">
             <p className="text-sm font-medium text-white sm:text-base">{item.caption}</p>
             {item.telugu && (
-              <p lang="te" className="mt-1.5 text-xs leading-relaxed text-ink-400">
+              <p lang="te" className="mt-2 text-xs leading-relaxed text-white/60">
                 {item.telugu}
               </p>
             )}
@@ -118,7 +118,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
         <button
           type="button"
           onClick={() => onStep(1)}
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           aria-label="Next photo"
         >
           <FaChevronRight aria-hidden="true" />
@@ -162,7 +162,7 @@ const Media = () => {
   return (
     <>
       <Seo
-        title="Media & Photo Gallery"
+        title="Photo Gallery & Updates"
         description="Photographs and updates from Hari Krishna Talikota's political and community service work — party events, constituency programmes, temple service and Telugu cultural events."
         image={`${site.url}/photos/with-chandrababu-naidu-1200.webp`}
         schema={schema}
@@ -171,7 +171,8 @@ const Media = () => {
       <PageHero
         eyebrow="Media & Updates"
         title="In pictures"
-        lead="Party events, constituency programmes, temple service and Telugu cultural celebrations — from the office of the iTDP Telangana State President."
+        lead="Party events, constituency programmes, temple service and Telugu cultural celebrations."
+        photo={photos.constituency}
       />
 
       {/* ---- Gallery ------------------------------------------------------- */}
@@ -179,8 +180,7 @@ const Media = () => {
         <div className="container-custom">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">Photo Gallery</p>
-            <h2 className="mt-3 text-title">Recent activity</h2>
-            <div className="rule mt-6" />
+            <h2 className="mt-5 font-display text-display">Recent activity</h2>
           </Reveal>
 
           {/* Filters */}
@@ -204,10 +204,10 @@ const Media = () => {
                       setLightbox(null)
                     }}
                     aria-pressed={active}
-                    className={`rounded-full px-4 py-2.5 font-heading text-xs font-bold transition-colors ${
+                    className={`rounded-sm px-4 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.08em] transition-colors ${
                       active
                         ? 'bg-ink-900 text-white'
-                        : 'border border-ink-200 text-ink-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800'
+                        : 'border border-ink-200 text-ink-600 hover:border-ink-900 hover:text-ink-900'
                     }`}
                   >
                     {g.label}
@@ -225,15 +225,15 @@ const Media = () => {
                 <button
                   type="button"
                   onClick={() => setLightbox(i)}
-                  className="group block w-full rounded-2xl text-left"
+                  className="group block w-full text-left"
                   aria-label={`Open photo: ${item.caption}`}
                 >
                   <Picture
                     photo={item}
                     aspect="4 / 3"
-                    rounded="rounded-2xl"
+                    rounded=""
                     sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
-                    className="ring-1 ring-ink-900/5 transition-transform duration-500 group-hover:scale-[1.02]"
+                    imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
                   />
                   <p className="mt-3 text-sm font-medium leading-snug text-ink-800">
                     {item.caption}
@@ -255,8 +255,7 @@ const Media = () => {
         <div className="container-custom">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">Press Releases</p>
-            <h2 className="mt-3 text-title">From the office</h2>
-            <div className="rule mt-6" />
+            <h2 className="mt-5 font-display text-display">From the office</h2>
           </Reveal>
 
           <div className="mt-12">
@@ -269,15 +268,15 @@ const Media = () => {
                     key={update.title}
                     delay={i * 0.06}
                     as="article"
-                    className="card-interactive h-full"
+                    className="h-full border-t hairline pt-6"
                   >
                     <time
                       dateTime={update.date}
-                      className="inline-block rounded-full bg-brand-50 px-3.5 py-1.5 font-heading text-[0.65rem] font-bold uppercase tracking-wider text-brand-800 ring-1 ring-brand-200"
+                      className="font-sans text-micro uppercase text-brand-800"
                     >
                       {formatDate(update.date)}
                     </time>
-                    <h3 className="mt-4 font-heading text-lg font-bold text-ink-900">
+                    <h3 className="mt-3 font-display text-headline text-ink-900">
                       {update.title}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-ink-600">{update.summary}</p>
@@ -294,8 +293,7 @@ const Media = () => {
         <div className="container-custom">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">Follow Along</p>
-            <h2 className="mt-3 text-title">Real-time updates on social</h2>
-            <div className="rule mt-6" />
+            <h2 className="mt-5 font-display text-display">Real-time updates on social</h2>
           </Reveal>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-3">
@@ -307,13 +305,13 @@ const Media = () => {
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer me"
-                    className="card-interactive group flex h-full items-center gap-4"
+                    className="group flex h-full items-center gap-4 border-t hairline py-6 transition-colors hover:border-ink-900"
                   >
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-ink-900 text-lg text-brand-400 transition-transform duration-300 group-hover:scale-105">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center bg-ink-900 text-base text-brand-400 transition-transform duration-300 group-hover:scale-105">
                       <Glyph aria-hidden="true" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block font-heading text-base font-bold text-ink-900">
+                      <span className="block font-display text-base font-semibold text-ink-900">
                         {s.name}
                         <span className="sr-only"> (opens in a new tab)</span>
                       </span>

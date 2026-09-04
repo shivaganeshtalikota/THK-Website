@@ -9,7 +9,6 @@
 
   html {
     scroll-behavior: smooth;
-    /* Anchor targets clear the fixed header instead of hiding under it. */
     scroll-padding-top: calc(var(--nav-h) + 1rem);
     -webkit-text-size-adjust: 100%;
   }
@@ -20,32 +19,29 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading text-ink-900;
+    @apply text-ink-900;
     text-wrap: balance;
   }
 
-  p {
-    text-wrap: pretty;
+  p { text-wrap: pretty; }
+
+  /* Telugu runs in its own face — Inter has no Telugu coverage, so without
+     this the browser silently substitutes and the captions look broken. */
+  [lang='te'] {
+    @apply font-telugu;
+    line-height: 1.7;
   }
 
-  /* Visible, high-contrast focus ring. The old outline-brand ring was
-     invisible against yellow sections — this one works on any surface. */
   :focus-visible {
     outline: 3px solid theme('colors.ink.900');
-    outline-offset: 2px;
+    outline-offset: 3px;
     border-radius: 2px;
   }
 
-  .on-brand :focus-visible {
-    outline-color: theme('colors.ink.950');
-  }
+  .on-dark :focus-visible { outline-color: theme('colors.brand.400'); }
 
-  ::selection {
-    @apply bg-brand-500 text-ink-900;
-  }
+  ::selection { @apply bg-brand-500 text-ink-900; }
 
-  /* Honour the OS "reduce motion" setting. The previous build animated
-     unconditionally, which is rough for vestibular sensitivity. */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -59,110 +55,110 @@
 
 @layer components {
   .container-custom {
-    @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[86rem] px-5 sm:px-8 lg:px-12;
   }
 
-  .section {
-    @apply py-16 sm:py-20 lg:py-28;
+  /* Narrower measure for editorial text blocks. */
+  .container-text {
+    @apply mx-auto w-full max-w-3xl px-5 sm:px-8;
   }
+
+  .section { @apply py-20 sm:py-24 lg:py-32; }
 
   /* ---- Buttons ------------------------------------------------------- */
+  /* Square-ish, not pill. Pills at every size are a stock-kit signature. */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5
-           font-heading text-sm font-bold tracking-wide
+    @apply inline-flex items-center justify-center gap-2.5 rounded-sm px-7 py-4
+           font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em]
            transition-all duration-300 ease-out
-           active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+           active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
   }
 
-  .btn-primary {
-    @apply btn bg-ink-900 text-white hover:bg-ink-800 hover:shadow-lift;
-  }
-
-  .btn-brand {
-    @apply btn bg-brand-500 text-ink-900 hover:bg-brand-400 hover:shadow-brand;
-  }
-
-  .btn-outline {
-    @apply btn border-2 border-ink-900 bg-transparent text-ink-900
-           hover:bg-ink-900 hover:text-white;
-  }
-
-  /* On yellow surfaces the outline needs dark ink, not white. */
-  .on-brand .btn-outline {
-    @apply border-ink-900 text-ink-900 hover:bg-ink-900 hover:text-brand-500;
-  }
-
-  /* ---- Surfaces ------------------------------------------------------ */
-  .card {
-    @apply rounded-2xl border border-ink-100 bg-white p-7 shadow-card
-           transition-all duration-300 ease-out;
-  }
-
-  .card-interactive {
-    @apply card hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift;
+  .btn-primary { @apply btn bg-ink-900 text-white hover:bg-ink-800; }
+  .btn-brand   { @apply btn bg-brand-500 text-ink-900 hover:bg-brand-400; }
+  .btn-outline { @apply btn border border-ink-900/25 text-ink-900 hover:border-ink-900 hover:bg-ink-900 hover:text-white; }
+  .btn-ghost-light {
+    @apply btn border border-white/30 text-white hover:border-white hover:bg-white hover:text-ink-900;
   }
 
   /* ---- Type ---------------------------------------------------------- */
-  /* brand-800, not brand-700: at 12px this is small text, and brand-700
-     measures 4.24:1 on white — under the 4.5 minimum. brand-800 is 7.2:1. */
   .eyebrow {
-    @apply font-heading text-xs font-bold uppercase tracking-[0.18em] text-brand-800;
+    @apply font-sans text-micro uppercase text-brand-800;
   }
 
-  .on-brand .eyebrow,
-  .on-dark .eyebrow {
-    @apply text-ink-900;
-  }
+  .on-dark .eyebrow { @apply text-brand-400; }
 
-  .on-dark .eyebrow {
-    @apply text-brand-300;
-  }
+  .lede { @apply max-w-prose text-lead text-ink-600; }
 
-  .prose-body {
-    @apply max-w-prose text-lead text-ink-600;
-  }
-
-  .rule {
-    @apply h-1 w-16 rounded-full bg-brand-500;
+  /* A hairline + label, used instead of the repeated icon-in-a-tile motif. */
+  /* ink-500, not ink-400: at 11px this is small text and ink-400 measures
+     3.38:1 on white, under the 4.5 minimum. ink-500 is 6.4:1. */
+  .label-rule {
+    @apply flex items-center gap-4 font-sans text-micro uppercase text-ink-500
+           before:h-px before:w-8 before:bg-ink-300 before:content-[''];
   }
 
   .nav-link {
-    @apply relative py-2 font-heading text-sm font-semibold text-ink-600
+    @apply relative py-2 font-sans text-[0.82rem] font-medium text-ink-600
            transition-colors duration-200
-           after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-0
-           after:rounded-full after:bg-brand-500 after:transition-all after:duration-300
+           after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-0
+           after:bg-ink-900 after:transition-all after:duration-300
            hover:text-ink-900 hover:after:w-full;
   }
 
-  .nav-link-active {
-    /* brand-800, not brand-500 — the old active link was unreadable on white. */
-    @apply text-brand-800 after:w-full;
-  }
+  .nav-link-active { @apply text-ink-900 after:w-full after:bg-brand-600; }
 
   .skip-link {
     @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100]
-           focus:rounded-lg focus:bg-ink-900 focus:px-5 focus:py-3
-           focus:font-heading focus:text-sm focus:font-bold focus:text-white;
+           focus:bg-ink-900 focus:px-5 focus:py-3
+           focus:font-sans focus:text-sm focus:font-semibold focus:text-white;
+  }
+
+  /* Editorial number, used for ordered lists of policy areas. */
+  .index-num {
+    @apply font-display text-[2.6rem] font-bold leading-none text-brand-700;
   }
 }
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
 
-  /* Subtle paper texture for yellow sections so large fills don't read flat. */
-  .bg-brand-texture {
-    background-color: theme('colors.brand.500');
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5) 0%, transparent 45%),
-      radial-gradient(circle at 85% 75%, rgba(201,154,0,0.28) 0%, transparent 50%);
+  /* Scrim for text sitting over photography.
+     On narrow screens the copy sits at the BOTTOM of a tall viewport, so an
+     angled left-to-right gradient leaves it on bare image — the type has to be
+     grounded from below instead. The angled version only makes sense once
+     there is horizontal room for a text column beside the subject. */
+  .scrim-left {
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 9, 0.95) 0%,
+      rgba(10, 10, 9, 0.80) 34%,
+      rgba(10, 10, 9, 0.42) 62%,
+      rgba(10, 10, 9, 0.28) 100%
+    );
   }
 
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, rgba(18,22,27,0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(18,22,27,0.05) 1px, transparent 1px);
-    background-size: 56px 56px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
-            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+  @media (min-width: 1024px) {
+    .scrim-left {
+      background: linear-gradient(
+        100deg,
+        rgba(10, 10, 9, 0.94) 0%,
+        rgba(10, 10, 9, 0.86) 32%,
+        rgba(10, 10, 9, 0.45) 58%,
+        rgba(10, 10, 9, 0.18) 100%
+      );
+    }
   }
+
+  .scrim-bottom {
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 9, 0.92) 0%,
+      rgba(10, 10, 9, 0.55) 38%,
+      rgba(10, 10, 9, 0.05) 78%
+    );
+  }
+
+  .hairline { @apply border-ink-200; }
+  .hairline-dark { @apply border-white/10; }
 }

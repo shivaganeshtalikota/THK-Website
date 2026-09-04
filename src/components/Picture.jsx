@@ -29,13 +29,16 @@ const Picture = ({
     .map((w) => `/photos/${photo.slug}-${w}.webp ${w}w`)
     .join(', ')
 
-  const ratio = aspect ?? `${photo.width} / ${photo.height}`
+  // aspect="auto" opts out of the intrinsic ratio box entirely, for cases where
+  // the parent sets the height (a full-bleed split panel, say) and the image
+  // should simply fill it.
+  const ratio = aspect === 'auto' ? undefined : (aspect ?? `${photo.width} / ${photo.height}`)
 
   if (failed) {
     return (
       <div
-        className={`bg-brand-texture relative grid place-items-center overflow-hidden ${rounded} ${className}`}
-        style={{ aspectRatio: ratio }}
+        className={`relative grid place-items-center overflow-hidden bg-brand-500 ${rounded} ${className}`}
+        style={ratio ? { aspectRatio: ratio } : undefined}
         role="img"
         aria-label={photo.alt}
       >
@@ -52,7 +55,7 @@ const Picture = ({
   return (
     <div
       className={`relative overflow-hidden bg-ink-100 ${rounded} ${className}`}
-      style={{ aspectRatio: ratio }}
+      style={ratio ? { aspectRatio: ratio } : undefined}
     >
       <picture>
         <source type="image/webp" srcSet={srcSet} sizes={sizes} />

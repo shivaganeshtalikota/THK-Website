@@ -14,9 +14,9 @@ export const site = {
   name: 'Hari Krishna Talikota',
   shortName: 'HK Talikota',
   alternateNames: ['Talikota Harikrishna', 'Hari TDP', 'Haranna'],
-  role: 'iTDP Telangana State President',
-  roleShort: 'iTDP Telangana President',
-  secondaryRole: 'Board Member, Sri Kanaka Durga Devasthanam',
+  role: 'Board Member, Sri Kanaka Durga Devasthanam',
+  roleShort: 'Devasthanam Board Member',
+  secondaryRole: 'iTDP Telangana State President',
 
   // TODO(office): confirm the production domain before launch. Every canonical
   // URL, the sitemap and the social preview tags are derived from this.
@@ -24,7 +24,7 @@ export const site = {
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Official website of Hari Krishna Talikota, iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam. Dedicated to Telugu pride, regional development, and good governance in Telangana.',
+    'Hari Krishna Talikota — Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada, and iTDP Telangana State President of the Telugu Desam Party. Temple service, regional development and Telugu cultural preservation.',
 
   mission:
     'Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.',
@@ -39,6 +39,31 @@ export const site = {
     lng: 78.486671,
   },
 }
+
+/**
+ * The two offices he holds, in the order the site presents them.
+ *
+ * The Devasthanam seat leads. It is the more widely recognised of the two —
+ * the Kanaka Durga temple at Indrakeeladri draws millions of devotees a year
+ * and is searched for by name constantly, whereas a state party-wing
+ * presidency is a niche query. Leading with it is both accurate to the
+ * standing of the role and the better route to reach.
+ *
+ * Stated exactly as held: Board Member, one of several trustees — not
+ * chairman, and not an executive officer of the temple.
+ */
+export const roles = [
+  {
+    title: 'Board Member',
+    org: 'Sri Kanaka Durga Devasthanam, Indrakeeladri, Vijayawada',
+    href: '/community',
+  },
+  {
+    title: 'iTDP Telangana State President',
+    org: 'Telugu Desam Party',
+    href: '/political',
+  },
+]
 
 /**
  * TODO(office): these are placeholders. The source document lists them as
@@ -286,11 +311,23 @@ export const temple = {
     },
   ],
   festivals: [
-    { name: 'Vasantha Navaratri', note: 'Spring festival celebrating the goddess' },
-    { name: 'Sharad Navaratri', note: 'Autumn festival with grand celebrations' },
-    { name: 'Ugadi', note: 'Telugu New Year celebrations' },
-    { name: 'Special Poojas', note: 'Religious ceremonies throughout the year' },
+    { name: 'Sharad Navaratri', note: 'The temple’s largest observance — nine nights of the goddess in the autumn, drawing the year’s heaviest footfall.' },
+    { name: 'Vasantha Navaratri', note: 'The spring Navaratri, observed with a full cycle of alankarams and special poojas.' },
+    { name: 'Ugadi', note: 'The Telugu New Year, marked at the temple with panchanga sravanam and festival darshan.' },
+    { name: 'Daily rituals & special poojas', note: 'The regular ritual calendar that runs through the year, alongside sponsored sevas.' },
   ],
+
+  /** Devotee-facing services the board oversees. */
+  services: [
+    { name: 'Darshan', note: 'Daily darshan for general and sponsored queues, including arrangements at peak festival times.' },
+    { name: 'Annadanam', note: 'Free meals served to devotees — among the most visible of the temple’s charitable functions.' },
+    { name: 'Accommodation', note: 'Lodging for pilgrims travelling from across the Telugu states and beyond.' },
+    { name: 'Online booking', note: 'Digital booking for darshan, sevas and accommodation.' },
+    { name: 'Assisted access', note: 'Provision for elderly and differently-abled devotees.' },
+  ],
+
+  governance:
+    'The Devasthanam is administered by a trust board under the oversight of the Andhra Pradesh Endowments Department, with professional management handling day-to-day operations. Board members carry responsibility for administration, transparent use of temple funds, the quality of devotee services, and the continuity of ritual tradition.',
 }
 
 /**

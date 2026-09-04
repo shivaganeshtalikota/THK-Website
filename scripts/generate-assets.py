@@ -94,11 +94,12 @@ def make_og():
 
     # Real portrait in the right panel. This is what makes the WhatsApp /
     # Facebook link preview show his face rather than a monogram.
-    portrait = ROOT / "public" / "photos" / "portrait-headshot-621.webp"
+    portrait = ROOT / "public" / "photos" / "hero-addressing-995.webp"
     if portrait.exists():
         p = Image.open(portrait).convert("RGB")
-        # centering y=0.22 keeps the face high in frame for the tall panel
-        p = ImageOps.fit(p, (PANEL, H), Image.LANCZOS, centering=(0.5, 0.22))
+        # centering y=0.18 keeps his face high in the tall panel rather than
+        # cropping to the lectern
+        p = ImageOps.fit(p, (PANEL, H), Image.LANCZOS, centering=(0.5, 0.18))
         img.paste(p, (W - PANEL, 0))
         # Scrim along the inner edge so the panel meets the yellow field cleanly.
         scrim = Image.new("L", (90, H), 0)
@@ -117,7 +118,7 @@ def make_og():
 
     x = 78
     # Eyebrow
-    track(d, (x, 92), "TELUGU DESAM PARTY", font("Montserrat-Bold.ttf", 21), (120, 92, 0), 4.2)
+    track(d, (x, 92), "VIJAYAWADA  ·  TELANGANA", font("Montserrat-Bold.ttf", 21), (120, 92, 0), 4.2)
 
     # Name — the hero element, sized to stay legible in a WhatsApp thumbnail.
     d.text((x - 4, 150), "HARI KRISHNA", font=font("Montserrat-ExtraBold.ttf", 82), fill=INK)
@@ -126,10 +127,13 @@ def make_og():
     # Rule
     d.rectangle([x, 358, x + 92, 366], fill=INK)
 
-    # Roles
-    d.text((x, 398), "iTDP Telangana State President", font=font("Montserrat-SemiBold.ttf", 33), fill=INK)
-    d.text((x, 448), "Board Member, Sri Kanaka Durga Devasthanam",
-           font=font("Montserrat-Medium.ttf", 25), fill=(92, 74, 12))
+    # Roles. The temple board seat is the more widely recognised position and
+    # the one people actually search for, so it leads.
+    d.text((x, 396), "Board Member", font=font("Montserrat-Bold.ttf", 32), fill=INK)
+    d.text((x, 436), "Sri Kanaka Durga Devasthanam, Indrakeeladri",
+           font=font("Montserrat-SemiBold.ttf", 26), fill=INK)
+    d.text((x, 478), "iTDP Telangana State President  ·  Telugu Desam Party",
+           font=font("Montserrat-Medium.ttf", 21), fill=(92, 74, 12))
 
     # Footer strip
     d.rectangle([0, H - 62, W - PANEL - 8, H], fill=INK)
