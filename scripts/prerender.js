@@ -89,7 +89,29 @@ async function main() {
     count++
   }
 
-  console.log(`\nprerendered ${count} routes`)
+  // 404.html — static hosts (Vercel, Netlify, GitHub Pages) serve this for any
+  // path that matches no file, and serve it with a real 404 status. Without it
+  // a mistyped URL gets the host's generic error page instead of our NotFound
+  // route. Note this is deliberately NOT a catch-all rewrite to index.html:
+  // that would return HTTP 200 for every wrong URL, which tells crawlers those
+  // pages exist and creates soft-404s across the whole site.
+  const nf = render('/__not_found__')
+  let notFound = template
+    .replace(/<title>[\s\S]*?<\/title>\s*/i, '')
+    .replace(/<meta\s+name="description"[^>]*>\s*/gi, '')
+    .replace(/<link\s+rel="canonical"[^>]*>\s*/gi, '')
+    .replace(/<meta\s+property="og:[^"]*"[^>]*>\s*/gi, '')
+    .replace(/<meta\s+name="twitter:[^"]*"[^>]*>\s*/gi, '')
+  const nfHead = [nf.helmet?.title?.toString(), nf.helmet?.priority?.toString(), nf.helmet?.meta?.toString()]
+    .filter((s) => s && s.trim())
+    .join('\n    ')
+  notFound = notFound
+    .replace('</head>', `  ${nfHead}\n  </head>`)
+    .replace('<div id="root"></div>', `<div id="root">${nf.html}</div>`)
+  writeFileSync(join(DIST, '404.html'), notFound, 'utf8')
+  console.log(`  404.html     -> ${Math.round(Buffer.byteLength(notFound) / 1024)}KB`)
+
+  console.log(`\nprerendered ${count} routes + 404`)
 }
 
 main().catch((err) => {
