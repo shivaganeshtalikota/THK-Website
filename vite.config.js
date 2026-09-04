@@ -9,12 +9,6 @@ export default defineConfig(({ isSsrBuild }) => ({
     port: Number(process.env.PORT) || 3000,
     open: true,
   },
-  ssr: {
-    // react-helmet-async ships CommonJS. Left external, Node's ESM loader
-    // cannot destructure `HelmetProvider` from it and the prerender step dies.
-    // Bundling it into the SSR output sidesteps the interop entirely.
-    noExternal: ['react-helmet-async'],
-  },
   build: {
     outDir: 'dist',
     sourcemap: false,

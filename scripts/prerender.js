@@ -26,6 +26,68 @@ const DIST = join(ROOT, 'dist')
 // Keep in sync with the <Routes> in src/App.jsx and scripts/generate-sitemap.js.
 const ROUTES = ['/', '/about', '/political', '/community', '/media', '/contact', '/privacy', '/terms']
 
+/** Escape a value for use inside a double-quoted HTML attribute. */
+const attr = (v) =>
+  String(v)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+/**
+ * Turn the head collector into HTML.
+ *
+ * Every element is marked data-head="1" so the client-side manager in
+ * src/components/Head.jsx can find and replace exactly these on navigation,
+ * without disturbing the hand-written tags in index.html.
+ */
+function serialiseHead({ title, tags }) {
+  const out = []
+  if (title) out.push(`<title data-head="1">${attr(title)}</title>`)
+  for (const tag of tags ?? []) {
+    const { _tag, _text, ...rest } = tag
+    const a = Object.entries(rest)
+      .filter(([, v]) => v !== undefined && v !== null)
+      .map(([k, v]) => `${k}="${attr(v)}"`)
+      .join(' ')
+    out.push(
+      _text != null
+        ? // JSON-LD only; its content is JSON.stringify output, so the one
+          // sequence that could break out of a <script> is escaped.
+          `<${_tag} data-head="1" ${a}>${String(_text).replace(/<\//g, '<\\/')}</${_tag}>`
+        : `<${_tag} data-head="1" ${a}>`
+    )
+  }
+  return out.join('\n    ')
+}
+
+/**
+ * Strip the template's own title/description/canonical/OG/twitter so the
+ * per-route versions from <Seo> are authoritative and nothing is duplicated.
+ *
+ * The template's JSON-LD is deliberately KEPT. It carries the site-wide @graph
+ * (Person -> PoliticalParty -> WebSite) that identifies him as an entity, which
+ * is what Google builds a Knowledge Panel from and what AI answer engines read.
+ * Stripping it left each page with only its own page-type schema and no Person
+ * at all. Page schemas reference the Person by @id, so the blocks merge rather
+ * than conflict.
+ */
+function stripTemplateHead(html) {
+  return html
+    .replace(/<title>[\s\S]*?<\/title>\s*/i, '')
+    .replace(/<meta\s+name="description"[^>]*>\s*/gi, '')
+    .replace(/<link\s+rel="canonical"[^>]*>\s*/gi, '')
+    .replace(/<meta\s+property="og:[^"]*"[^>]*>\s*/gi, '')
+    .replace(/<meta\s+name="twitter:[^"]*"[^>]*>\s*/gi, '')
+    .replace(/<meta\s+property="profile:[^"]*"[^>]*>\s*/gi, '')
+}
+
+function compose(template, head, bodyHtml) {
+  return stripTemplateHead(template)
+    .replace('</head>', `  ${serialiseHead(head)}\n  </head>`)
+    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+}
+
 async function main() {
   const serverEntry = join(ROOT, 'dist-ssr', 'entry-server.js')
   if (!existsSync(serverEntry)) {
@@ -40,74 +102,23 @@ async function main() {
 
   let count = 0
   for (const route of ROUTES) {
-    const { html, helmet } = render(route)
-
-    // Replace the static head tags with this route's own. react-helmet-async
-    // gives back ready-to-inject strings; `.toString()` includes the tag markup.
-    let page = template
-
-    // `priority` first: <Seo> sets prioritizeSeoTags, which moves description,
-    // canonical, the Open Graph block and the JSON-LD into this bucket rather
-    // than meta/link/script. Omitting it silently dropped every canonical and
-    // every structured-data block from the prerendered pages.
-    const head = [
-      helmet?.title?.toString(),
-      helmet?.priority?.toString(),
-      helmet?.meta?.toString(),
-      helmet?.link?.toString(),
-      helmet?.script?.toString(),
-    ]
-      .filter((s) => s && s.trim())
-      .join('\n    ')
-
-    // Drop the template's title/description/canonical/OG/twitter so the
-    // per-route versions from <Seo> are authoritative and nothing is duplicated.
-    //
-    // The template's JSON-LD is deliberately KEPT. It carries the site-wide
-    // @graph (Person -> PoliticalParty -> WebSite) that identifies him as an
-    // entity, which is what Google builds a Knowledge Panel from and what AI
-    // answer engines read. Stripping it left each page with only its own
-    // page-type schema and no Person at all. Page schemas reference the Person
-    // by @id, so the two blocks merge rather than conflict.
-    page = page
-      .replace(/<title>[\s\S]*?<\/title>\s*/i, '')
-      .replace(/<meta\s+name="description"[^>]*>\s*/gi, '')
-      .replace(/<link\s+rel="canonical"[^>]*>\s*/gi, '')
-      .replace(/<meta\s+property="og:[^"]*"[^>]*>\s*/gi, '')
-      .replace(/<meta\s+name="twitter:[^"]*"[^>]*>\s*/gi, '')
-      .replace(/<meta\s+property="profile:[^"]*"[^>]*>\s*/gi, '')
-
-    page = page.replace('</head>', `  ${head}\n  </head>`)
-    page = page.replace('<div id="root"></div>', `<div id="root">${html}</div>`)
+    const { html, head } = render(route)
+    const page = compose(template, head, html)
 
     const outDir = route === '/' ? DIST : join(DIST, route)
     mkdirSync(outDir, { recursive: true })
     writeFileSync(join(outDir, 'index.html'), page, 'utf8')
 
-    const kb = Math.round(Buffer.byteLength(page) / 1024)
-    console.log(`  ${route.padEnd(12)} -> ${kb}KB`)
+    console.log(`  ${route.padEnd(12)} -> ${Math.round(Buffer.byteLength(page) / 1024)}KB`)
     count++
   }
 
   // 404.html — static hosts (Vercel, Netlify, GitHub Pages) serve this for any
-  // path that matches no file, and serve it with a real 404 status. Without it
-  // a mistyped URL gets the host's generic error page instead of our NotFound
-  // route. Note this is deliberately NOT a catch-all rewrite to index.html:
-  // that would return HTTP 200 for every wrong URL, which tells crawlers those
-  // pages exist and creates soft-404s across the whole site.
+  // path matching no file, with a real 404 status. Deliberately NOT a catch-all
+  // rewrite to index.html: that returns HTTP 200 for every wrong URL, telling
+  // crawlers those pages exist and manufacturing soft-404s across the site.
   const nf = render('/__not_found__')
-  let notFound = template
-    .replace(/<title>[\s\S]*?<\/title>\s*/i, '')
-    .replace(/<meta\s+name="description"[^>]*>\s*/gi, '')
-    .replace(/<link\s+rel="canonical"[^>]*>\s*/gi, '')
-    .replace(/<meta\s+property="og:[^"]*"[^>]*>\s*/gi, '')
-    .replace(/<meta\s+name="twitter:[^"]*"[^>]*>\s*/gi, '')
-  const nfHead = [nf.helmet?.title?.toString(), nf.helmet?.priority?.toString(), nf.helmet?.meta?.toString()]
-    .filter((s) => s && s.trim())
-    .join('\n    ')
-  notFound = notFound
-    .replace('</head>', `  ${nfHead}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${nf.html}</div>`)
+  const notFound = compose(template, nf.head, nf.html)
   writeFileSync(join(DIST, '404.html'), notFound, 'utf8')
   console.log(`  404.html     -> ${Math.round(Buffer.byteLength(notFound) / 1024)}KB`)
 

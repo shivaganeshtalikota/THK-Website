@@ -1,36 +1,34 @@
 import { StrictMode } from 'react'
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
-import { HelmetProvider } from 'react-helmet-async'
+import { HeadCollector } from './components/Head'
 import App from './App'
 
 /**
- * Server entry used only at build time by scripts/prerender.js.
+ * Server entry, used only at build time by scripts/prerender.js.
  *
- * WHY THIS EXISTS
+ * WHY PRERENDER AT ALL
  * This is a client-rendered SPA, and most crawlers that feed AI answer engines
  * — GPTBot, PerplexityBot, ClaudeBot, CCBot — do not execute JavaScript. Nor do
  * the WhatsApp / Facebook / X link-preview fetchers. Without prerendering they
- * all receive `<div id="root"></div>` and nothing else, so:
- *   - sharing a deep link like /political showed the homepage card
- *   - AI engines had no text to answer "who is Hari Krishna Talikota?" from
+ * all receive `<div id="root"></div>` and nothing else, so sharing a deep link
+ * showed the homepage card and AI engines had no text about him to read.
  *
- * Rendering each route to static HTML at build time fixes both: every page
- * ships real content and its own metadata, and the SPA still hydrates and takes
- * over for real visitors.
+ * `collector` is filled in by useHead during render; prerender.js serialises it
+ * into the static <head>.
  */
 export function render(url) {
-  const helmetContext = {}
+  const collector = { title: null, tags: [] }
 
   const html = renderToString(
     <StrictMode>
-      <HelmetProvider context={helmetContext}>
+      <HeadCollector collector={collector}>
         <StaticRouter location={url}>
           <App />
         </StaticRouter>
-      </HelmetProvider>
+      </HeadCollector>
     </StrictMode>
   )
 
-  return { html, helmet: helmetContext.helmet }
+  return { html, head: collector }
 }

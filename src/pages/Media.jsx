@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
-import { FaArrowRight, FaRegNewspaper, FaXmark, FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
+import { FaArrowRight, FaRegNewspaper, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
 import { photos, gallery, galleryGroups } from '../data/photos'
+import { videos, channel } from '../data/videos'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
@@ -245,6 +246,78 @@ const Media = () => {
                     </p>
                   )}
                 </button>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ---- Videos --------------------------------------------------------- */}
+      <section className="section bg-ink-950">
+        <div className="on-dark container-custom">
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Video</p>
+              <h2 className="mt-5 font-display text-display text-white">
+                From the official channel
+              </h2>
+            </div>
+            <a
+              href={channel.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
+            >
+              {channel.handle}
+              <span className="sr-only"> on YouTube (opens in a new tab)</span>
+              <FaArrowRight
+                className="transition-transform duration-300 group-hover:translate-x-1.5"
+                aria-hidden="true"
+              />
+            </a>
+          </Reveal>
+
+          <ul className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {videos.slice(0, 9).map((v, i) => (
+              <Reveal as="li" key={v.id} delay={Math.min(i, 5) * 0.05}>
+                <a
+                  href={`https://www.youtube.com/watch?v=${v.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block"
+                >
+                  <div className="relative overflow-hidden bg-ink-800">
+                    <img
+                      src={`/photos/video/${v.id}.webp`}
+                      alt=""
+                      width="640"
+                      height="360"
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-video w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
+                    />
+                    <span
+                      className="absolute inset-0 grid place-items-center bg-ink-950/25 transition-colors group-hover:bg-ink-950/10"
+                      aria-hidden="true"
+                    >
+                      <span className="grid h-14 w-14 place-items-center rounded-full bg-brand-500/95 text-ink-900 transition-transform duration-300 group-hover:scale-110">
+                        <FaPlay className="ml-0.5" />
+                      </span>
+                    </span>
+                  </div>
+                  <p className="mt-4 font-sans text-sm font-medium leading-snug text-white transition-colors group-hover:text-brand-300">
+                    {v.title}
+                    <span className="sr-only"> — watch on YouTube (opens in a new tab)</span>
+                  </p>
+                  {v.telugu && (
+                    <p lang="te" className="mt-1.5 line-clamp-2 text-xs text-white/55">
+                      {v.telugu}
+                    </p>
+                  )}
+                  <time dateTime={v.published} className="mt-2 block text-xs text-white/45">
+                    {formatDate(v.published)}
+                  </time>
+                </a>
               </Reveal>
             ))}
           </ul>
