@@ -2,12 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react()],
   server: {
     // Honour PORT when the environment assigns one; default to 3000 locally.
     port: Number(process.env.PORT) || 3000,
     open: true,
+  },
+  ssr: {
+    // react-helmet-async ships CommonJS. Left external, Node's ESM loader
+    // cannot destructure `HelmetProvider` from it and the prerender step dies.
+    // Bundling it into the SSR output sidesteps the interop entirely.
+    noExternal: ['react-helmet-async'],
   },
   build: {
     outDir: 'dist',
@@ -17,13 +23,18 @@ export default defineConfig({
     chunkSizeWarningLimit: 400,
     rollupOptions: {
       output: {
-        // 'animation-vendor' used to list 'aos', which is no longer a
-        // dependency — naming a missing package here fails the build.
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'animation-vendor': ['framer-motion'],
-        },
+        // Client only. In an SSR build react/react-dom are externals, and
+        // Rollup refuses to put an external module in a manual chunk —
+        // applying this unconditionally broke `vite build --ssr` outright.
+        ...(isSsrBuild
+          ? {}
+          : {
+              manualChunks: {
+                'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+                'animation-vendor': ['framer-motion'],
+              },
+            }),
       },
     },
   },
-})
+}))

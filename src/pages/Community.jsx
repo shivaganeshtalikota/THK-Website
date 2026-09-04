@@ -1,9 +1,9 @@
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
-import Photo from '../components/Photo'
+import Picture from '../components/Picture'
 import { site, temple } from '../data/site'
-import { photos } from '../data/images'
+import { photos } from '../data/photos'
 
 const Community = () => {
   const schema = {
@@ -68,7 +68,7 @@ const Community = () => {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <Photo photo={photos.community} className="shadow-card ring-1 ring-ink-900/5" />
+            <Picture photo={photos.community} sizes="(max-width: 1024px) 92vw, 580px" className="shadow-card ring-1 ring-ink-900/5" />
           </Reveal>
         </div>
       </section>

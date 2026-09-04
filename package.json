@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/generate-sitemap.js",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js",
     "preview": "vite preview",
+    "photos": "python scripts/process-photos.py",
     "assets": "python scripts/generate-assets.py",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },

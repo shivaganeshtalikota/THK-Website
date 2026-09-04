@@ -12,14 +12,35 @@ the portrait composited in — see PHOTO_SLOT below.
 Run:  python scripts/generate-assets.py
 """
 
+import os
+import sys
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public"
 OUT.mkdir(exist_ok=True)
 
-FONTS = Path("C:/Windows/Fonts")
+# Font directory, in order: $THK_FONT_DIR, then the platform default.
+# Hardcoding C:/Windows/Fonts made this script Windows-only, so it failed on
+# macOS, Linux and CI.
+_DEFAULT_FONT_DIRS = {
+    "win32": [Path("C:/Windows/Fonts")],
+    "darwin": [Path("/Library/Fonts"), Path.home() / "Library/Fonts", Path("/System/Library/Fonts")],
+}
+_LINUX_DIRS = [
+    Path("/usr/share/fonts/truetype/montserrat"),
+    Path("/usr/share/fonts/truetype"),
+    Path("/usr/share/fonts"),
+    Path.home() / ".fonts",
+]
+
+
+def _font_dirs():
+    override = os.environ.get("THK_FONT_DIR")
+    if override:
+        return [Path(override)]
+    return _DEFAULT_FONT_DIRS.get(sys.platform, _LINUX_DIRS)
 BRAND = (255, 215, 0)      # TDP yellow
 BRAND_DK = (201, 154, 0)
 INK = (18, 22, 27)
@@ -28,7 +49,20 @@ WHITE = (255, 255, 255)
 
 
 def font(name, size):
-    return ImageFont.truetype(str(FONTS / name), size)
+    """Find `name` in any candidate font dir, searching subdirectories."""
+    for base in _font_dirs():
+        if not base.exists():
+            continue
+        direct = base / name
+        if direct.exists():
+            return ImageFont.truetype(str(direct), size)
+        for found in base.rglob(name):
+            return ImageFont.truetype(str(found), size)
+    raise SystemExit(
+        f"Font '{name}' not found in {[str(p) for p in _font_dirs()]}.\n"
+        "Install the Montserrat family, or point THK_FONT_DIR at a directory "
+        "containing it:  THK_FONT_DIR=/path/to/fonts python scripts/generate-assets.py"
+    )
 
 
 def track(draw, xy, text, f, fill, spacing):
@@ -58,15 +92,25 @@ def make_og():
     img.paste(Image.blend(img, glow, 0.5).crop([0, 0, W - PANEL, H]), (0, 0))
     d = ImageDraw.Draw(img)
 
-    # PHOTO_SLOT: to use a real portrait, paste it into the right panel here:
-    #   p = Image.open(ROOT / "public/images/hari-krishna-talikota-portrait.jpg")
-    #   p = ImageOps.fit(p, (PANEL, H), centering=(0.5, 0.2))
-    #   img.paste(p, (W - PANEL, 0))
-    mono = font("Montserrat-ExtraBold.ttf", 150)
-    mw = d.textlength("HKT", font=mono)
-    d.text((W - PANEL + (PANEL - mw) / 2, H / 2 - 118), "HKT", font=mono, fill=(255, 215, 0))
-    sub = font("Montserrat-Bold.ttf", 19)
-    track(d, (W - PANEL + 84, H / 2 + 60), "TDP", sub, (140, 150, 165), 5)
+    # Real portrait in the right panel. This is what makes the WhatsApp /
+    # Facebook link preview show his face rather than a monogram.
+    portrait = ROOT / "public" / "photos" / "portrait-headshot-621.webp"
+    if portrait.exists():
+        p = Image.open(portrait).convert("RGB")
+        # centering y=0.22 keeps the face high in frame for the tall panel
+        p = ImageOps.fit(p, (PANEL, H), Image.LANCZOS, centering=(0.5, 0.22))
+        img.paste(p, (W - PANEL, 0))
+        # Scrim along the inner edge so the panel meets the yellow field cleanly.
+        scrim = Image.new("L", (90, H), 0)
+        ImageDraw.Draw(scrim).rectangle([0, 0, 90, H], fill=0)
+        for x in range(90):
+            ImageDraw.Draw(scrim).line([(x, 0), (x, H)], fill=int(150 * (1 - x / 90)))
+        img.paste(Image.new("RGB", (90, H), INK), (W - PANEL, 0), scrim)
+    else:
+        mono = font("Montserrat-ExtraBold.ttf", 150)
+        mw = d.textlength("HKT", font=mono)
+        d.text((W - PANEL + (PANEL - mw) / 2, H / 2 - 118), "HKT", font=mono, fill=(255, 215, 0))
+        print("  (no portrait found — monogram fallback used)")
 
     # Vertical accent rule between fields.
     d.rectangle([W - PANEL - 8, 0, W - PANEL, H], fill=BRAND_DK)

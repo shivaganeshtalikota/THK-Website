@@ -1,10 +1,12 @@
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { FaInstagram, FaFacebookF, FaXTwitter } from 'react-icons/fa6'
-import { FaArrowRight, FaRegNewspaper } from 'react-icons/fa'
+import { FaArrowRight, FaRegNewspaper, FaXmark, FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
+import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
-import { gallery } from '../data/images'
+import { gallery, galleryGroups } from '../data/photos'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter }
 
@@ -12,9 +14,9 @@ const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
 
 /**
- * Shown while `updates` is empty. The previous build filled this space with
+ * Shown while `updates` is empty. The original build filled this space with
  * four invented press events carrying real-looking dates. An empty newsroom
- * that points people to the live social feeds is honest and still useful.
+ * that points to the live feeds is honest and still useful.
  */
 const EmptyNewsroom = () => (
   <Reveal className="rounded-3xl border border-dashed border-ink-200 bg-ink-50 px-6 py-14 text-center">
@@ -22,11 +24,12 @@ const EmptyNewsroom = () => (
       <FaRegNewspaper aria-hidden="true" />
     </span>
     <h3 className="mt-5 font-heading text-lg font-bold text-ink-900">
-      Announcements will appear here
+      Press releases will appear here
     </h3>
     <p className="mx-auto mt-2.5 max-w-md text-sm leading-relaxed text-ink-600">
-      Press releases, event announcements and policy statements will be published on this
-      page. In the meantime, the social channels below carry the most current updates.
+      Dated statements and announcements will be published on this page. The photo
+      gallery below records recent activity, and the social channels carry the most
+      current updates.
     </p>
     <a
       href={social.find((s) => s.name === 'X')?.url}
@@ -34,39 +37,224 @@ const EmptyNewsroom = () => (
       rel="noopener noreferrer"
       className="btn-primary mt-7 !px-6 !py-3"
     >
-      Latest on X <FaArrowRight aria-hidden="true" />
+      Latest on X<span className="sr-only"> (opens in a new tab)</span>
+      <FaArrowRight aria-hidden="true" />
     </a>
   </Reveal>
 )
 
+/** Full-screen viewer. Keyboard-navigable and focus-trapped at the edges. */
+const Lightbox = ({ items, index, onClose, onStep }) => {
+  const item = items[index]
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') onStep(1)
+      if (e.key === 'ArrowLeft') onStep(-1)
+    }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [onClose, onStep])
+
+  if (!item) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex flex-col bg-ink-950/95 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Photo ${index + 1} of ${items.length}: ${item.caption}`}
+    >
+      <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <p className="font-heading text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
+          {index + 1} / {items.length}
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          autoFocus
+          className="grid h-11 w-11 place-items-center rounded-xl text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Close photo viewer"
+        >
+          <FaXmark size={20} aria-hidden="true" />
+        </button>
+      </div>
+
+      <div className="flex min-h-0 flex-1 items-center gap-2 px-2 sm:px-4">
+        <button
+          type="button"
+          onClick={() => onStep(-1)}
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Previous photo"
+        >
+          <FaChevronLeft aria-hidden="true" />
+        </button>
+
+        <figure className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4">
+          <img
+            src={`/photos/${item.slug}-1200.webp`}
+            onError={(e) => {
+              e.currentTarget.src = item.src
+            }}
+            alt={item.alt}
+            className="max-h-[62vh] w-auto max-w-full rounded-xl object-contain"
+          />
+          <figcaption className="max-w-2xl px-2 text-center">
+            <p className="text-sm font-medium text-white sm:text-base">{item.caption}</p>
+            {item.telugu && (
+              <p lang="te" className="mt-1.5 text-xs leading-relaxed text-ink-400">
+                {item.telugu}
+              </p>
+            )}
+          </figcaption>
+        </figure>
+
+        <button
+          type="button"
+          onClick={() => onStep(1)}
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Next photo"
+        >
+          <FaChevronRight aria-hidden="true" />
+        </button>
+      </div>
+      <div className="h-4" />
+    </div>
+  )
+}
+
 const Media = () => {
+  const [group, setGroup] = useState('all')
+  const [lightbox, setLightbox] = useState(null)
+
+  const shown = useMemo(
+    () => (group === 'all' ? gallery : gallery.filter((g) => g.group === group)),
+    [group]
+  )
+
+  const step = useCallback(
+    (delta) => setLightbox((i) => (i === null ? i : (i + delta + shown.length) % shown.length)),
+    [shown.length]
+  )
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Media & Updates',
     url: `${site.url}/media`,
     about: { '@id': `${site.url}/#person` },
+    // Surfacing the gallery as ImageObjects gives Google Images real captions
+    // to index against, which is a large share of political-name search traffic.
+    hasPart: gallery.slice(0, 12).map((g) => ({
+      '@type': 'ImageObject',
+      contentUrl: `${site.url}/photos/${g.slug}-1200.webp`,
+      caption: g.caption,
+      creditText: `${site.name} official`,
+    })),
   }
 
   return (
     <>
       <Seo
-        title="Media & Updates"
-        description="Latest news, announcements and media coverage from Hari Krishna Talikota's political and community service work in Telangana."
+        title="Media & Photo Gallery"
+        description="Photographs and updates from Hari Krishna Talikota's political and community service work — party events, constituency programmes, temple service and Telugu cultural events."
+        image={`${site.url}/photos/with-chandrababu-naidu-1200.webp`}
         schema={schema}
       />
 
       <PageHero
         eyebrow="Media & Updates"
-        title="News, announcements and coverage"
-        lead="Press releases, public statements and event announcements from the office of the iTDP Telangana State President."
+        title="In pictures"
+        lead="Party events, constituency programmes, temple service and Telugu cultural celebrations — from the office of the iTDP Telangana State President."
       />
 
-      {/* ---- Newsroom ------------------------------------------------------ */}
+      {/* ---- Gallery ------------------------------------------------------- */}
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Latest Updates</p>
+            <p className="eyebrow">Photo Gallery</p>
+            <h2 className="mt-3 text-title">Recent activity</h2>
+            <div className="rule mt-6" />
+          </Reveal>
+
+          {/* Filters */}
+          <Reveal delay={0.05}>
+            <div
+              className="mt-9 flex flex-wrap gap-2"
+              role="group"
+              aria-label="Filter photographs by category"
+            >
+              {galleryGroups.map((g) => {
+                const active = group === g.id
+                const count =
+                  g.id === 'all' ? gallery.length : gallery.filter((x) => x.group === g.id).length
+                if (!count) return null
+                return (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => {
+                      setGroup(g.id)
+                      setLightbox(null)
+                    }}
+                    aria-pressed={active}
+                    className={`rounded-full px-4 py-2.5 font-heading text-xs font-bold transition-colors ${
+                      active
+                        ? 'bg-ink-900 text-white'
+                        : 'border border-ink-200 text-ink-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800'
+                    }`}
+                  >
+                    {g.label}
+                    <span className="ml-1.5 opacity-60">{count}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </Reveal>
+
+          {/* Grid */}
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {shown.map((item, i) => (
+              <Reveal as="li" key={item.slug} delay={Math.min(i, 6) * 0.05}>
+                <button
+                  type="button"
+                  onClick={() => setLightbox(i)}
+                  className="group block w-full rounded-2xl text-left"
+                  aria-label={`Open photo: ${item.caption}`}
+                >
+                  <Picture
+                    photo={item}
+                    aspect="4 / 3"
+                    rounded="rounded-2xl"
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
+                    className="ring-1 ring-ink-900/5 transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                  <p className="mt-3 text-sm font-medium leading-snug text-ink-800">
+                    {item.caption}
+                  </p>
+                  {item.telugu && (
+                    <p lang="te" className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-500">
+                      {item.telugu}
+                    </p>
+                  )}
+                </button>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ---- Newsroom ------------------------------------------------------ */}
+      <section className="section bg-ink-50">
+        <div className="container-custom">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">Press Releases</p>
             <h2 className="mt-3 text-title">From the office</h2>
             <div className="rule mt-6" />
           </Reveal>
@@ -92,62 +280,12 @@ const Media = () => {
                     <h3 className="mt-4 font-heading text-lg font-bold text-ink-900">
                       {update.title}
                     </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-600">
-                      {update.summary}
-                    </p>
-                    {update.href && (
-                      <a
-                        href={update.href}
-                        className="mt-5 inline-flex items-center gap-1.5 font-heading text-xs font-bold uppercase tracking-wider text-brand-800"
-                      >
-                        Read more <FaArrowRight aria-hidden="true" />
-                      </a>
-                    )}
+                    <p className="mt-2 text-sm leading-relaxed text-ink-600">{update.summary}</p>
                   </Reveal>
                 ))}
               </div>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* ---- Gallery -------------------------------------------------------- */}
-      <section className="section bg-ink-50">
-        <div className="container-custom">
-          <Reveal className="max-w-2xl">
-            <p className="eyebrow">Photo Gallery</p>
-            <h2 className="mt-3 text-title">Events and public meetings</h2>
-            <div className="rule mt-6" />
-          </Reveal>
-
-          {gallery.length === 0 ? (
-            <Reveal className="mt-10 rounded-3xl border border-dashed border-ink-200 bg-white px-6 py-12 text-center">
-              <p className="text-sm text-ink-500">
-                Event photography will be published here.
-              </p>
-            </Reveal>
-          ) : (
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {gallery.map((item, i) => (
-                <Reveal key={item.src} delay={i * 0.05} as="figure" className="group">
-                  <div className="overflow-hidden rounded-2xl bg-ink-100">
-                    <img
-                      src={item.src}
-                      alt={item.alt}
-                      loading="lazy"
-                      decoding="async"
-                      className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  {item.caption && (
-                    <figcaption className="mt-2.5 text-xs text-ink-500">
-                      {item.caption}
-                    </figcaption>
-                  )}
-                </Reveal>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -177,6 +315,7 @@ const Media = () => {
                     <span className="min-w-0">
                       <span className="block font-heading text-base font-bold text-ink-900">
                         {s.name}
+                        <span className="sr-only"> (opens in a new tab)</span>
                       </span>
                       <span className="block truncate text-sm text-ink-500">{s.handle}</span>
                     </span>
@@ -191,6 +330,15 @@ const Media = () => {
           </div>
         </div>
       </section>
+
+      {lightbox !== null && (
+        <Lightbox
+          items={shown}
+          index={lightbox}
+          onClose={() => setLightbox(null)}
+          onStep={step}
+        />
+      )}
     </>
   )
 }

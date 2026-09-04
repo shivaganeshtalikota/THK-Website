@@ -3,10 +3,10 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { FaArrowRight, FaLandmark, FaOm } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import Reveal from '../components/Reveal'
-import Photo from '../components/Photo'
+import Picture from '../components/Picture'
 import Icon from '../components/Icon'
 import { site, party, focusAreas, temple } from '../data/site'
-import { photos } from '../data/images'
+import { photos } from '../data/photos'
 
 /**
  * Verifiable credentials — the replacement for the old stats bar, which
@@ -90,15 +90,13 @@ const Home = () => {
                 </span>
               </span>
 
+              {/* No marker-pen highlight under the surname here: the header
+                  wordmark now uses exactly that device, and repeating it a
+                  second time on the same screen reads as clutter rather than
+                  emphasis. The display type carries the hero on its own. */}
               <h1 className="mt-6 text-display text-ink-900">
                 Hari Krishna
-                <span className="relative ml-0 block w-fit">
-                  Talikota
-                  <span
-                    className="absolute -bottom-1 left-0 -z-10 h-3 w-full rounded-sm bg-brand-500/70 sm:h-4"
-                    aria-hidden="true"
-                  />
-                </span>
+                <span className="block">Talikota</span>
               </h1>
 
               <p className="mt-7 max-w-xl text-lead text-ink-600">
@@ -146,9 +144,10 @@ const Home = () => {
                   className="absolute -inset-3 rounded-[2rem] bg-brand-500/25 blur-2xl"
                   aria-hidden="true"
                 />
-                <Photo
-                  photo={photos.portrait}
+                <Picture
+                  photo={photos.hero}
                   priority
+                  sizes="(max-width: 1024px) 90vw, 420px"
                   className="shadow-lift ring-1 ring-ink-900/5"
                 />
                 <div className="absolute -bottom-4 -left-4 hidden rounded-2xl bg-ink-900 px-5 py-4 shadow-lift sm:block">

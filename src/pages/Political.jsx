@@ -3,10 +3,10 @@ import { FaArrowRight } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
-import Photo from '../components/Photo'
+import Picture from '../components/Picture'
 import Icon from '../components/Icon'
 import { site, party, focusAreas } from '../data/site'
-import { photos } from '../data/images'
+import { photos } from '../data/photos'
 
 const Political = () => {
   const schema = {
@@ -63,7 +63,7 @@ const Political = () => {
             </p>
           </Reveal>
           <Reveal delay={0.1}>
-            <Photo photo={photos.political} className="shadow-card ring-1 ring-ink-900/5" />
+            <Picture photo={photos.political} sizes="(max-width: 1024px) 92vw, 580px" className="shadow-card ring-1 ring-ink-900/5" />
           </Reveal>
         </div>
       </section>

@@ -35,19 +35,19 @@ const Footer = () => {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Identity */}
           <div className="space-y-5 lg:col-span-5">
-            <div className="flex items-center gap-3">
-              <span
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-500 font-heading text-base font-extrabold text-ink-900"
-                aria-hidden="true"
-              >
-                HK
+            {/* Wordmark, matching the header: name only, no monogram tile. */}
+            <div>
+              <span className="block font-heading text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ink-400">
+                Hari Krishna
               </span>
-              <span>
-                <span className="block font-heading text-base font-bold text-white">
-                  {site.name}
-                </span>
-                <span className="block text-xs text-ink-400">{site.roleShort}</span>
+              <span className="relative mt-0.5 inline-block font-heading text-2xl font-extrabold uppercase leading-none tracking-tight text-white">
+                Talikota
+                <span
+                  className="absolute -bottom-2 left-0 h-[3px] w-full rounded-full bg-brand-500"
+                  aria-hidden="true"
+                />
               </span>
+              <span className="mt-5 block text-sm text-ink-400">{site.role}</span>
             </div>
 
             <p className="max-w-sm text-sm leading-relaxed text-ink-400">

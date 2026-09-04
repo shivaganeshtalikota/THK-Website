@@ -3,18 +3,33 @@ import { FaArrowRight } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
-import Photo from '../components/Photo'
+import Picture from '../components/Picture'
 import Icon from '../components/Icon'
-import { site, party, biography, values, responsibilities } from '../data/site'
-import { photos } from '../data/images'
+import { site, party, biography, values, responsibilities, faqs } from '../data/site'
+import { photos } from '../data/photos'
 
 const About = () => {
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: `About ${site.name}`,
-    url: `${site.url}/about`,
-    mainEntity: { '@id': `${site.url}/#person` },
+    '@graph': [
+      {
+        '@type': 'AboutPage',
+        name: `About ${site.name}`,
+        url: `${site.url}/about`,
+        mainEntity: { '@id': `${site.url}/#person` },
+      },
+      // FAQPage: gives search and AI answer engines explicit question/answer
+      // pairs about who he is, rather than leaving them to infer it from prose.
+      {
+        '@type': 'FAQPage',
+        '@id': `${site.url}/about#faq`,
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      },
+    ],
   }
 
   return (
@@ -49,7 +64,7 @@ const About = () => {
 
             <Reveal delay={0.1} className="lg:col-span-5">
               <div className="lg:sticky lg:top-28">
-                <Photo photo={photos.about} className="shadow-card ring-1 ring-ink-900/5" />
+                <Picture photo={photos.about} sizes="(max-width: 1024px) 90vw, 400px" className="shadow-card ring-1 ring-ink-900/5" />
                 <div className="mt-6 rounded-2xl border border-ink-100 bg-ink-50 p-6">
                   <h2 className="font-heading text-xs font-bold uppercase tracking-[0.14em] text-ink-500">
                     At a glance
@@ -145,6 +160,33 @@ const About = () => {
                   </li>
                 ))}
               </ul>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- FAQ ---------------------------------------------------------- */}
+      <section className="section bg-white">
+        <div className="container-custom">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <Reveal className="lg:col-span-4">
+              <p className="eyebrow">Frequently Asked</p>
+              <h2 className="mt-3 text-title">Common questions</h2>
+              <div className="rule mt-6" />
+              <p className="mt-6 text-sm leading-relaxed text-ink-600">
+                Straight answers about his roles, party and public service.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.1} className="lg:col-span-8">
+              <dl className="divide-y divide-ink-200 border-y border-ink-200">
+                {faqs.map((f) => (
+                  <div key={f.q} className="py-6">
+                    <dt className="font-heading text-base font-bold text-ink-900">{f.q}</dt>
+                    <dd className="mt-2.5 leading-relaxed text-ink-600">{f.a}</dd>
+                  </div>
+                ))}
+              </dl>
             </Reveal>
           </div>
         </div>

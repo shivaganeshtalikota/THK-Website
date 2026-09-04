@@ -5,11 +5,37 @@
  * created — so every crawler that followed that line got a 404. Runs
  * automatically on `npm run build` (see package.json prebuild).
  */
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-const ORIGIN = 'https://harikrishnatalikota.com'
+const HERE = dirname(fileURLToPath(import.meta.url))
+
+/**
+ * Origin, resolved in order:
+ *   1. $SITE_ORIGIN            — deploy previews / staging
+ *   2. site.url in src/data/site.js  — the single source of truth
+ *
+ * It used to be hardcoded here while src/data/site.js separately declared
+ * site.url, so canonicals and the sitemap could silently disagree.
+ * site.js can't be imported directly (it pulls in JSX-adjacent app code), so
+ * the value is read out of the source text.
+ */
+function resolveOrigin() {
+  if (process.env.SITE_ORIGIN) return process.env.SITE_ORIGIN.replace(/\/$/, '')
+
+  const src = readFileSync(join(HERE, '..', 'src', 'data', 'site.js'), 'utf8')
+  const match = src.match(/^\s*url:\s*['"`]([^'"`]+)['"`]/m)
+  if (!match) {
+    throw new Error(
+      'Could not read `url` from src/data/site.js — the sitemap origin is derived from it. ' +
+        'Set SITE_ORIGIN to override.'
+    )
+  }
+  return match[1].replace(/\/$/, '')
+}
+
+const ORIGIN = resolveOrigin()
 
 // changefreq/priority are hints. The newsroom changes most; legal pages least.
 const routes = [
@@ -40,6 +66,6 @@ ${routes
 </urlset>
 `
 
-const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'sitemap.xml')
+const out = join(HERE, '..', 'public', 'sitemap.xml')
 writeFileSync(out, xml, 'utf8')
-console.log(`sitemap.xml written — ${routes.length} URLs, lastmod ${lastmod}`)
+console.log(`sitemap.xml written — ${routes.length} URLs at ${ORIGIN}, lastmod ${lastmod}`)

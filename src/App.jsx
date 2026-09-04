@@ -1,31 +1,30 @@
-import { Suspense, lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import ScrollReset from './components/ScrollReset'
+
+// Eager imports, deliberately.
+//
+// These were React.lazy() + Suspense, which is the right call for a normal SPA.
+// But the build now prerenders every route to static HTML (scripts/prerender.js)
+// so that non-JS crawlers — the AI answer engines and the WhatsApp/Facebook
+// link-preview fetchers — get real content. renderToString() renders the
+// Suspense *fallback* for a lazy component rather than the page, so lazy routes
+// would prerender to a loading spinner.
+//
+// The trade is ~30KB of extra JS in the main chunk against every page shipping
+// real HTML. For a six-page site whose pages are already server-rendered, that
+// is clearly worth it: the content is visible before any JS executes.
 import Home from './pages/Home'
-
-// Home stays in the main bundle (it's the entry point for most visits);
-// the rest split out so the first paint doesn't carry all six pages.
-const About = lazy(() => import('./pages/About'))
-const Political = lazy(() => import('./pages/Political'))
-const Community = lazy(() => import('./pages/Community'))
-const Media = lazy(() => import('./pages/Media'))
-const Contact = lazy(() => import('./pages/Contact'))
-const Privacy = lazy(() => import('./pages/Privacy'))
-const Terms = lazy(() => import('./pages/Terms'))
-const NotFound = lazy(() => import('./pages/NotFound'))
-
-const RouteFallback = () => (
-  <div className="grid min-h-[60vh] place-items-center" role="status" aria-live="polite">
-    <span className="sr-only">Loading page…</span>
-    <span
-      className="h-8 w-8 animate-spin rounded-full border-[3px] border-ink-200 border-t-brand-500"
-      aria-hidden="true"
-    />
-  </div>
-)
+import About from './pages/About'
+import Political from './pages/Political'
+import Community from './pages/Community'
+import Media from './pages/Media'
+import Contact from './pages/Contact'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -37,21 +36,19 @@ function App() {
 
       {/* pt matches the fixed header so content never hides beneath it. */}
       <main id="main" className="flex-grow pt-[var(--nav-h)]" tabIndex={-1}>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/political" element={<Political />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/media" element={<Media />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            {/* Catch-all: the footer linked to /privacy and /terms with no
-                routes behind them, so those clicks rendered a blank page. */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/political" element={<Political />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/media" element={<Media />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          {/* Catch-all: the footer linked to /privacy and /terms with no routes
+              behind them, so those clicks rendered a blank page. */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
 
       <Footer />

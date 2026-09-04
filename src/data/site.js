@@ -303,6 +303,46 @@ export const temple = {
  */
 export const updates = []
 
+/**
+ * Frequently asked questions, rendered on /about and emitted as FAQPage
+ * structured data.
+ *
+ * This block exists for GEO (generative engine optimisation) as much as for
+ * readers: AI answer engines consume explicit question/answer pairs directly,
+ * so stating plainly "who is he / what party / what temple role" is what lets
+ * an assistant answer accurately instead of guessing or conflating him with
+ * someone else of a similar name.
+ *
+ * Every answer is traceable to website-content-master.md. Do not add a question
+ * whose answer cannot be sourced.
+ */
+export const faqs = [
+  {
+    q: 'Who is Hari Krishna Talikota?',
+    a: 'Hari Krishna Talikota is an Indian politician who serves as the iTDP Telangana State President of the Telugu Desam Party (TDP). He is also a Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada. He is based in Hyderabad, Telangana, and is also known as Talikota Harikrishna.',
+  },
+  {
+    q: 'Which political party does Hari Krishna Talikota belong to?',
+    a: 'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. Hari Krishna Talikota serves as the party’s iTDP Telangana State President.',
+  },
+  {
+    q: 'What is his role at the Sri Kanaka Durga temple?',
+    a: 'He serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam — popularly the Sri Kanaka Durga Temple — on Indrakeeladri Hill in Vijayawada, Andhra Pradesh. The role covers temple administration, financial stewardship, devotee services and the preservation of temple tradition.',
+  },
+  {
+    q: 'What are Hari Krishna Talikota’s political focus areas?',
+    a: 'His stated focus areas are economic development and employment for youth, infrastructure development, social welfare including education and healthcare, good governance and transparency, Telugu cultural preservation, and direct community engagement across Telangana.',
+  },
+  {
+    q: 'Where is Hari Krishna Talikota based?',
+    a: 'His base of operations is Hyderabad, Telangana, India. His political work covers Telangana state, and his temple board service is in Vijayawada, Andhra Pradesh.',
+  },
+  {
+    q: 'How can I contact Hari Krishna Talikota?',
+    a: 'You can reach the office through the contact page on this website, or follow the official social media channels — Instagram (@hari_krishna_talikota), Facebook (Talikota Harikrishna) and X (@THK_iTDP).',
+  },
+]
+
 export const subjectOptions = [
   'Political Inquiry',
   'Media Request',

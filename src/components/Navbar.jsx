@@ -47,21 +47,26 @@ const Navbar = () => {
     >
       <nav className="container-custom" aria-label="Primary">
         <div className="flex items-center justify-between gap-4">
-          {/* Wordmark */}
-          <Link to="/" className="group flex shrink-0 items-center gap-3 rounded-xl">
-            <span
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-500 font-heading text-base font-extrabold tracking-tight text-ink-900 shadow-sm transition-transform duration-300 group-hover:scale-105"
-              aria-hidden="true"
-            >
-              HK
+          {/* Wordmark — typographic, no monogram tile and no role subtitle.
+              The surname carries the recognition, so it takes the weight and a
+              party-yellow underline; the given name sits lighter above-left.
+              On narrow screens only the surname survives.
+              py-1.5 lifts the hit area past the 24px minimum tap target
+              (WCAG 2.5.8) — the baseline-aligned text alone measured 23px. */}
+          <Link
+            to="/"
+            className="group flex shrink-0 items-baseline gap-2 rounded-lg py-1.5"
+            aria-label={`${site.name} — home`}
+          >
+            <span className="hidden font-heading text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ink-500 transition-colors group-hover:text-ink-700 sm:inline">
+              Hari Krishna
             </span>
-            <span className="hidden min-w-0 sm:block">
-              <span className="block truncate font-heading text-[0.95rem] font-bold leading-tight text-ink-900">
-                {site.name}
-              </span>
-              <span className="block truncate text-[0.7rem] font-medium text-ink-500">
-                {site.roleShort}
-              </span>
+            <span className="relative font-heading text-[1.15rem] font-extrabold uppercase leading-none tracking-tight text-ink-900 sm:text-[1.3rem]">
+              Talikota
+              <span
+                className="absolute -bottom-1.5 left-0 h-[3px] w-full origin-left rounded-full bg-brand-500 transition-transform duration-300 group-hover:scale-x-110"
+                aria-hidden="true"
+              />
             </span>
           </Link>
 
