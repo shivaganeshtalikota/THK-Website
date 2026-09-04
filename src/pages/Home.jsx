@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { motion, useReducedMotion } from 'framer-motion'
 import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import Reveal from '../components/Reveal'
@@ -8,7 +7,6 @@ import { site, party, focusAreas, temple, roles } from '../data/site'
 import { photos, gallery } from '../data/photos'
 
 const Home = () => {
-  const reduce = useReducedMotion()
 
   const schema = {
     '@context': 'https://schema.org',
@@ -16,15 +14,6 @@ const Home = () => {
     mainEntity: { '@id': `${site.url}/#person` },
   }
 
-  // Stagger the hero lines rather than fading the whole block at once.
-  const line = (i) =>
-    reduce
-      ? {}
-      : {
-          initial: { opacity: 0, y: 24 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.9, delay: 0.15 + i * 0.09, ease: [0.16, 1, 0.3, 1] },
-        }
 
   const featured = gallery.filter((g) => ['party', 'temple'].includes(g.group)).slice(0, 4)
 
@@ -34,65 +23,73 @@ const Home = () => {
       <Seo description={site.description} schema={schema} />
 
       {/* ================= HERO =================
-          Full-bleed photograph with an angled scrim and the name set over it.
-          A card-grid hero with the photo in a rounded box is the stock-template
-          shape; this is how a campaign or newsroom front page actually reads. */}
-      <section className="relative isolate -mt-[var(--nav-h)] flex min-h-[100svh] items-end overflow-hidden bg-ink-950">
-        <div className="absolute inset-0">
-          <img
-            src={`/photos/${photos.hero.slug}-995.webp`}
-            srcSet={photos.hero.widths.map((w) => `/photos/${photos.hero.slug}-${w}.webp ${w}w`).join(', ')}
-            sizes="100vw"
-            alt={photos.hero.alt}
-            width={photos.hero.width}
-            height={photos.hero.height}
-            fetchpriority="high"
-            decoding="sync"
-            className={`h-full w-full object-cover object-[62%_center] sm:object-[70%_center] lg:object-[78%_20%] ${
-              reduce ? '' : 'animate-slow-zoom'
-            }`}
-          />
-          <div className="absolute inset-0 scrim-left" aria-hidden="true" />
-        </div>
+          Split: type on the left, a 4:3 photograph on the right. The previous
+          full-bleed treatment cropped him to a zoomed face and forced the
+          header to float over the image; this keeps the whole podium frame
+          visible and lets the header stay a solid yellow bar. */}
+      <section className="relative overflow-hidden bg-ink-950">
+        <div className="container-custom relative py-14 lg:py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="on-dark lg:col-span-6 xl:col-span-5">
+              <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
+                {site.location.region} · {party.name}
+              </Reveal>
 
-        <div className="on-dark container-custom relative z-10 pb-16 pt-32 sm:pb-24 lg:pb-28">
-          <div className="max-w-3xl">
-            <motion.p {...line(0)} className="label-rule !text-brand-400 before:!bg-brand-500">
-              {site.location.region} · {party.name}
-            </motion.p>
+              {/* Both names at the same size and weight — the surname is not a
+                  lesser line. The gold rule sits under the pair. */}
+              <Reveal as="h1" delay={0.14} className="relative mt-7 inline-block">
+                <span className="block font-display text-hero text-white">Hari Krishna</span>
+                <span className="block font-display text-hero text-white">Talikota</span>
+                <span
+                  className="mt-4 block h-[5px] w-28 bg-brand-500 sm:w-36"
+                  aria-hidden="true"
+                />
+              </Reveal>
 
-            <motion.h1
-              {...line(1)}
-              className="mt-7 font-display text-hero text-white [text-wrap:balance]"
+              {/* Both offices, temple seat first. */}
+              <Reveal delay={0.23} className="mt-8 space-y-4">
+                {roles.map((r) => (
+                  <div key={r.title} className="border-l-2 border-brand-500 pl-5">
+                    <p className="font-sans text-base font-semibold text-white sm:text-lg">
+                      {r.title}
+                    </p>
+                    <p className="mt-0.5 text-sm text-white/70">{r.org}</p>
+                  </div>
+                ))}
+              </Reveal>
+
+              <Reveal delay={0.32} className="mt-10 flex flex-wrap gap-3">
+                <Link to="/community" className="btn-brand">
+                  Temple Service <FaArrowRight aria-hidden="true" />
+                </Link>
+                <Link to="/political" className="btn-ghost-light">
+                  Political Leadership
+                </Link>
+              </Reveal>
+            </div>
+
+            <Reveal
+              variant="fade"
+              delay={0.2}
+              className="lg:col-span-6 lg:col-start-7 xl:col-span-7"
             >
-              Hari Krishna
-              <span className="block text-brand-400">Talikota</span>
-            </motion.h1>
-
-            {/* Both offices, temple seat first — it is the more widely
-                recognised of the two and the one people search for. */}
-            <motion.div
-              {...line(2)}
-              className="mt-9 flex flex-col gap-4 border-l-2 border-brand-500 pl-5 sm:pl-6"
-            >
-              {roles.map((r) => (
-                <div key={r.title}>
-                  <p className="font-sans text-base font-semibold text-white sm:text-lg">
-                    {r.title}
-                  </p>
-                  <p className="mt-0.5 text-sm text-white/70">{r.org}</p>
-                </div>
-              ))}
-            </motion.div>
-
-            <motion.div {...line(3)} className="mt-11 flex flex-wrap gap-3">
-              <Link to="/community" className="btn-brand">
-                Temple Service <FaArrowRight aria-hidden="true" />
-              </Link>
-              <Link to="/political" className="btn-ghost-light">
-                Political Leadership
-              </Link>
-            </motion.div>
+              <div className="relative">
+                <Picture
+                  photo={photos.hero}
+                  priority
+                  rounded=""
+                  aspect="4 / 3"
+                  sizes="(max-width: 1024px) 92vw, 55vw"
+                  className="shadow-frame"
+                />
+                {/* Offset yellow rule — a small piece of structure so the photo
+                    reads as placed rather than dropped in. */}
+                <span
+                  className="absolute -bottom-3 -right-3 hidden h-24 w-24 border-b-4 border-r-4 border-brand-500 lg:block"
+                  aria-hidden="true"
+                />
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>

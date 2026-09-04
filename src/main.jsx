@@ -8,7 +8,11 @@ import './styles/index.css'
 // AOS was initialised here and its stylesheet imported, but no element in the
 // app ever carried a data-aos attribute — it was shipping a whole animation
 // library and CSS file to every visitor for nothing. Scroll reveals are handled
-// by <Reveal>, which uses framer-motion and honours prefers-reduced-motion.
+// by <Reveal>, which is CSS-driven and honours prefers-reduced-motion.
+
+// The app mounted, so cancel the fallback in index.html that would otherwise
+// strip the `js` class and disable reveal animations.
+clearTimeout(window.__thkReveal)
 
 const container = document.getElementById('root')
 

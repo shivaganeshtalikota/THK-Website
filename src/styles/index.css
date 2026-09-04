@@ -26,9 +26,14 @@
   p { text-wrap: pretty; }
 
   /* Telugu runs in its own face — Inter has no Telugu coverage, so without
-     this the browser silently substitutes and the captions look broken. */
+     this the browser silently substitutes and the captions look broken.
+     Declared literally rather than via `@apply font-telugu`: @apply resolves
+     against the Tailwind config at build time, and a dev server started before
+     the family was added keeps a stale config, which fails the whole stylesheet
+     with "The `font-telugu` class does not exist". A plain declaration has no
+     such dependency. */
   [lang='te'] {
-    @apply font-telugu;
+    font-family: 'Noto Sans Telugu', 'Noto Sans', sans-serif;
     line-height: 1.7;
   }
 
@@ -117,6 +122,45 @@
   /* Editorial number, used for ordered lists of policy areas. */
   .index-num {
     @apply font-display text-[2.6rem] font-bold leading-none text-brand-700;
+  }
+}
+
+@layer components {
+  /**
+   * Entry and scroll reveals.
+   *
+   * TRANSITIONS, not animations, and the distinction matters. An
+   * `animation: … both` holds its `from` keyframe — opacity 0 — until the
+   * document timeline advances. If that clock never advances (a background
+   * tab, a throttled renderer, an embedded webview) the element stays
+   * invisible forever: it fails HIDDEN. A transition has no such state; when
+   * the class flips, the property takes its new value and merely interpolates
+   * if it can. Worst case the reveal is instant instead of smooth, so it fails
+   * VISIBLE.
+   *
+   * The whole thing is additionally gated on `.js`, set by an inline script in
+   * <head> before first paint and removed again by a timeout if the app never
+   * mounts. Without that class nothing is hidden at all, so a visitor with
+   * JavaScript off, blocked, or broken reads the prerendered page normally.
+   */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+  }
+
+  .js [data-reveal='fade'] {
+    transform: scale(0.985);
+  }
+
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
   }
 }
 

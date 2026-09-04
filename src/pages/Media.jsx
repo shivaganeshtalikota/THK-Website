@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { FaInstagram, FaFacebookF, FaXTwitter } from 'react-icons/fa6'
+import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaArrowRight, FaRegNewspaper, FaXmark, FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
@@ -8,7 +8,7 @@ import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
 import { photos, gallery, galleryGroups } from '../data/photos'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter }
+const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -172,7 +172,8 @@ const Media = () => {
         eyebrow="Media & Updates"
         title="In pictures"
         lead="Party events, constituency programmes, temple service and Telugu cultural celebrations."
-        photo={photos.constituency}
+        photo={photos.bannerMedia}
+        focus="object-[center_40%]"
       />
 
       {/* ---- Gallery ------------------------------------------------------- */}

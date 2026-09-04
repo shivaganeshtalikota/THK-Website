@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { FaInstagram, FaFacebookF, FaXTwitter } from 'react-icons/fa6'
+import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaExclamationTriangle } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import { site, contact, social, subjectOptions } from '../data/site'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter }
+const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 /**
  * Web3Forms access key. Set VITE_WEB3FORMS_KEY in .env (see .env.example).

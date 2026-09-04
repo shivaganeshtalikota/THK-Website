@@ -18,13 +18,15 @@
   "role": "portrait",
   "alt": "Hari Krishna Talikota addressing an iTDP Telangana party meeting",
   "telugu": null,
-  "width": 995,
-  "height": 1325,
-  "aspect": 0.7509,
+  "width": 1820,
+  "height": 1365,
+  "aspect": 1.3333,
   "widths": [
    480,
    768,
-   995
+   1200,
+   1800,
+   1820
   ]
  },
  {
@@ -281,6 +283,22 @@
    768,
    1200,
    1600
+  ]
+ },
+ {
+  "slug": "amaravati-cm-meeting",
+  "role": "gallery",
+  "alt": "Hari Krishna Talikota and family meeting Chief Minister N. Chandrababu Naidu in Amaravati",
+  "telugu": "నిన్న అమరావతిలో ముఖ్యమంత్రి శ్రీ నారా చంద్రబాబు నాయుడు గారిని కుటుంబసమేతంగా కలిసి కృతజ్ఞతలు తెలియజేయడం జరిగింది.",
+  "width": 2048,
+  "height": 1283,
+  "aspect": 1.5963,
+  "widths": [
+   480,
+   768,
+   1200,
+   1800,
+   2048
   ]
  },
  {

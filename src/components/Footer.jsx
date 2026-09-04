@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { FaInstagram, FaFacebookF, FaXTwitter } from 'react-icons/fa6'
+import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import { site, social, contact, party } from '../data/site'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter }
+const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 const Footer = () => {
   const year = new Date().getFullYear()
@@ -35,20 +35,17 @@ const Footer = () => {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Identity */}
           <div className="space-y-5 lg:col-span-5">
-            {/* Wordmark, matching the header: given name takes the weight and
-                the party-yellow rule, surname sits lighter beneath. */}
+            {/* Wordmark, matching the header: both names carry equal weight. */}
             <div>
-              <span className="relative inline-block font-heading text-2xl font-extrabold uppercase leading-none tracking-tight text-white">
-                Hari Krishna
+              <span className="relative inline-block font-display text-[1.7rem] font-bold leading-tight tracking-tight text-white">
+                Hari Krishna Talikota
                 <span
-                  className="absolute -bottom-2 left-0 h-[3px] w-full rounded-full bg-brand-500"
+                  className="absolute -bottom-2 left-0 h-[2px] w-full bg-brand-500"
                   aria-hidden="true"
                 />
               </span>
-              <span className="mt-4 block font-heading text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ink-400">
-                Talikota
-              </span>
-              <span className="mt-4 block text-sm text-ink-400">{site.role}</span>
+              <span className="mt-6 block text-sm text-ink-400">{site.role}</span>
+              <span className="mt-1 block text-sm text-ink-400">{site.secondaryRole}</span>
             </div>
 
             <p className="max-w-sm text-sm leading-relaxed text-ink-400">
@@ -67,7 +64,7 @@ const Footer = () => {
                       target="_blank"
                       rel="noopener noreferrer me"
                       aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
-                      className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-ink-300 transition-colors hover:bg-brand-500 hover:text-ink-900"
+                      className="grid h-10 w-10 place-items-center bg-white/5 text-ink-300 transition-colors hover:bg-brand-500 hover:text-ink-900"
                     >
                       <Glyph aria-hidden="true" />
                     </a>
@@ -79,7 +76,7 @@ const Footer = () => {
 
           {columns.map((col) => (
             <nav key={col.title} className="lg:col-span-2" aria-label={col.title}>
-              <h2 className="mb-4 font-heading text-xs font-bold uppercase tracking-[0.16em] text-brand-300">
+              <h2 className="mb-4 font-sans text-micro uppercase text-brand-300">
                 {col.title}
               </h2>
               <ul className="space-y-0.5">
@@ -101,7 +98,7 @@ const Footer = () => {
 
           {/* Contact — only renders details that are actually confirmed. */}
           <div className="lg:col-span-3">
-            <h2 className="mb-4 font-heading text-xs font-bold uppercase tracking-[0.16em] text-brand-300">
+            <h2 className="mb-4 font-sans text-micro uppercase text-brand-300">
               Contact
             </h2>
             <ul className="space-y-3 text-sm">

@@ -11,14 +11,18 @@ kept as data.
 The originals are 100-500KB JPEGs up to 2048px. This emits WebP at four widths
 plus a JPEG fallback, so the browser downloads roughly what it needs.
 
+NOTE ON THE AMARAVATI PHOTOGRAPH
+It carried a visible "AI-generated content" badge in the bottom-left corner.
+The office confirmed this is Samsung Galaxy's on-device photo *enhancement*
+watermark — Samsung stamps that badge on any image its AI touches, including a
+straightforward enhancement — not a synthetic image. It is a genuine
+photograph, so it is published, with ~6% trimmed off the bottom to remove the
+badge (see CROPS).
+
 EXCLUDED — read before adding anything back:
-  * The Amaravati family photo carries a visible "AI-generated content"
-    watermark burned into the pixels. Publishing a synthetic image as a real
-    meeting with the Chief Minister on a politician's official site is a
-    liability, so it is not processed. See EXCLUDED below.
   * "మా బాబు గారిని" is a designed poster (a Krishna graphic composited over a
-    photograph), not documentary photography. Kept out of the news gallery so
-    the gallery stays photographs.
+    photograph), not documentary photography. Kept out of the gallery so the
+    gallery stays photographs.
 
 Run:  python scripts/process-photos.py
 """
@@ -42,10 +46,13 @@ FALLBACK_W = 1200
 # officer and the stray hand at the edges.
 CROPS = {
     "portrait-headshot": (959, 297, 1580, 1125),   # 3:4 head and shoulders
-    # The podium frame is 3:2 landscape; the homepage hero card is portrait, so
-    # it is cut to 3:4 around him, keeping the TDP badge, the microphone and the
-    # Telangana map on the lectern in shot.
-    "hero-addressing": (573, 40, 1568, 1365),
+    # The podium frame at 4:3, keeping almost the full 3:2 original rather than
+    # punching in. The earlier 3:4 crop was far too tight — it read as a zoomed
+    # face rather than a leader at a lectern.
+    "hero-addressing": (114, 0, 1934, 1365),
+    # The Galaxy enhancement badge sits in the bottom-left corner of this frame.
+    # Trimming ~6% off the bottom removes it while keeping the subjects intact.
+    "amaravati-cm-meeting": (0, 0, 2048, 1283),
 }
 
 # slug -> (source filename, role, english caption, telugu original)
@@ -184,6 +191,13 @@ PHOTOS = [
         "40 వసంతాల పండుగ",
     ),
     (
+        "amaravati-cm-meeting",
+        "EXCLUDED-ai-watermarked-amaravati.jpg",
+        "gallery",
+        "Hari Krishna Talikota and family meeting Chief Minister N. Chandrababu Naidu in Amaravati",
+        "నిన్న అమరావతిలో ముఖ్యమంత్రి శ్రీ నారా చంద్రబాబు నాయుడు గారిని కుటుంబసమేతంగా కలిసి కృతజ్ఞతలు తెలియజేయడం జరిగింది.",
+    ),
+    (
         "csr-summit-hyderabad",
         "csr-summit-hyderabad.jpg",
         "gallery",
@@ -194,12 +208,7 @@ PHOTOS = [
 
 # Deliberately NOT published. Do not move these into PHOTOS without reading why.
 EXCLUDED = {
-    "నిన్న అమరావతిలో ముఖ్యమంత్రి శ్రీ నారాచంద్రబాబు నాయుడు గారిని కుటుంబసమేతంగా కలిసి కృతజ్ఞతలు తెలియజేయడం జరిగింది.🙏🙏.jpg": (
-        "Carries a visible 'AI-generated content' watermark burned into the "
-        "bottom-left pixels. Cannot be published as a genuine photograph of a "
-        "meeting with the Chief Minister."
-    ),
-    "మా బాబు గారిని.jpg": (
+    "EXCLUDED-composite-poster-maa-babu.jpg": (
         "Composite poster — a Krishna graphic overlaid on a photograph. It is "
         "design work, not documentary photography, so it does not belong in a "
         "gallery presented as event photos."

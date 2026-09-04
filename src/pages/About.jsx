@@ -43,7 +43,8 @@ const About = () => {
         eyebrow="About"
         title="A life in public service"
         lead="Two offices, one commitment — to the traditions that shape Telugu life, and to the development that will carry it forward."
-        photo={photos.about}
+        photo={photos.bannerAbout}
+        focus="object-[center_38%]"
       />
 
       {/* ---- Biography ------------------------------------------------------ */}

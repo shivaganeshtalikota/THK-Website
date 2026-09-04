@@ -61,7 +61,8 @@ const Community = () => {
         eyebrow="Devasthanam Board"
         title="Board Member, Sri Kanaka Durga Devasthanam"
         lead={temple.intro}
-        photo={photos.community}
+        photo={photos.bannerCommunity}
+        focus="object-[center_42%]"
       />
 
       {/* ---- The temple ---------------------------------------------------- */}

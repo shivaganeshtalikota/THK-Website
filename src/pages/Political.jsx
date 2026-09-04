@@ -4,7 +4,7 @@ import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { site, party, focusAreas } from '../data/site'
+import { site, party, focusAreas, campaigns } from '../data/site'
 import { photos, gallery } from '../data/photos'
 
 const Political = () => {
@@ -49,7 +49,8 @@ const Political = () => {
         eyebrow="Party Office"
         title="iTDP Telangana State President"
         lead="Leading the Telugu Desam Party’s efforts across Telangana — advancing development, good governance, and Telugu pride."
-        photo={photos.political}
+        photo={photos.bannerPolitical}
+        focus="object-[center_35%]"
       />
 
       {/* ---- Mandate --------------------------------------------------------- */}
@@ -153,6 +154,72 @@ const Political = () => {
           </ul>
         </div>
       </section>
+
+      {/* ---- Campaigns & mobilisations ---------------------------------------- */}
+      {campaigns.length > 0 && (
+        <section className="section bg-ink-950">
+          <div className="on-dark container-custom">
+            <Reveal className="max-w-2xl">
+              <p className="eyebrow">Leadership in Action</p>
+              <h2 className="mt-5 font-display text-display text-white">
+                Campaigns &amp; mobilisations
+              </h2>
+            </Reveal>
+
+            <div className="mt-14 space-y-14">
+              {campaigns.map((c, i) => (
+                <Reveal
+                  as="article"
+                  key={c.slug}
+                  delay={i * 0.06}
+                  className="grid gap-8 border-t hairline-dark pt-9 lg:grid-cols-12 lg:gap-14"
+                >
+                  <div className="lg:col-span-4">
+                    <p className="font-sans text-micro uppercase text-brand-400">
+                      {c.dateLabel}
+                    </p>
+                    <h3 className="mt-3 font-display text-headline text-white">{c.title}</h3>
+                    <p className="mt-2 text-sm text-white/55">{c.place}</p>
+                  </div>
+
+                  <div className="lg:col-span-8">
+                    <p className="text-lead text-white/75">{c.summary}</p>
+                    <p className="mt-5 border-l-2 border-brand-500 pl-5 text-white/70">
+                      {c.role}
+                    </p>
+
+                    {c.coverage?.length > 0 && (
+                      <div className="mt-7">
+                        <p className="font-sans text-micro uppercase text-white/45">
+                          Press coverage
+                        </p>
+                        <ul className="mt-3 space-y-2">
+                          {c.coverage.map((m) => (
+                            <li key={m.url}>
+                              <a
+                                href={m.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-baseline gap-2.5 py-1 text-sm text-white/70 transition-colors hover:text-brand-300"
+                              >
+                                <span className="font-semibold text-brand-400">{m.outlet}</span>
+                                <span className="underline-offset-4 group-hover:underline">
+                                  {m.title}
+                                </span>
+                                <span className="sr-only"> (opens in a new tab)</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ---- Party photographs ------------------------------------------------ */}
       {partyPhotos.length > 0 && (

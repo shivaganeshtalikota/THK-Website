@@ -94,6 +94,11 @@ export const social = [
     handle: '@THK_iTDP',
     url: 'https://x.com/THK_iTDP',
   },
+  {
+    name: 'YouTube',
+    handle: '@TeamHaranna',
+    url: 'https://www.youtube.com/@TeamHaranna',
+  },
 ]
 
 export const party = {
@@ -377,6 +382,34 @@ export const faqs = [
   {
     q: 'How can I contact Hari Krishna Talikota?',
     a: 'You can reach the office through the contact page on this website, or follow the official social media channels — Instagram (@hari_krishna_talikota), Facebook (Talikota Harikrishna) and X (@THK_iTDP).',
+  },
+]
+
+/**
+ * Notable political activity, newest first.
+ *
+ * SOURCING RULE: the `event` and its `coverage` must be independently
+ * verifiable. His own role is stated as the office's own account — normal for
+ * a first-party site — and must never be dressed up as press reporting.
+ * Anything unverified stays out until the office confirms it.
+ */
+export const campaigns = [
+  {
+    slug: 'wipro-circle-protest',
+    date: '2023-09',
+    dateLabel: 'September 2023',
+    title: 'IT professionals’ protest at Wipro Circle',
+    place: 'Gachibowli, Hyderabad',
+    summary:
+      'After the arrest of TDP National President N. Chandrababu Naidu in the Skill Development case, IT professionals gathered at Wipro Circle in Gachibowli to demand his release. The demonstration was mobilised through the party’s professional and IT wing and drew employees from across Hyderabad’s IT corridor, with protesters holding “I Stand With CBN” placards. Police moved in and dispersed the gathering.',
+    role:
+      'Hari Krishna Talikota led the iTDP Telangana mobilisation for the Wipro Circle demonstration, organising the turnout of IT-sector party workers across the corridor.',
+    coverage: [
+      { outlet: 'V6 News', title: 'TDP IT Wing Employees Protest Over Chandra Babu Arrest At Wipro Circle', url: 'https://www.youtube.com/watch?v=pikT5aJJy7I' },
+      { outlet: 'Deccan Chronicle', title: 'IT staff protest Naidu’s arrest in Hyderabad', url: 'https://www.deccanchronicle.com/nation/in-other-news/140923/it-staff-protest-naidus-arrest-in-hyderabad.html' },
+      { outlet: 'The News Minute', title: 'Techies associated with TDP protest against Chandrababu’s arrest in Hyderabad', url: 'https://www.thenewsminute.com/andhra-pradesh/techies-associated-with-tdp-protest-against-chandrababus-arrest-in-hyderabad' },
+      { outlet: 'The Hans India', title: 'Global city’s techies take to streets over Naidu’s arrest', url: 'https://www.thehansindia.com/news/cities/hyderabad/hyderabad-global-citys-techies-take-to-streets-over-naidus-arrest-822520' },
+    ],
   },
 ]
 

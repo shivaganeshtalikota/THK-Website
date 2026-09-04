@@ -148,16 +148,38 @@ def make_og():
 
 # ---------------------------------------------------------------- Favicons
 def make_icons():
-    """Master mark: yellow rounded tile, dark 'HK'. Renders at 4x then downsamples."""
-    S = 512
-    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle([0, 0, S, S], radius=104, fill=BRAND)
+    """
+    Browser-tab icon: his face, not an "HK" monogram.
 
-    f = font("Montserrat-ExtraBold.ttf", 232)
-    box = d.textbbox((0, 0), "HK", font=f)
-    d.text(((S - (box[2] - box[0])) / 2 - box[0],
-            (S - (box[3] - box[1])) / 2 - box[1] - 6), "HK", font=f, fill=INK)
+    A face at 16px is inevitably mushy, so the crop is tight — head filling the
+    frame — which is the only way a portrait stays recognisable at tab size. A
+    thin party-yellow border separates it from the browser chrome.
+    """
+    S = 512
+    src = ROOT / "public" / "photos" / "portrait-headshot-621.webp"
+    if src.exists():
+        p = Image.open(src).convert("RGB")
+        # Tight square centred on the head. The headshot is 3:4 with the face
+        # high and slightly right of centre, so the box is anchored on the face
+        # rather than the frame — a centred crop left him off to one side.
+        w, h = p.size
+        side = int(w * 0.74)
+        left = int(w * 0.55 - side / 2)
+        top = int(h * 0.02)
+        left = max(0, min(left, w - side))
+        img = p.crop((left, top, left + side, top + side)).resize((S, S), Image.LANCZOS)
+        img = img.convert("RGBA")
+        d = ImageDraw.Draw(img)
+        d.rectangle([0, 0, S - 1, S - 1], outline=BRAND, width=26)
+    else:
+        img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle([0, 0, S, S], radius=104, fill=BRAND)
+        f = font("Montserrat-ExtraBold.ttf", 232)
+        box = d.textbbox((0, 0), "HK", font=f)
+        d.text(((S - (box[2] - box[0])) / 2 - box[0],
+                (S - (box[3] - box[1])) / 2 - box[1] - 6), "HK", font=f, fill=INK)
+        print("  (no portrait — monogram icon fallback)")
 
     img.save(OUT / "android-chrome-512x512.png", "PNG", optimize=True)
     for size, name in [
@@ -180,16 +202,12 @@ def make_icons():
     )
     print("  favicon.ico  (16/32/48/256)")
 
-    # Crisp vector favicon for modern browsers.
-    (OUT / "favicon.svg").write_text(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'
-        '<rect width="512" height="512" rx="104" fill="#FFD700"/>'
-        '<text x="256" y="256" font-family="Montserrat,Arial,sans-serif" font-size="232"'
-        ' font-weight="800" fill="#12161B" text-anchor="middle"'
-        ' dominant-baseline="central">HK</text></svg>',
-        encoding="utf-8",
+    # A 512px PNG doubles as the "SVG" slot's replacement — the icon is now a
+    # photograph, which SVG cannot carry without embedding the whole bitmap.
+    img.convert("RGB").resize((512, 512), Image.LANCZOS).save(
+        OUT / "favicon-512.png", "PNG", optimize=True
     )
-    print("  favicon.svg")
+    print("  favicon-512.png")
 
 
 if __name__ == "__main__":

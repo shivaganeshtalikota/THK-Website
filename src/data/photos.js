@@ -18,7 +18,7 @@
 /** Absolute width list per slug, mirroring what the processor emitted. */
 const W = {
   'tdp-44-anniversary': [480, 768, 960],
-  'hero-addressing': [480, 768, 995],
+  'hero-addressing': [480, 768, 1200, 1800, 1820],
   'portrait-headshot': [480, 621],
   'addressing-itdp-telangana': [480, 768, 1200, 1800, 2048],
   'with-chandrababu-naidu': [480, 768, 1200, 1800, 2048],
@@ -36,6 +36,7 @@ const W = {
   'with-nandamuri-balakrishna': [480, 768, 1153],
   'mahanadu-2025': [480, 768, 1024],
   'ntr-anniversary-tribute': [480, 768, 1200, 1600],
+  'amaravati-cm-meeting': [480, 768, 1200, 1800, 2048],
   'csr-summit-hyderabad': [480, 768, 1200, 1600],
 }
 
@@ -56,8 +57,8 @@ export const photos = {
   // Telangana map on the lectern all read at a glance.
   hero: photo(
     'hero-addressing',
-    995,
-    1325,
+    1820,
+    1365,
     'Hari Krishna Talikota addressing an iTDP Telangana party meeting'
   ),
 
@@ -70,11 +71,42 @@ export const photos = {
     828,
     'Hari Krishna Talikota, iTDP Telangana State President'
   ),
+  // Portrait, used inside the biography column (not as a banner).
   about: photo(
     'with-chandrababu-naidu-portrait',
     2048,
     2046,
     'Hari Krishna Talikota with TDP National President N. Chandrababu Naidu'
+  ),
+
+  /**
+   * Page banners. These are chosen for being NATIVELY WIDE — a 2048x2046
+   * square or a 967x1409 portrait cropped down to a 56vh band cuts heads in
+   * half, which is exactly what was happening on About and Political.
+   */
+  bannerAbout: photo(
+    'amaravati-cm-meeting',
+    2048,
+    1283,
+    'Hari Krishna Talikota with family meeting Chief Minister N. Chandrababu Naidu in Amaravati'
+  ),
+  bannerPolitical: photo(
+    'medchal-constituency-dais',
+    2048,
+    1536,
+    'Hari Krishna Talikota at an opinion-gathering programme in Medchal constituency'
+  ),
+  bannerCommunity: photo(
+    'kuchipudi-natya-kshetram',
+    2048,
+    1465,
+    'Kuchipudi dancers assembled before a temple gopuram at the Shravana Maasa Nrityotsavam'
+  ),
+  bannerMedia: photo(
+    'ntr-anniversary-tribute',
+    1600,
+    1200,
+    'TDP workers paying tribute at an N.T. Rama Rao statue'
   ),
   political: photo(
     'medchal-constituency-meeting',
@@ -168,6 +200,18 @@ export const gallery = [
     group: 'party',
     caption: 'At the Telugu Desam Party’s 44th anniversary celebration',
     telugu: '44 వసంతాల తెలుగుదేశం పార్టీ',
+  },
+  {
+    ...photo(
+      'amaravati-cm-meeting',
+      2048,
+      1283,
+      'Hari Krishna Talikota with family meeting Chief Minister N. Chandrababu Naidu in Amaravati'
+    ),
+    group: 'party',
+    caption: 'Meeting Chief Minister N. Chandrababu Naidu with family in Amaravati',
+    telugu:
+      'నిన్న అమరావతిలో ముఖ్యమంత్రి శ్రీ నారా చంద్రబాబు నాయుడు గారిని కుటుంబసమేతంగా కలిసి కృతజ్ఞతలు తెలియజేయడం జరిగింది.',
   },
   {
     ...photo('mahanadu-2025', 1024, 768, 'Delegate registration at TDP Mahanadu 2025'),

@@ -14,8 +14,8 @@ const NotFound = () => (
 
     {/* Dark, like every other page hero — the fixed header goes transparent
         over the top of the viewport and needs a dark ground beneath it. */}
-    <section className="on-dark relative -mt-[var(--nav-h)] overflow-hidden bg-ink-950">
-      <div className="container-custom relative grid min-h-[100svh] place-items-center py-20">
+    <section className="on-dark relative overflow-hidden bg-ink-950">
+      <div className="container-custom relative grid min-h-[70vh] place-items-center py-20">
         <div className="max-w-lg text-center">
           <p className="font-display text-[6rem] font-bold leading-none tracking-tight text-brand-500 sm:text-[9rem]">
             404
