@@ -1,6 +1,7 @@
 import React from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import App from './App.jsx'
 import './styles/index.css'
 
@@ -19,6 +20,12 @@ const tree = (
   <React.StrictMode>
     <BrowserRouter>
       <App />
+      {/* Client-only, deliberately outside App: App is also the SSR entry
+          used by scripts/prerender.js, and this component has nothing to do
+          at build time — it injects a script tag and posts view/vitals
+          beacons in the browser. Keeping it here means the prerender bundle
+          never even imports it. */}
+      <Analytics />
     </BrowserRouter>
   </React.StrictMode>
 )
