@@ -62,7 +62,13 @@ export default {
       fontSize: {
         // Wider scale contrast than a stock kit: the hero is genuinely large,
         // and labels are genuinely small, so hierarchy reads instantly.
-        hero: ['clamp(3rem, 1.6rem + 6.4vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.035em', fontWeight: '800' }],
+        // Sized to the COLUMN, not the viewport. The hero is a split layout and
+        // the text column is only ~501px at 1440 — at the old 6.4vw the name set
+        // 720px wide and broke into three ragged lines, "Hari / Krishna /
+        // Talikota". Measured: 81px is the largest that fits "Hari Krishna" on
+        // one line there, so the curve is tuned to stay under it and the name
+        // holds its intended two lines.
+        hero: ['clamp(2.75rem, 1.1rem + 3.9vw, 5rem)', { lineHeight: '0.98', letterSpacing: '-0.03em', fontWeight: '800' }],
         display: ['clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem)', { lineHeight: '1.0', letterSpacing: '-0.03em', fontWeight: '700' }],
         title: ['clamp(1.9rem, 1.4rem + 2.2vw, 3.1rem)', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
         headline: ['clamp(1.3rem, 1.15rem + 0.7vw, 1.65rem)', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '600' }],

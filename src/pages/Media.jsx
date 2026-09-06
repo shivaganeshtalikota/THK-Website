@@ -164,8 +164,7 @@ const Media = () => {
     <>
       <Seo
         title="Photo Gallery & Updates"
-        description="Photographs and updates from Hari Krishna Talikota's political and community service work — party events, constituency programmes, temple service and Telugu cultural events."
-        image={`${site.url}/photos/with-chandrababu-naidu-1200.webp`}
+        description="Photographs and video from Hari Krishna Talikota’s political and temple service work across Telangana and Andhra Pradesh."
         schema={schema}
       />
 
@@ -174,7 +173,6 @@ const Media = () => {
         title="In pictures"
         lead="Party events, constituency programmes, temple service and Telugu cultural celebrations."
         photo={photos.bannerMedia}
-        focus="object-[center_40%]"
       />
 
       {/* ---- Gallery ------------------------------------------------------- */}
@@ -221,9 +219,15 @@ const Media = () => {
           </Reveal>
 
           {/* Grid */}
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Masonry, not a grid. The set spans 0.56 to 2.22 native — a 3.9x
+              spread — so a single box shape cannot hold it: at 4:3 the
+              Balakrishna portrait lost 58% of its height, cutting out both the
+              NTR portrait above the two men and their heads below, and the
+              bonam photograph lost the pot the picture is actually about.
+              Columns let every photograph keep its own ratio. */}
+          <ul className="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3">
             {shown.map((item, i) => (
-              <Reveal as="li" key={item.slug} delay={Math.min(i, 6) * 0.05}>
+              <Reveal as="li" key={item.slug} delay={Math.min(i, 6) * 0.05} className="mb-4 break-inside-avoid">
                 <button
                   type="button"
                   onClick={() => setLightbox(i)}
@@ -232,9 +236,8 @@ const Media = () => {
                 >
                   <Picture
                     photo={item}
-                    aspect="4 / 3"
                     rounded=""
-                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 416px"
                     imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
                   />
                   <p className="mt-3 text-sm font-medium leading-snug text-ink-800">

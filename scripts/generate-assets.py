@@ -147,92 +147,61 @@ def make_og():
 
 
 # ---------------------------------------------------------------- Favicons
-# Official Telugu Desam Party emblem, from the party's own site
-# (telugudesam.org). Vendored to public/tdp-logo.png so the build needs no
-# network and the asset is served same-origin — the CSP is `img-src 'self'`,
-# so a hotlinked logo would simply not render.
-TDP_LOGO = ROOT / "public" / "tdp-logo.png"
+# The Telugu Desam Party emblem — the gear, plough and house of the party flag,
+# taken from the party's own site (telugudesam.org) and vendored so the build
+# needs no network and the file is served same-origin (the CSP is
+# `img-src 'self'`, so a hotlinked mark would not render at all).
+#
+# Deliberately NOT the cycle. The cycle is the Election Commission ballot
+# symbol; this is the party's own emblem, and it is what the office asked for.
+TDP_EMBLEM = ROOT / "public" / "tdp-emblem.png"
 TDP_YELLOW = (253, 216, 0)
-
-
-def _bicycle():
-    """
-    Cut the cycle symbol out of the party emblem.
-
-    The full emblem is the cycle on yellow above a red band reading TELUGU
-    DESAM PARTY. That band is the whole point at poster size and pure noise at
-    16px, where it collapses into two muddy stripes. The cycle alone is what
-    carries the identity in a browser tab.
-    """
-    im = Image.open(TDP_LOGO).convert("RGBA")
-    w, h = im.size
-    px = im.load()
-    xs, ys = [], []
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = px[x, y]
-            if a > 200 and r < 90 and g < 90 and b < 90:
-                xs.append(x)
-                ys.append(y)
-    if not xs:
-        raise SystemExit("no dark pixels in tdp-logo.png — is it the right image?")
-    pad = 4
-    box = (max(0, min(xs) - pad), max(0, min(ys) - pad),
-           min(w, max(xs) + pad), min(h, max(ys) + pad))
-    crop = im.crop(box).convert("RGB")
-
-    # Key the cycle out rather than pasting the cropped rectangle. The emblem's
-    # yellow is a subtle vertical gradient, so pasting the rectangle onto a flat
-    # yellow canvas left a visible seam where the two yellows met. Deriving an
-    # alpha mask from luminance keeps the anti-aliased stroke edges and drops
-    # the background entirely, so it composites cleanly onto any colour.
-    cw, ch = crop.size
-    cpx = crop.load()
-    lum = lambda p: 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
-    base = max(lum(cpx[0, 0]), lum(cpx[cw - 1, 0]), 1.0)  # background luminance
-    out = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
-    opx = out.load()
-    for y in range(ch):
-        for x in range(cw):
-            a = (base - lum(cpx[x, y])) / base
-            opx[x, y] = (0, 0, 0, max(0, min(255, int(a * 255))))
-    return out
 
 
 def make_icons():
     """
-    Browser-tab icon: the Telugu Desam Party cycle on party yellow.
+    Browser-tab icon: the Telugu Desam Party emblem on party yellow.
 
-    It replaced a tight crop of his face. A photograph cannot survive a 16px
-    tab — the head landed in roughly nine pixels and read as a brown smudge,
-    indistinguishable from any other photo favicon. The party emblem is the
-    opposite: two flat colours, one hard-edged silhouette, and a shape that
-    every voter in Andhra Pradesh and Telangana recognises instantly. It also
-    matches the site's yellow header, so tab and page read as one thing.
+    The first version of this was a tight crop of his face. A photograph cannot
+    survive a 16px tab — the head landed in roughly nine pixels and read as a
+    brown smudge, indistinguishable from any other photo favicon. A flat
+    two-colour emblem with a hard silhouette is the opposite, and it matches the
+    site's yellow header so the tab and the page read as one thing.
     """
     S = 512
-    bike = _bicycle()
+    em = Image.open(TDP_EMBLEM).convert("RGBA")
 
-    # Full-bleed rather than a rounded tile: browsers, OSes and bookmark bars
-    # all apply their own masking, and a tile inside a tile loses size twice.
+    # Trim the transparent margin so the artwork, not its padding, is what gets
+    # scaled — the source carries roughly 6% dead space on each side.
+    box = em.split()[3].getbbox()
+    if box:
+        em = em.crop(box)
+
+    # Square it without distorting: pad the shorter axis rather than stretch.
+    side = max(em.size)
+    sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    sq.paste(em, ((side - em.width) // 2, (side - em.height) // 2), em)
+
+    # Full-bleed ground rather than a rounded tile: browsers, launchers and
+    # bookmark bars all apply their own masking, and a tile inside a tile loses
+    # size twice.
     img = Image.new("RGBA", (S, S), TDP_YELLOW + (255,))
-    target_w = int(S * 0.84)
-    scale = target_w / bike.width
-    bike = bike.resize((target_w, max(1, int(bike.height * scale))), Image.LANCZOS)
-    img.paste(bike, ((S - bike.width) // 2, (S - bike.height) // 2), bike)
+    art = int(S * 0.88)
+    sq = sq.resize((art, art), Image.LANCZOS)
+    img.paste(sq, ((S - art) // 2, (S - art) // 2), sq)
 
     img.save(OUT / "android-chrome-512x512.png", "PNG", optimize=True)
+    img.convert("RGB").save(OUT / "favicon-512.png", "PNG", optimize=True)
 
-    # Maskable variant: Android crops these to a circle (or squircle, or
-    # whatever the launcher uses), so the artwork has to live inside the inner
-    # 80% "safe zone". At the standard 84% the wheels would be sliced off.
+    # Maskable variant: Android crops these to a circle, so the artwork has to
+    # sit inside the inner 80% safe zone. At 88% the emblem would lose its edges.
     mask = Image.new("RGBA", (S, S), TDP_YELLOW + (255,))
-    mw = int(S * 0.56)
-    mb = bike.resize((mw, max(1, int(bike.height * mw / bike.width))), Image.LANCZOS)
-    mask.paste(mb, ((S - mb.width) // 2, (S - mb.height) // 2), mb)
+    mart = int(S * 0.60)
+    ms = sq.resize((mart, mart), Image.LANCZOS)
+    mask.paste(ms, ((S - mart) // 2, (S - mart) // 2), ms)
     mask.save(OUT / "android-chrome-maskable-512x512.png", "PNG", optimize=True)
     print("  android-chrome-maskable-512x512.png")
-    img.convert("RGB").save(OUT / "favicon-512.png", "PNG", optimize=True)
+
     for size, name in [
         (192, "android-chrome-192x192.png"),
         (32, "favicon-32x32.png"),
@@ -248,7 +217,7 @@ def make_icons():
     apple.save(OUT / "apple-touch-icon.png", "PNG", optimize=True)
     print("  apple-touch-icon.png")
 
-    # 16/32/48 only. The old file carried a 256px frame too, which is why it
+    # 16/32/48 only. The original carried a 256px frame too, which is why it
     # weighed 124KB — for an image the browser draws at 16 pixels.
     img.resize((48, 48), Image.LANCZOS).save(
         OUT / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)]

@@ -194,12 +194,41 @@
     }
   }
 
+  /*
+   * Banner scrim. These numbers are measured, not chosen by eye.
+   *
+   * The previous curve fell to 0.05 alpha at 78% height, but PageHero's text
+   * stack (eyebrow + display h1 + lead) reaches about two thirds up the band —
+   * so the eyebrow and the top of the heading sat over almost bare photograph.
+   * scripts/audit-images.py composites this exact gradient over the real pixels
+   * of every banner and computes the WCAG contrast of white text against it.
+   * Five of six banners failed: the Community banner bottomed out at 1.31:1 on
+   * mobile, against the 4.5:1 AA threshold, which is why the white text
+   * disappeared into the photograph.
+   *
+   * The stop at 78% is the one that governs. 0.50 cleared every banner except
+   * Community on a phone — the temple gopuram is bright sky and the text stack
+   * fills 80% of a narrow band — so it is 0.60. Worst case across all five
+   * banners at both viewports is now 5.51:1 against the 4.5 threshold, with no
+   * pixel of any text area below it.
+   * Re-run the script after changing any banner photograph or this gradient.
+   */
+  /*
+   * Playfair Display's ink runs to about 1.33em, but text-display sets
+   * line-height 1.0 — so on any heading that wraps, the descenders of one line
+   * touch the capitals of the next. Applied here rather than on the token so
+   * single-line uses keep their tight setting.
+   */
+  .display-wrap {
+    line-height: 1.07;
+  }
+
   .scrim-bottom {
     background: linear-gradient(
       to top,
-      rgba(10, 10, 9, 0.92) 0%,
-      rgba(10, 10, 9, 0.55) 38%,
-      rgba(10, 10, 9, 0.05) 78%
+      rgba(10, 10, 9, 0.94) 0%,
+      rgba(10, 10, 9, 0.72) 44%,
+      rgba(10, 10, 9, 0.60) 78%
     );
   }
 

@@ -24,7 +24,7 @@ export const site = {
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Hari Krishna Talikota — Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada, and iTDP Telangana State President of the Telugu Desam Party. Temple service, regional development and Telugu cultural preservation.',
+    'Hari Krishna Talikota — Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri, and iTDP Telangana State President of the Telugu Desam Party.',
 
   mission:
     'Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.',
@@ -409,6 +409,10 @@ export const campaigns = [
       { outlet: 'Deccan Chronicle', title: 'IT staff protest Naidu’s arrest in Hyderabad', url: 'https://www.deccanchronicle.com/nation/in-other-news/140923/it-staff-protest-naidus-arrest-in-hyderabad.html' },
       { outlet: 'The News Minute', title: 'Techies associated with TDP protest against Chandrababu’s arrest in Hyderabad', url: 'https://www.thenewsminute.com/andhra-pradesh/techies-associated-with-tdp-protest-against-chandrababus-arrest-in-hyderabad' },
       { outlet: 'The Hans India', title: 'Global city’s techies take to streets over Naidu’s arrest', url: 'https://www.thehansindia.com/news/cities/hyderabad/hyderabad-global-citys-techies-take-to-streets-over-naidus-arrest-822520' },
+      // Eenadu's photo report names the route explicitly — Wipro Circle to the
+      // Outer Ring Road — which is the detail that ties this coverage to the
+      // location, in the largest-circulation Telugu daily.
+      { outlet: 'Eenadu', title: 'చంద్రబాబు అరెస్టుకు నిరసనగా ఐటీ ఉద్యోగుల ఆందోళన (IT employees’ protest rally, Hyderabad)', url: 'https://www.eenadu.net/photos/playimages/it-employees-protest-rally-in-hyderabad/1/11735' },
     ],
   },
 ]

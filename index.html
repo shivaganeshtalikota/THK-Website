@@ -50,9 +50,9 @@
     <meta property="og:url" content="https://talikotaharikrishna.com/" />
     <meta property="og:title" content="Hari Krishna Talikota — Devasthanam Board Member &amp; iTDP Telangana State President" />
     <meta property="og:description" content="Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri · iTDP Telangana State President, Telugu Desam Party." />
-    <meta property="og:image" content="https://talikotaharikrishna.com/og-image.png" />
-    <meta property="og:image:secure_url" content="https://talikotaharikrishna.com/og-image.png" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image" content="https://talikotaharikrishna.com/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://talikotaharikrishna.com/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Hari Krishna Talikota — Board Member, Sri Kanaka Durga Devasthanam, and iTDP Telangana State President" />
@@ -65,7 +65,7 @@
     <meta name="twitter:creator" content="@THK_iTDP" />
     <meta name="twitter:title" content="Hari Krishna Talikota — Devasthanam Board Member &amp; iTDP Telangana State President" />
     <meta name="twitter:description" content="Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri · iTDP Telangana State President, Telugu Desam Party." />
-    <meta name="twitter:image" content="https://talikotaharikrishna.com/og-image.png" />
+    <meta name="twitter:image" content="https://talikotaharikrishna.com/og-image.jpg" />
     <meta name="twitter:image:alt" content="Hari Krishna Talikota — Devasthanam Board Member &amp; iTDP Telangana State President" />
 
     <!-- Geo signals (local/regional search) -->
@@ -131,10 +131,18 @@
           "image": [
             "https://talikotaharikrishna.com/photos/portrait-headshot-621.webp",
             "https://talikotaharikrishna.com/photos/addressing-itdp-telangana-1200.webp",
-            "https://talikotaharikrishna.com/og-image.png"
+            "https://talikotaharikrishna.com/og-image.jpg"
           ],
           "nationality": { "@type": "Country", "name": "India" },
           "knowsLanguage": ["te", "en"],
+          "disambiguatingDescription": "Talikota Hari Krishna, iTDP Telangana State President of the Telugu Desam Party and a serving Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada. He is a different person from Nandamuri Harikrishna (1956-2018), the TDP politician and actor, son of party founder N. T. Rama Rao.",
+          "knowsAbout": [
+            "Telugu Desam Party organisation in Telangana",
+            "Hindu temple administration and Devasthanam governance",
+            "Telugu language and cultural preservation",
+            "Information technology professionals' advocacy in Hyderabad",
+            "Regional development policy in Telangana"
+          ],
           "worksFor": { "@id": "https://talikotaharikrishna.com/#party" },
           "memberOf": { "@id": "https://talikotaharikrishna.com/#party" },
           "hasOccupation": {
@@ -163,7 +171,8 @@
           "sameAs": [
             "https://www.instagram.com/hari_krishna_talikota/",
             "https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/",
-            "https://x.com/THK_iTDP"
+            "https://x.com/THK_iTDP",
+            "https://www.youtube.com/@TeamHaranna"
           ]
         },
         {
@@ -193,14 +202,15 @@
   </head>
   <body>
     <div id="root"></div>
-    <noscript>
-      <div style="font-family: system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.6;">
-        <h1 style="font-size: 1.5rem;">Hari Krishna Talikota</h1>
-        <p><strong>iTDP Telangana State President</strong> · Board Member, Sri Kanaka Durga Devasthanam</p>
-        <p>This website needs JavaScript enabled. Please turn it on, or reach the office through
-          <a href="https://x.com/THK_iTDP">@THK_iTDP</a>.</p>
-      </div>
-    </noscript>
+    <!--
+      A scripting-disabled fallback block used to sit here. It was removed
+      because it had become both false and harmful: every route is prerendered
+      to static HTML, so the page reads perfectly with scripting off, and the
+      block asserted the opposite. Worse, its content is part of the document
+      for any parser that does not evaluate scripting, so it put a second
+      top-level heading on every prerendered page, competing with the real one
+      for the name this site exists to rank for.
+    -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

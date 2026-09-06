@@ -35,7 +35,7 @@ const About = () => {
     <>
       <Seo
         title="Biography & Public Service"
-        description="Hari Krishna Talikota — Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri and iTDP Telangana State President. His public service, core values and vision for Telangana."
+        description="Biography of Hari Krishna Talikota — Board Member of the Sri Kanaka Durga Devasthanam, Indrakeeladri, and iTDP Telangana State President, TDP."
         schema={schema}
       />
 
@@ -44,7 +44,6 @@ const About = () => {
         title="A life in public service"
         lead="Two offices, one commitment — to the traditions that shape Telugu life, and to the development that will carry it forward."
         photo={photos.bannerAbout}
-        focus="object-[center_38%]"
       />
 
       {/* ---- Biography ------------------------------------------------------ */}

@@ -46,14 +46,23 @@ const Community = () => {
     ],
   }
 
-  const templePhotos = gallery.filter((g) => g.group === 'temple' || g.group === 'culture')
+  // Square tiles, so anything near-panoramic is excluded rather than butchered:
+  // endowments-minister-anam is 1280x577 (2.22:1) and a square centre crop threw
+  // away 66% of its width, which on a two-person photograph removes one of them.
+  // The page banner is excluded too — it was reappearing as the fourth tile of
+  // the same page.
+  const templePhotos = gallery.filter(
+    (g) =>
+      (g.group === 'temple' || g.group === 'culture') &&
+      g.slug !== photos.bannerCommunity.slug &&
+      g.width / g.height < 1.6
+  )
 
   return (
     <>
       <Seo
         title="Board Member, Sri Kanaka Durga Devasthanam"
-        description="Hari Krishna Talikota serves as a Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada — temple administration, financial stewardship, devotee services and the continuity of tradition at one of South India's most visited Shakti Peethas."
-        image={`${site.url}/photos/bonalu-bangaru-bonam-768.webp`}
+        description="Hari Krishna Talikota’s service as a Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada — temple governance and devotee services."
         schema={schema}
       />
 
@@ -62,7 +71,6 @@ const Community = () => {
         title="Board Member, Sri Kanaka Durga Devasthanam"
         lead={temple.intro}
         photo={photos.bannerCommunity}
-        focus="object-[center_42%]"
       />
 
       {/* ---- The temple ---------------------------------------------------- */}
@@ -222,14 +230,14 @@ const Community = () => {
               </Link>
             </Reveal>
 
-            <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {templePhotos.slice(0, 4).map((item, i) => (
+            <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {templePhotos.slice(0, 3).map((item, i) => (
                 <Reveal as="li" key={item.slug} delay={i * 0.07}>
                   <Link to="/media" className="group block">
                     <div className="overflow-hidden">
                       <Picture
                         photo={item}
-                        aspect="3 / 4"
+                        aspect="1 / 1"
                         rounded=""
                         sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 22vw"
                         imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"

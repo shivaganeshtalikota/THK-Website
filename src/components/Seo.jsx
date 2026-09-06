@@ -16,7 +16,7 @@ import { site } from '../data/site'
 const Seo = ({
   title,
   description = site.description,
-  image = `${site.url}/og-image.png`,
+  image = `${site.url}/og-image.jpg`,
   type = 'website',
   noindex = false,
   schema,

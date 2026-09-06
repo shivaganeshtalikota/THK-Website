@@ -35,9 +35,74 @@ const W = {
   'endowments-minister-anam': [480, 768, 1200, 1280],
   'with-nandamuri-balakrishna': [480, 768, 1153],
   'mahanadu-2025': [480, 768, 1024],
-  'ntr-anniversary-tribute': [480, 768, 1200, 1600],
+  'ntr-anniversary-tribute': [480, 768, 1200, 1600, 1800],
   'amaravati-cm-meeting': [480, 768, 1200, 1800, 2048],
   'csr-summit-hyderabad': [480, 768, 1200, 1600],
+}
+
+/**
+ * Focal point per photograph, as a CSS object-position.
+ *
+ * WHY THIS EXISTS
+ * Every container on the site crops with object-fit:cover, and the default is
+ * `50% 50%` — which is only correct when the subject happens to sit dead centre.
+ * In press photography it almost never does. The bonam photograph is a 0.69
+ * portrait whose subject's face sits at 58% height; centred in a near-square
+ * box it pushed his face onto the bottom edge. The group photographs put their
+ * faces in the upper third, so a centred crop clipped foreheads.
+ *
+ * These values were measured, not guessed: scripts/audit-images.py runs an
+ * OpenCV cascade over every file and reports the area-weighted centre of the
+ * faces it finds (scripts/image-audit.json). Where the detector found nothing,
+ * or was dragged off by background faces, the value is corrected by eye and
+ * the reason noted.
+ */
+const FOCUS = {
+  // Detected cleanly — faces in the upper third, as usual for a handshake or
+  // a greeting frame.
+  'with-chandrababu-naidu': '50% 30%',
+  'with-chandrababu-naidu-portrait': '52% 32%',
+  'with-nara-lokesh': '52% 28%',
+  'with-nandamuri-balakrishna': '58% 28%',
+  'with-party-leadership': '62% 40%',
+  'addressing-itdp-telangana': '56% 30%',
+  'hero-addressing': '57% 38%',
+  'portrait-headshot': '55% 35%',
+  'csr-summit-hyderabad': '59% 46%',
+  'mahanadu-2025': '55% 45%',
+  'ntr-anniversary-tribute': '55% 42%',
+  'amaravati-cm-meeting': '57% 40%',
+  'tdp-44-anniversary': '48% 45%',
+  'hero-tdp-44': '48% 45%',
+  'jonnawada-kamakshi-thayi': '38% 52%',
+  'kuchipudi-natyotsavam-stage': '58% 44%',
+
+  // The subject carries the bonam on his head, so the frame is pot-above-face.
+  // The detector puts his face at 58%; the old hand-set value of 28% chased the
+  // pot instead and pushed his face out of the bottom of the box.
+  'bonalu-bangaru-bonam': '47% 58%',
+
+  // Corrected by eye. The detector found no frontal face here — both men are
+  // turned three-quarters — but they are plainly at 32% and 70% across, high
+  // in the frame.
+  'greeting-chandrababu-naidu': '50% 26%',
+
+  // Corrected by eye. Ultra-wide at 2.22, no face detected against the busy
+  // background; the handshake sits slightly above centre.
+  'endowments-minister-anam': '50% 40%',
+
+  // Corrected. The detector locked onto the two clearest faces on the right of
+  // a wide hall and returned 80%, which would crop the audience out entirely.
+  // Pulled back toward the standing speaker while keeping the crowd in frame.
+  'medchal-constituency-dais': '62% 46%',
+
+  // Corrected. Detection averaged the standing speaker with the seated row
+  // behind him and landed at mid-height; his own face is higher.
+  'medchal-constituency-meeting': '45% 24%',
+
+  // Corrected. Detection returned 70% — the dancers' faces — but at banner
+  // height that drops the gopuram the photograph is composed around.
+  'kuchipudi-natya-kshetram': '45% 46%',
 }
 
 const photo = (slug, width, height, alt, extra = {}) => ({
@@ -47,6 +112,7 @@ const photo = (slug, width, height, alt, extra = {}) => ({
   alt,
   widths: W[slug],
   src: `/photos/${slug}.jpg`,
+  focus: FOCUS[slug] ?? '50% 50%',
   ...extra,
 })
 
@@ -84,11 +150,15 @@ export const photos = {
    * square or a 967x1409 portrait cropped down to a 56vh band cuts heads in
    * half, which is exactly what was happening on About and Political.
    */
+  // Public service, not private life. This was the Amaravati frame, which is a
+  // family photograph — the wrong register for the banner of a page about his
+  // work, and the office asked for it to appear only in the gallery. This is
+  // him on his feet at a constituency opinion-gathering programme.
   bannerAbout: photo(
-    'amaravati-cm-meeting',
+    'medchal-constituency-meeting',
     2048,
-    1283,
-    'Hari Krishna Talikota with family meeting Chief Minister N. Chandrababu Naidu in Amaravati'
+    1538,
+    'Hari Krishna Talikota speaking at a constituency opinion-gathering programme in Medchal'
   ),
   bannerPolitical: photo(
     'medchal-constituency-dais',
@@ -96,23 +166,31 @@ export const photos = {
     1536,
     'Hari Krishna Talikota at an opinion-gathering programme in Medchal constituency'
   ),
+  // The indoor stage frame was tried here and rejected on measurement: behind
+  // the banner scrim its mean luminance was 0.025 against this one's 0.117, so
+  // it rendered as a near-black rectangle. This photograph was previously
+  // duplicated as a tile in the grid at the foot of this same page; the grid
+  // now filters the banner out by slug, so it can stay.
   bannerCommunity: photo(
     'kuchipudi-natya-kshetram',
     2048,
     1465,
-    'Kuchipudi dancers assembled before a temple gopuram at the Shravana Maasa Nrityotsavam'
+    'Kuchipudi dancers with Hari Krishna Talikota before the temple gopuram at the Shravana Maasa Nrityotsavam'
   ),
+  // Swapped off ntr-anniversary-tribute, which was also a tile in the gallery
+  // directly below it, and whose largest variant is smaller than a full-bleed
+  // desktop band needs.
   bannerMedia: photo(
-    'ntr-anniversary-tribute',
-    1600,
-    1200,
-    'TDP workers paying tribute at an N.T. Rama Rao statue'
+    'addressing-itdp-telangana',
+    2048,
+    1365,
+    'Hari Krishna Talikota addressing an iTDP Telangana party meeting'
   ),
   political: photo(
-    'medchal-constituency-meeting',
-    2048,
-    1538,
-    'Hari Krishna Talikota speaking at an opinion-gathering programme in Medchal constituency'
+    'ntr-anniversary-tribute',
+    1800,
+    1350,
+    'Telugu Desam Party workers paying tribute at an N.T. Rama Rao statue'
   ),
   community: photo(
     'bonalu-bangaru-bonam',

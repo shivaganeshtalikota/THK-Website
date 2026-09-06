@@ -41,8 +41,7 @@ const Political = () => {
     <>
       <Seo
         title="iTDP Telangana State President"
-        description="Hari Krishna Talikota serves as iTDP Telangana State President, leading the Telugu Desam Party's organisation in Telangana — development, good governance and Telugu cultural pride."
-        image={`${site.url}/photos/addressing-itdp-telangana-1200.webp`}
+        description="Hari Krishna Talikota, iTDP Telangana State President — leading the Telugu Desam Party’s organisation in Telangana, and the Wipro Circle mobilisation."
         schema={schema}
       />
 
@@ -51,7 +50,6 @@ const Political = () => {
         title="iTDP Telangana State President"
         lead="Leading the Telugu Desam Party’s efforts across Telangana — advancing development, good governance, and Telugu pride."
         photo={photos.bannerPolitical}
-        focus="object-[center_35%]"
       />
 
       {/* ---- Mandate --------------------------------------------------------- */}
@@ -252,7 +250,7 @@ const Political = () => {
                     <div className="overflow-hidden">
                       <Picture
                         photo={item}
-                        aspect="3 / 4"
+                        aspect="1 / 1"
                         rounded=""
                         sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 22vw"
                         imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"

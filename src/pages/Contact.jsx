@@ -87,6 +87,10 @@ const Contact = () => {
       />
 
       <PageHero
+        // No photograph here, so the band is sized to its copy instead of to a
+        // banner. Left at the image height it rendered as up to 300px of empty
+        // black above the text on a tall monitor.
+        compact
         eyebrow="Contact"
         title="Get in touch"
         lead="I am here to serve the people of Telangana. Whether you have political inquiries, need constituent services, or want to get involved with our movement, I welcome your contact."

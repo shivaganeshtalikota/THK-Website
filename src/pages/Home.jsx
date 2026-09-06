@@ -38,8 +38,17 @@ const Home = () => {
               {/* Both names at the same size and weight — the surname is not a
                   lesser line. The gold rule sits under the pair. */}
               <Reveal as="h1" delay={0.14} className="relative mt-7 inline-block">
-                <span className="block font-display text-hero text-white">Hari Krishna</span>
-                <span className="block font-display text-hero text-white">Talikota</span>
+                {/* One text node, broken visually rather than structurally.
+                    Two sibling <span class="block"> elements serialise with no
+                    separator, so every crawler that does not apply CSS — GPTBot,
+                    ClaudeBot, PerplexityBot, CCBot and every naive tag-stripper —
+                    read this h1 as the single token "HariKrishnaTalikota". The
+                    whole site exists to rank for this name and its strongest
+                    on-page element was malformed. Browsers rendered it correctly,
+                    so it never showed up in visual QA. */}
+                <span className="block font-display text-hero text-white">
+                  Hari Krishna <span className="lg:block">Talikota</span>
+                </span>
                 <span
                   className="mt-4 block h-[5px] w-28 bg-brand-500 sm:w-36"
                   aria-hidden="true"
@@ -129,7 +138,6 @@ const Home = () => {
               aspect="auto"
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="!absolute inset-0 h-full w-full"
-              imgClassName="object-[center_28%]"
             />
           </div>
 
@@ -269,7 +277,7 @@ const Home = () => {
                   <div className="overflow-hidden">
                     <Picture
                       photo={item}
-                      aspect="3 / 4"
+                      aspect="1 / 1"
                       rounded=""
                       sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 22vw"
                       imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
