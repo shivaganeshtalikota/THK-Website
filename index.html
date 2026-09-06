@@ -1,128 +1,216 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary Meta Tags -->
-    <title>Hari Krishna Talikota - iTDP Telangana State President | Telugu Desam Party</title>
-    <meta name="title" content="Hari Krishna Talikota - iTDP Telangana State President | Telugu Desam Party" />
-    <meta name="description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam. Dedicated to Telugu pride, regional development, and good governance in Telangana." />
-    <meta name="keywords" content="Hari Krishna Talikota, Talikota Harikrishna, iTDP Telangana, TDP Telangana President, Telugu Desam Party, Telangana Politics, TDP Leader, Hyderabad Politics, Telugu Pride, Kanaka Durga Temple Board" />
+    <!--
+      Marks that scripting is available, BEFORE first paint. Entry and scroll
+      animations hide their elements via `.js [data-reveal] { opacity: 0 }`, so
+      without this class nothing is ever hidden: a visitor with JavaScript off,
+      blocked, or simply slow to load sees the prerendered content immediately
+      rather than a blank page. Inline and synchronous on purpose — a deferred
+      or external script would paint the unstyled state first.
+    -->
+    <script>
+      (function () {
+        var d = document.documentElement
+        d.classList.add('js')
+        // Dead-man's switch: if the app has not signalled that it mounted
+        // within 4s — a chunk 404s, a script error, an ad blocker eats the
+        // bundle — drop the class so the reveal styles stop hiding content and
+        // the prerendered page is simply readable. Cleared in src/main.jsx.
+        window.__thkReveal = setTimeout(function () { d.classList.remove('js') }, 4000)
+      })()
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!--
+      ============================================================
+      IMPORTANT: these static tags are what social platforms read.
+      ============================================================
+      WhatsApp, Facebook and Telegram crawlers do NOT execute JavaScript, so the
+      per-page <Seo> component (react-helmet-async) is invisible to them — only
+      what is literally in this file produces a link preview. That makes this
+      block the source of truth for shared links.
+
+      The image below MUST be an absolute https:// URL. Relative paths silently
+      produce a preview with no image, which is what the old build did: it
+      pointed at /og-image.jpg, a file that was never created.
+    -->
+
+    <title>Hari Krishna Talikota — Sri Kanaka Durga Devasthanam Board Member &amp; iTDP Telangana State President</title>
+    <meta name="description" content="Hari Krishna Talikota — Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada, and iTDP Telangana State President of the Telugu Desam Party. Temple service, regional development and Telugu cultural preservation." />
     <meta name="author" content="Hari Krishna Talikota" />
-    <meta name="robots" content="index, follow" />
-    <meta name="language" content="English" />
-    <meta name="revisit-after" content="7 days" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://harikrishnatalikota.com/" />
-    <meta property="og:title" content="Hari Krishna Talikota - iTDP Telangana State President" />
-    <meta property="og:description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President. Dedicated to Telugu pride, regional development, and good governance." />
-    <meta property="og:image" content="https://harikrishnatalikota.com/og-image.jpg" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <link rel="canonical" href="https://talikotaharikrishna.com/" />
+
+    <!-- Open Graph — WhatsApp / Facebook / LinkedIn / Telegram link preview -->
+    <meta property="og:type" content="profile" />
     <meta property="og:site_name" content="Hari Krishna Talikota Official" />
     <meta property="og:locale" content="en_IN" />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://harikrishnatalikota.com/" />
-    <meta property="twitter:title" content="Hari Krishna Talikota - iTDP Telangana State President" />
-    <meta property="twitter:description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President. Dedicated to Telugu pride and regional development." />
-    <meta property="twitter:image" content="https://harikrishnatalikota.com/twitter-image.jpg" />
-    <meta property="twitter:site" content="@THK_iTDP" />
-    <meta property="twitter:creator" content="@THK_iTDP" />
-    
-    <!-- Geo Tags -->
+    <meta property="og:url" content="https://talikotaharikrishna.com/" />
+    <meta property="og:title" content="Hari Krishna Talikota — Devasthanam Board Member &amp; iTDP Telangana State President" />
+    <meta property="og:description" content="Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri · iTDP Telangana State President, Telugu Desam Party." />
+    <meta property="og:image" content="https://talikotaharikrishna.com/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://talikotaharikrishna.com/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hari Krishna Talikota — Board Member, Sri Kanaka Durga Devasthanam, and iTDP Telangana State President" />
+    <meta property="profile:first_name" content="Hari Krishna" />
+    <meta property="profile:last_name" content="Talikota" />
+
+    <!-- X / Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@THK_iTDP" />
+    <meta name="twitter:creator" content="@THK_iTDP" />
+    <meta name="twitter:title" content="Hari Krishna Talikota — Devasthanam Board Member &amp; iTDP Telangana State President" />
+    <meta name="twitter:description" content="Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri · iTDP Telangana State President, Telugu Desam Party." />
+    <meta name="twitter:image" content="https://talikotaharikrishna.com/og-image.jpg" />
+    <meta name="twitter:image:alt" content="Hari Krishna Talikota — Devasthanam Board Member &amp; iTDP Telangana State President" />
+
+    <!-- Geo signals (local/regional search) -->
     <meta name="geo.region" content="IN-TG" />
     <meta name="geo.placename" content="Hyderabad, Telangana" />
     <meta name="geo.position" content="17.385044;78.486671" />
     <meta name="ICBM" content="17.385044, 78.486671" />
-    
-    <!-- Additional Meta Tags -->
+
     <meta name="theme-color" content="#FFD700" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HK Talikota" />
     <meta name="format-detection" content="telephone=yes" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://harikrishnatalikota.com/" />
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    
-    <!-- Preconnect to external resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    
-    <!-- Structured Data - Person Schema -->
+
+    <!--
+      Fonts are self-hosted from /fonts (generated by scripts/fetch-fonts.py).
+
+      They used to load from Google's CDN with the usual deferred-stylesheet
+      trick: media="print" onload="this.media='all'". That onload is an inline
+      event handler, and the production CSP is `script-src 'self'` with no
+      'unsafe-inline' — Chrome blocked the handler, the sheet stayed at
+      media="print", and EVERY webfont on the site silently fell back to
+      Georgia and system-ui. It only broke in production because localhost
+      never applies vercel.json's headers.
+
+      Self-hosting removes the cause: no inline handler to block, no
+      third-party DNS + TLS in the critical path, no visitor IPs sent to a
+      third party, and a CSP that needs no font or style exceptions at all.
+
+      crossorigin is required on the preloads even though these are
+      same-origin: fonts are always fetched in CORS mode, and without it the
+      preload is discarded and the file is downloaded a second time.
+    -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/playfair-display-800-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-400-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-600-latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+
+    <!--
+      Structured data. One connected graph rather than the previous two floating
+      islands: the Person, the party, the website and the temple role all
+      reference each other by @id, which is what lets Google build a Knowledge
+      Panel and answer entity queries about him.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Hari Krishna Talikota",
-      "alternateName": "Talikota Harikrishna",
-      "jobTitle": "iTDP Telangana State President",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Telugu Desam Party",
-        "url": "https://www.telugudesam.org"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Hyderabad",
-        "addressRegion": "Telangana",
-        "addressCountry": "IN"
-      },
-      "sameAs": [
-        "https://www.instagram.com/hari_krishna_talikota/",
-        "https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/",
-        "https://x.com/THK_iTDP"
-      ],
-      "description": "iTDP Telangana State President and Board Member of Sri Kanaka Durga Devasthanam, dedicated to Telugu pride and regional development."
-    }
-    </script>
-    
-    <!-- Structured Data - Political Organization -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "PoliticalOrganization",
-      "name": "iTDP Telangana",
-      "parentOrganization": {
-        "@type": "PoliticalOrganization",
-        "name": "Telugu Desam Party",
-        "foundingDate": "1982-03-29",
-        "founder": {
+      "@graph": [
+        {
           "@type": "Person",
-          "name": "N.T. Rama Rao"
+          "@id": "https://talikotaharikrishna.com/#person",
+          "name": "Hari Krishna Talikota",
+          "alternateName": ["Talikota Harikrishna", "Hari TDP", "Haranna"],
+          "jobTitle": ["Board Member, Sri Kanaka Durga Devasthanam", "iTDP Telangana State President"],
+          "description": "Hari Krishna Talikota is the iTDP Telangana State President of the Telugu Desam Party and a Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada. He works on regional development, good governance and Telugu cultural preservation in Telangana.",
+          "url": "https://talikotaharikrishna.com/",
+          "image": [
+            "https://talikotaharikrishna.com/photos/portrait-headshot-621.webp",
+            "https://talikotaharikrishna.com/photos/addressing-itdp-telangana-1200.webp",
+            "https://talikotaharikrishna.com/og-image.jpg"
+          ],
+          "nationality": { "@type": "Country", "name": "India" },
+          "knowsLanguage": ["te", "en"],
+          "disambiguatingDescription": "Talikota Hari Krishna, iTDP Telangana State President of the Telugu Desam Party and a serving Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada. He is a different person from Nandamuri Harikrishna (1956-2018), the TDP politician and actor, son of party founder N. T. Rama Rao.",
+          "knowsAbout": [
+            "Telugu Desam Party organisation in Telangana",
+            "Hindu temple administration and Devasthanam governance",
+            "Telugu language and cultural preservation",
+            "Information technology professionals' advocacy in Hyderabad",
+            "Regional development policy in Telangana"
+          ],
+          "worksFor": { "@id": "https://talikotaharikrishna.com/#party" },
+          "memberOf": { "@id": "https://talikotaharikrishna.com/#party" },
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "Politician",
+            "occupationLocation": { "@type": "State", "name": "Telangana" }
+          },
+          "affiliation": {
+            "@type": "Organization",
+            "@id": "https://talikotaharikrishna.com/#devasthanam",
+            "name": "Sri Durga Malleswara Swamy Varla Devasthanam",
+            "alternateName": "Sri Kanaka Durga Temple, Indrakeeladri",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Vijayawada",
+              "addressRegion": "Andhra Pradesh",
+              "addressCountry": "IN"
+            }
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Hyderabad",
+            "addressRegion": "Telangana",
+            "addressCountry": "IN"
+          },
+          "sameAs": [
+            "https://www.instagram.com/hari_krishna_talikota/",
+            "https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/",
+            "https://x.com/THK_iTDP",
+            "https://www.youtube.com/@TeamHaranna"
+          ]
+        },
+        {
+          "@type": "PoliticalParty",
+          "@id": "https://talikotaharikrishna.com/#party",
+          "name": "Telugu Desam Party",
+          "alternateName": "TDP",
+          "url": "https://www.telugudesam.org",
+          "foundingDate": "1982-03-29",
+          "founder": { "@type": "Person", "name": "N.T. Rama Rao" },
+          "areaServed": [
+            { "@type": "State", "name": "Telangana" },
+            { "@type": "State", "name": "Andhra Pradesh" }
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://talikotaharikrishna.com/#website",
+          "url": "https://talikotaharikrishna.com/",
+          "name": "Hari Krishna Talikota Official",
+          "inLanguage": "en-IN",
+          "publisher": { "@id": "https://talikotaharikrishna.com/#person" }
         }
-      },
-      "leader": {
-        "@type": "Person",
-        "name": "Hari Krishna Talikota"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Hyderabad",
-        "addressRegion": "Telangana",
-        "addressCountry": "IN"
-      }
+      ]
     }
     </script>
-    
-    <!-- Preload critical assets -->
-    <link rel="preload" as="style" href="/src/styles/index.css" />
   </head>
   <body>
     <div id="root"></div>
+    <!--
+      A scripting-disabled fallback block used to sit here. It was removed
+      because it had become both false and harmful: every route is prerendered
+      to static HTML, so the page reads perfectly with scripting off, and the
+      block asserted the opposite. Worse, its content is part of the document
+      for any parser that does not evaluate scripting, so it put a second
+      top-level heading on every prerendered page, competing with the real one
+      for the name this site exists to rank for.
+    -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

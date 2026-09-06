@@ -1,219 +1,316 @@
-import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { FaArrowRight, FaUsers, FaHandshake, FaHeart, FaBullhorn } from 'react-icons/fa'
+import { FaArrowRight } from 'react-icons/fa6'
+import Seo from '../components/Seo'
+import Reveal from '../components/Reveal'
+import Picture from '../components/Picture'
+import { site, party, focusAreas, temple, roles } from '../data/site'
+import { photos, gallery } from '../data/photos'
 
 const Home = () => {
-  const stats = [
-    { number: '10+', label: 'Years of Service', icon: FaUsers },
-    { number: '1000+', label: 'Community Events', icon: FaHandshake },
-    { number: '50K+', label: 'Lives Impacted', icon: FaHeart },
-    { number: '100%', label: 'Dedication', icon: FaBullhorn },
-  ]
 
-  const focusAreas = [
-    {
-      title: 'Economic Development',
-      description: 'Promoting industrial growth and creating employment opportunities for the youth of Telangana.',
-    },
-    {
-      title: 'Good Governance',
-      description: 'Ensuring transparency, accountability, and citizen-centric services in administration.',
-    },
-    {
-      title: 'Social Welfare',
-      description: 'Supporting education, healthcare, and empowerment programs for all communities.',
-    },
-    {
-      title: 'Telugu Cultural Pride',
-      description: 'Preserving Telugu language, culture, and heritage while embracing progress.',
-    },
-  ]
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: { '@id': `${site.url}/#person` },
+  }
+
+
+  const featured = gallery.filter((g) => ['party', 'temple'].includes(g.group)).slice(0, 4)
 
   return (
     <>
-      <Helmet>
-        <title>Home - Hari Krishna Talikota | iTDP Telangana State President</title>
-        <meta name="description" content="Official website of Hari Krishna Talikota, iTDP Telangana State President. Dedicated to Telugu pride, regional development, and good governance." />
-      </Helmet>
+      {/* No title prop: the homepage takes the full descriptive title. */}
+      <Seo description={site.description} schema={schema} />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-white pt-20">
-        <div className="container-custom relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="order-2 lg:order-1"
+      {/* ================= HERO =================
+          Split: type on the left, a 4:3 photograph on the right. The previous
+          full-bleed treatment cropped him to a zoomed face and forced the
+          header to float over the image; this keeps the whole podium frame
+          visible and lets the header stay a solid yellow bar. */}
+      <section className="relative overflow-hidden bg-ink-950">
+        <div className="container-custom relative py-14 lg:py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="on-dark lg:col-span-6 xl:col-span-5">
+              <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
+                {site.location.region} · {party.name}
+              </Reveal>
+
+              {/* Both names at the same size and weight — the surname is not a
+                  lesser line. The gold rule sits under the pair. */}
+              <Reveal as="h1" delay={0.14} className="relative mt-7 inline-block">
+                {/* One text node, broken visually rather than structurally.
+                    Two sibling <span class="block"> elements serialise with no
+                    separator, so every crawler that does not apply CSS — GPTBot,
+                    ClaudeBot, PerplexityBot, CCBot and every naive tag-stripper —
+                    read this h1 as the single token "HariKrishnaTalikota". The
+                    whole site exists to rank for this name and its strongest
+                    on-page element was malformed. Browsers rendered it correctly,
+                    so it never showed up in visual QA. */}
+                <span className="block font-display text-hero text-white">
+                  Hari Krishna <span className="lg:block">Talikota</span>
+                </span>
+                <span
+                  className="mt-4 block h-[5px] w-28 bg-brand-500 sm:w-36"
+                  aria-hidden="true"
+                />
+              </Reveal>
+
+              {/* Both offices, temple seat first. */}
+              <Reveal delay={0.23} className="mt-8 space-y-4">
+                {roles.map((r) => (
+                  <div key={r.title} className="border-l-2 border-brand-500 pl-5">
+                    <p className="font-sans text-base font-semibold text-white sm:text-lg">
+                      {r.title}
+                    </p>
+                    <p className="mt-0.5 text-sm text-white/70">{r.org}</p>
+                  </div>
+                ))}
+              </Reveal>
+
+              <Reveal delay={0.32} className="mt-10 flex flex-wrap gap-3">
+                <Link to="/community" className="btn-brand">
+                  Temple Service <FaArrowRight aria-hidden="true" />
+                </Link>
+                <Link to="/political" className="btn-ghost-light">
+                  Political Leadership
+                </Link>
+              </Reveal>
+            </div>
+
+            <Reveal
+              variant="fade"
+              delay={0.2}
+              className="lg:col-span-6 lg:col-start-7 xl:col-span-7"
             >
-              <div className="relative w-full max-w-lg mx-auto">
-                <div className="absolute inset-0 bg-tdp-yellow rounded-3xl blur-3xl opacity-20"></div>
-                <img
-                  src="https://scontent.fhyd11-1.fna.fbcdn.net/v/t39.30808-6/365503769_645869240981296_7055762961202094926_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=TymTDWravgkQ7kNvwGA1Z6e&_nc_oc=Adq0w-johTaXMRf8bdpdT_kbmE3oyyP9F4A8FaBhb6LMlJxvRFFUlzl3Z2tyLqL-wcaqefpvKBE7ar7ZOQ_pVCM2&_nc_zt=23&_nc_ht=scontent.fhyd11-1.fna&_nc_gid=DUb53rCeUCW5sctkghSLRA&_nc_ss=7b289&oh=00_Af7n6mtvqR4QQIPdZyzIH-7X3IAj3YODOgXjlu3kYvz0JA&oe=6A05FBC0"
-                  alt="Hari Krishna Talikota"
-                  className="relative rounded-3xl w-full shadow-2xl border-8 border-tdp-yellow"
+              <div className="relative">
+                <Picture
+                  photo={photos.hero}
+                  priority
+                  rounded=""
+                  aspect="4 / 3"
+                  sizes="(max-width: 1024px) 92vw, 55vw"
+                  className="shadow-frame"
+                />
+                {/* Offset yellow rule — a small piece of structure so the photo
+                    reads as placed rather than dropped in. */}
+                <span
+                  className="absolute -bottom-3 -right-3 hidden h-24 w-24 border-b-4 border-r-4 border-brand-500 lg:block"
+                  aria-hidden="true"
                 />
               </div>
-            </motion.div>
-
-            {/* Text Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="order-1 lg:order-2 text-center lg:text-left"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="inline-block mb-6"
-              >
-                <span className="bg-tdp-yellow text-gray-900 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wide">
-                  iTDP Telangana State President
-                </span>
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-gray-900 mb-6"
-              >
-                Hari Krishna
-                <span className="block text-tdp-yellow">Talikota</span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.6 }}
-                className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8"
-              >
-                Serving Telangana with Dedication. Committed to Telugu Pride, Regional Development, and Good Governance.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
-                className="flex flex-wrap gap-4 justify-center lg:justify-start"
-              >
-                <Link to="/political" className="bg-tdp-yellow text-gray-900 font-bold py-4 px-8 rounded-full hover:bg-tdp-dark-yellow transition-all duration-300 hover:shadow-xl inline-flex items-center gap-2">
-                  Political Vision <FaArrowRight />
-                </Link>
-                <Link to="/contact" className="border-2 border-tdp-yellow text-gray-900 font-bold py-4 px-8 rounded-full hover:bg-tdp-yellow transition-all duration-300 inline-flex items-center gap-2">
-                  Get Involved <FaArrowRight />
-                </Link>
-              </motion.div>
-            </motion.div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-tdp-yellow">
-        <div className="container-custom">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="text-center"
+      {/* ================= MISSION PULL-QUOTE =================
+          Set as an actual quotation at display size, not another centred card. */}
+      <section className="section bg-white">
+        <div className="container-text">
+          <Reveal>
+            <p className="eyebrow">Mission</p>
+            {/* Sized as a quotation, not a headline. `text-display` is tuned
+                for three or four words; a sixty-word mission statement at that
+                size fills an entire screen and stops being readable. */}
+            <blockquote className="relative mt-8">
+              <span
+                className="absolute -left-1 -top-8 font-display text-[5rem] leading-none text-brand-700 sm:-left-8 sm:-top-6 sm:text-[7rem]"
+                aria-hidden="true"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full text-tdp-yellow text-2xl mb-4">
-                  <stat.icon />
-                </div>
-                <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">{stat.number}</h3>
-                <p className="text-gray-800 font-semibold">{stat.label}</p>
-              </motion.div>
-            ))}
+                “
+              </span>
+              <p className="relative font-display text-[clamp(1.35rem,1.05rem+1.5vw,2.3rem)] font-semibold leading-[1.35] tracking-[-0.015em] text-ink-900">
+                {site.mission}
+              </p>
+            </blockquote>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ================= TEMPLE — LEAD ROLE =================
+          Full-bleed split. The temple seat gets the first and largest block. */}
+      <section className="relative bg-ink-950">
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-[22rem] lg:min-h-[42rem]">
+            <Picture
+              photo={photos.community}
+              rounded=""
+              aspect="auto"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="!absolute inset-0 h-full w-full"
+            />
           </div>
-        </div>
-      </section>
 
-      {/* Mission Statement */}
-      <section className="py-20 bg-white">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Mission</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-8"></div>
-            <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
-              Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Focus Areas */}
-      <section className="py-20 bg-gray-50">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Political Focus Areas</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-6"></div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Working towards comprehensive development and prosperity for all citizens of Telangana
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {focusAreas.map((area, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-t-4 border-tdp-yellow"
+          <div className="on-dark flex items-center px-6 py-16 sm:px-10 lg:px-16 lg:py-24">
+            <Reveal className="max-w-xl">
+              <p className="label-rule !text-brand-400 before:!bg-brand-500">
+                Devasthanam Board
+              </p>
+              <h2 className="mt-7 font-display text-title text-white">
+                Board Member, Sri Kanaka Durga Devasthanam
+              </h2>
+              <p className="mt-6 text-lead text-white/70">{temple.intro}</p>
+              <p className="mt-5 text-white/60">
+                The Devasthanam at Indrakeeladri in Vijayawada is one of South India’s most
+                visited Shakti Peethas, drawing millions of devotees each year. Board service
+                covers temple administration, financial stewardship, devotee facilities and the
+                continuity of tradition.
+              </p>
+              <Link
+                to="/community"
+                className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{area.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{area.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-tdp-yellow">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Join Our Movement</h2>
-            <p className="text-xl text-gray-800 mb-8">
-              Be part of the change. Together, we can build a prosperous and inclusive Telangana that honors our heritage while embracing progress.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="bg-white text-gray-900 font-bold py-4 px-8 rounded-full hover:bg-gray-100 transition-all duration-300 hover:shadow-xl inline-flex items-center gap-2">
-                Get Involved <FaArrowRight />
+                The board’s work
+                <FaArrowRight
+                  className="transition-transform duration-300 group-hover:translate-x-1.5"
+                  aria-hidden="true"
+                />
               </Link>
-              <Link to="/about" className="border-2 border-white text-gray-900 font-bold py-4 px-8 rounded-full hover:bg-white transition-all duration-300 inline-flex items-center gap-2">
-                Learn More <FaArrowRight />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= POLITICAL ROLE ================= */}
+      <section className="relative bg-white">
+        <div className="grid lg:grid-cols-2">
+          <div className="on-brand order-2 flex items-center bg-brand-500 px-6 py-16 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
+            <Reveal className="max-w-xl">
+              <p className="label-rule !text-ink-800 before:!bg-ink-900/40">Party Office</p>
+              <h2 className="mt-7 font-display text-title text-ink-900">
+                iTDP Telangana State President
+              </h2>
+              <p className="mt-6 text-lead text-ink-800">
+                Leading the Telugu Desam Party’s organisation across Telangana — building
+                membership, representing citizens’ interests, and carrying forward the founding
+                principles set by N.T. Rama Rao.
+              </p>
+              <Link
+                to="/political"
+                className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900 transition-opacity hover:opacity-70"
+              >
+                Political vision
+                <FaArrowRight
+                  className="transition-transform duration-300 group-hover:translate-x-1.5"
+                  aria-hidden="true"
+                />
+              </Link>
+            </Reveal>
+          </div>
+
+          <div className="relative order-1 min-h-[22rem] lg:order-2 lg:min-h-[42rem]">
+            <Picture
+              photo={photos.political}
+              rounded=""
+              aspect="auto"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="!absolute inset-0 h-full w-full"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ================= FOCUS AREAS =================
+          A numbered editorial list. The icon-in-a-rounded-tile grid this
+          replaces is the single most template-looking pattern on the web. */}
+      <section className="section bg-white">
+        <div className="container-custom">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">Focus Areas</p>
+            <h2 className="mt-5 font-display text-display">
+              Where the work is directed
+            </h2>
+          </Reveal>
+
+          <ul className="mt-14 border-t hairline">
+            {focusAreas.map((area, i) => (
+              <Reveal
+                as="li"
+                key={area.slug}
+                delay={Math.min(i, 5) * 0.05}
+                className="border-b hairline"
+              >
+                <Link
+                  to="/political"
+                  className="group grid items-baseline gap-x-8 gap-y-2 py-8 sm:grid-cols-[4rem_1fr] lg:grid-cols-[5rem_20rem_1fr] lg:py-10"
+                >
+                  <span className="index-num transition-colors duration-300 group-hover:text-brand-700" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="font-display text-headline text-ink-900 transition-transform duration-500 ease-out group-hover:translate-x-1">
+                    {area.title}
+                  </h3>
+                  <p className="text-ink-600 sm:col-span-2 lg:col-span-1 lg:pt-1">
+                    {area.summary}
+                  </p>
+                </Link>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ================= PHOTO STRIP ================= */}
+      <section className="bg-ink-950 py-20 lg:py-28">
+        <div className="on-dark container-custom">
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">In Pictures</p>
+              <h2 className="mt-5 font-display text-display text-white">Recent activity</h2>
+            </div>
+            <Link
+              to="/media"
+              className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
+            >
+              Full gallery
+              <FaArrowRight
+                className="transition-transform duration-300 group-hover:translate-x-1.5"
+                aria-hidden="true"
+              />
+            </Link>
+          </Reveal>
+
+          <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.map((item, i) => (
+              <Reveal as="li" key={item.slug} delay={i * 0.07}>
+                <Link to="/media" className="group block">
+                  <div className="overflow-hidden">
+                    <Picture
+                      photo={item}
+                      aspect="1 / 1"
+                      rounded=""
+                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 22vw"
+                      imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
+                    />
+                  </div>
+                  <p className="mt-4 text-sm leading-snug text-white/65 transition-colors group-hover:text-white">
+                    {item.caption}
+                  </p>
+                </Link>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ================= CTA ================= */}
+      <section className="section bg-white">
+        <div className="container-text text-center">
+          <Reveal>
+            <h2 className="font-display text-display">Join the movement</h2>
+            <p className="mx-auto mt-6 max-w-xl text-lead text-ink-600">
+              Be part of the change. Together we can build a prosperous, inclusive Telangana
+              that honours its heritage while embracing progress.
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <Link to="/contact" className="btn-primary">
+                Contact the office <FaArrowRight aria-hidden="true" />
+              </Link>
+              <Link to="/about" className="btn-outline">
+                About Hari Krishna
               </Link>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
     </>

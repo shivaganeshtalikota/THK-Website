@@ -1,250 +1,419 @@
-import { Helmet } from 'react-helmet-async'
-import { motion } from 'framer-motion'
-import { FaNewspaper, FaImage, FaVideo, FaInstagram, FaFacebook, FaTwitter } from 'react-icons/fa'
+import { useState, useCallback, useEffect, useMemo } from 'react'
+import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
+import { FaArrowRight, FaRegNewspaper, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
+import Seo from '../components/Seo'
+import PageHero from '../components/PageHero'
+import Reveal from '../components/Reveal'
+import Picture from '../components/Picture'
+import { site, social, updates } from '../data/site'
+import { photos, gallery, galleryGroups } from '../data/photos'
+import { videos, channel } from '../data/videos'
+
+const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
+
+const formatDate = (iso) =>
+  new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+
+/**
+ * Shown while `updates` is empty. The original build filled this space with
+ * four invented press events carrying real-looking dates. An empty newsroom
+ * that points to the live feeds is honest and still useful.
+ */
+const EmptyNewsroom = () => (
+  <Reveal className="border-y hairline py-16 text-center">
+    <span className="mx-auto grid h-12 w-12 place-items-center text-xl text-ink-500">
+      <FaRegNewspaper aria-hidden="true" />
+    </span>
+    <h3 className="mt-5 font-display text-headline text-ink-900">
+      Press releases will appear here
+    </h3>
+    <p className="mx-auto mt-2.5 max-w-md text-sm leading-relaxed text-ink-600">
+      Dated statements and announcements will be published on this page. The photo
+      gallery below records recent activity, and the social channels carry the most
+      current updates.
+    </p>
+    <a
+      href={social.find((s) => s.name === 'X')?.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="btn-primary mt-8"
+    >
+      Latest on X<span className="sr-only"> (opens in a new tab)</span>
+      <FaArrowRight aria-hidden="true" />
+    </a>
+  </Reveal>
+)
+
+/** Full-screen viewer. Keyboard-navigable and focus-trapped at the edges. */
+const Lightbox = ({ items, index, onClose, onStep }) => {
+  const item = items[index]
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') onStep(1)
+      if (e.key === 'ArrowLeft') onStep(-1)
+    }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [onClose, onStep])
+
+  if (!item) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex flex-col bg-ink-950/95 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Photo ${index + 1} of ${items.length}: ${item.caption}`}
+    >
+      <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <p className="font-sans text-micro uppercase text-brand-400">
+          {index + 1} / {items.length}
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          autoFocus
+          className="grid h-11 w-11 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Close photo viewer"
+        >
+          <FaXmark size={20} aria-hidden="true" />
+        </button>
+      </div>
+
+      <div className="flex min-h-0 flex-1 items-center gap-2 px-2 sm:px-4">
+        <button
+          type="button"
+          onClick={() => onStep(-1)}
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Previous photo"
+        >
+          <FaChevronLeft aria-hidden="true" />
+        </button>
+
+        <figure className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4">
+          <img
+            src={`/photos/${item.slug}-1200.webp`}
+            onError={(e) => {
+              e.currentTarget.src = item.src
+            }}
+            alt={item.alt}
+            className="max-h-[62vh] w-auto max-w-full object-contain"
+          />
+          <figcaption className="max-w-2xl px-2 text-center">
+            <p className="text-sm font-medium text-white sm:text-base">{item.caption}</p>
+            {item.telugu && (
+              <p lang="te" className="mt-2 text-xs leading-relaxed text-white/60">
+                {item.telugu}
+              </p>
+            )}
+          </figcaption>
+        </figure>
+
+        <button
+          type="button"
+          onClick={() => onStep(1)}
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Next photo"
+        >
+          <FaChevronRight aria-hidden="true" />
+        </button>
+      </div>
+      <div className="h-4" />
+    </div>
+  )
+}
 
 const Media = () => {
-  const mediaCategories = [
-    {
-      icon: FaNewspaper,
-      title: 'Political News',
-      description: 'Latest updates on TDP activities, policy announcements, and political initiatives',
-      color: 'from-tdp-yellow to-tdp-dark-yellow',
-    },
-    {
-      icon: FaImage,
-      title: 'Photo Gallery',
-      description: 'Visual documentation of events, public meetings, and community service activities',
-      color: 'from-tdp-yellow to-tdp-dark-yellow',
-    },
-    {
-      icon: FaVideo,
-      title: 'Video Content',
-      description: 'Speeches, interviews, event coverage, and public announcements',
-      color: 'from-tdp-yellow to-tdp-dark-yellow',
-    },
-  ]
+  const [group, setGroup] = useState('all')
+  const [lightbox, setLightbox] = useState(null)
 
-  const recentUpdates = [
-    {
-      date: 'May 8, 2026',
-      title: 'Public Meeting in Hyderabad',
-      description: 'Addressed key issues facing Telangana citizens and outlined development plans for the region.',
-    },
-    {
-      date: 'May 5, 2026',
-      title: 'TDP State Committee Meeting',
-      description: 'Participated in strategic planning session with party leadership to discuss upcoming initiatives.',
-    },
-    {
-      date: 'May 1, 2026',
-      title: 'Community Outreach Program',
-      description: 'Visited local communities to understand their concerns and provide support for various issues.',
-    },
-    {
-      date: 'April 28, 2026',
-      title: 'Temple Board Meeting',
-      description: 'Reviewed temple operations and discussed improvements for devotee services at Kanaka Durga Temple.',
-    },
-  ]
+  const shown = useMemo(
+    () => (group === 'all' ? gallery : gallery.filter((g) => g.group === group)),
+    [group]
+  )
 
-  const socialLinks = [
-    {
-      icon: FaInstagram,
-      name: 'Instagram',
-      handle: '@hari_krishna_talikota',
-      url: 'https://www.instagram.com/hari_krishna_talikota',
-      color: 'from-tdp-yellow to-tdp-dark-yellow',
-      followers: '10K+',
-    },
-    {
-      icon: FaFacebook,
-      name: 'Facebook',
-      handle: 'Talikota Harikrishna',
-      url: 'https://www.facebook.com/p/Talikota-Harikrishna-100066746782661',
-      color: 'from-tdp-yellow to-tdp-dark-yellow',
-      followers: '25K+',
-    },
-    {
-      icon: FaTwitter,
-      name: 'Twitter',
-      handle: '@THK_iTDP',
-      url: 'https://x.com/THK_iTDP',
-      color: 'from-tdp-yellow to-tdp-dark-yellow',
-      followers: '15K+',
-    },
-  ]
+  const step = useCallback(
+    (delta) => setLightbox((i) => (i === null ? i : (i + delta + shown.length) % shown.length)),
+    [shown.length]
+  )
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Media & Updates',
+    url: `${site.url}/media`,
+    about: { '@id': `${site.url}/#person` },
+    // Surfacing the gallery as ImageObjects gives Google Images real captions
+    // to index against, which is a large share of political-name search traffic.
+    hasPart: gallery.slice(0, 12).map((g) => ({
+      '@type': 'ImageObject',
+      contentUrl: `${site.url}/photos/${g.slug}-1200.webp`,
+      caption: g.caption,
+      creditText: `${site.name} official`,
+    })),
+  }
 
   return (
     <>
-      <Helmet>
-        <title>Media & Updates - Hari Krishna Talikota | Latest News and Announcements</title>
-        <meta name="description" content="Stay updated with the latest news, photos, videos, and announcements from Hari Krishna Talikota's political and community service activities." />
-      </Helmet>
+      <Seo
+        title="Photo Gallery & Updates"
+        description="Photographs and video from Hari Krishna Talikota’s political and temple service work across Telangana and Andhra Pradesh."
+        schema={schema}
+      />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center justify-center bg-tdp-yellow text-gray-900 pt-20">
-        <div className="container-custom relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">Media & Updates</h1>
-            <p className="text-xl md:text-2xl max-w-3xl mx-auto font-semibold text-gray-800">
-              Stay Connected with Latest News, Events, and Announcements
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Media & Updates"
+        title="In pictures"
+        lead="Party events, constituency programmes, temple service and Telugu cultural celebrations."
+        photo={photos.bannerMedia}
+      />
 
-      {/* Media Categories */}
-      <section className="section-padding bg-gray-50">
+      {/* ---- Gallery ------------------------------------------------------- */}
+      <section className="section bg-white">
         <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="section-title">Content Categories</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-6"></div>
-            <p className="section-subtitle">
-              Explore different types of media content and stay informed
-            </p>
-          </motion.div>
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">Photo Gallery</p>
+            <h2 className="mt-5 font-display text-display">Recent activity</h2>
+          </Reveal>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {mediaCategories.map((category, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white rounded-2xl shadow-lg p-8 hover-lift text-center border-t-4 border-tdp-yellow"
-              >
-                <div className={`w-20 h-20 bg-gradient-to-br ${category.color} rounded-full flex items-center justify-center text-gray-900 text-4xl mx-auto mb-6`}>
-                  <category.icon />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-3">{category.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{category.description}</p>
-              </motion.div>
+          {/* Filters */}
+          <Reveal delay={0.05}>
+            <div
+              className="mt-9 flex flex-wrap gap-2"
+              role="group"
+              aria-label="Filter photographs by category"
+            >
+              {galleryGroups.map((g) => {
+                const active = group === g.id
+                const count =
+                  g.id === 'all' ? gallery.length : gallery.filter((x) => x.group === g.id).length
+                if (!count) return null
+                return (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => {
+                      setGroup(g.id)
+                      setLightbox(null)
+                    }}
+                    aria-pressed={active}
+                    className={`rounded-sm px-4 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                      active
+                        ? 'bg-ink-900 text-white'
+                        : 'border border-ink-200 text-ink-600 hover:border-ink-900 hover:text-ink-900'
+                    }`}
+                  >
+                    {g.label}
+                    <span className="ml-1.5 opacity-60">{count}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </Reveal>
+
+          {/* Grid */}
+          {/* Masonry, not a grid. The set spans 0.56 to 2.22 native — a 3.9x
+              spread — so a single box shape cannot hold it: at 4:3 the
+              Balakrishna portrait lost 58% of its height, cutting out both the
+              NTR portrait above the two men and their heads below, and the
+              bonam photograph lost the pot the picture is actually about.
+              Columns let every photograph keep its own ratio. */}
+          <ul className="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3">
+            {shown.map((item, i) => (
+              <Reveal as="li" key={item.slug} delay={Math.min(i, 6) * 0.05} className="mb-4 break-inside-avoid">
+                <button
+                  type="button"
+                  onClick={() => setLightbox(i)}
+                  className="group block w-full text-left"
+                  aria-label={`Open photo: ${item.caption}`}
+                >
+                  <Picture
+                    photo={item}
+                    rounded=""
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 416px"
+                    imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
+                  />
+                  <p className="mt-3 text-sm font-medium leading-snug text-ink-800">
+                    {item.caption}
+                  </p>
+                  {item.telugu && (
+                    <p lang="te" className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-500">
+                      {item.telugu}
+                    </p>
+                  )}
+                </button>
+              </Reveal>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* Recent Updates */}
-      <section className="section-padding bg-white">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="section-title">Recent Updates</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-6"></div>
-            <p className="section-subtitle">
-              Latest activities and announcements from our political and community work
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {recentUpdates.map((update, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white rounded-2xl shadow-lg p-8 hover-lift border-t-4 border-tdp-yellow"
-              >
-                <div className="bg-tdp-yellow text-gray-900 px-4 py-2 rounded-full text-sm font-semibold inline-block mb-4">
-                  {update.date}
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-3">{update.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{update.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Social Media */}
-      <section className="section-padding bg-gray-50">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="section-title">Follow on Social Media</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-6"></div>
-            <p className="section-subtitle">
-              Stay connected and get real-time updates on all platforms
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {socialLinks.map((social, index) => (
-              <motion.a
-                key={index}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white rounded-2xl shadow-lg p-8 hover-lift text-center group border-t-4 border-tdp-yellow"
-              >
-                <div className={`w-24 h-24 bg-gradient-to-br ${social.color} rounded-full flex items-center justify-center text-gray-900 text-5xl mx-auto mb-6 group-hover:scale-110 transition-transform`}>
-                  <social.icon />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">{social.name}</h3>
-                <p className="text-gray-600 mb-3">{social.handle}</p>
-                <div className="inline-block bg-tdp-yellow px-4 py-2 rounded-full">
-                  <span className="text-sm font-semibold text-gray-900">{social.followers} Followers</span>
-                </div>
-              </motion.a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter CTA */}
-      <section className="section-padding bg-tdp-yellow text-gray-900">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-2xl mx-auto text-center space-y-6"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold">Stay Informed</h2>
-            <p className="text-xl text-gray-800 font-semibold">
-              Subscribe to receive updates about political activities, community events, and important announcements directly to your inbox.
-            </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto pt-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-6 py-3 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 border-2 border-gray-900"
-                required
+      {/* ---- Videos --------------------------------------------------------- */}
+      <section className="section bg-ink-950">
+        <div className="on-dark container-custom">
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Video</p>
+              <h2 className="mt-5 font-display text-display text-white">
+                From the official channel
+              </h2>
+            </div>
+            <a
+              href={channel.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
+            >
+              {channel.handle}
+              <span className="sr-only"> on YouTube (opens in a new tab)</span>
+              <FaArrowRight
+                className="transition-transform duration-300 group-hover:translate-x-1.5"
+                aria-hidden="true"
               />
-              <button type="submit" className="bg-gray-900 text-white font-semibold py-3 px-8 rounded-full hover:bg-gray-800 transition-all whitespace-nowrap">
-                Subscribe
-              </button>
-            </form>
-          </motion.div>
+            </a>
+          </Reveal>
+
+          <ul className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {videos.slice(0, 9).map((v, i) => (
+              <Reveal as="li" key={v.id} delay={Math.min(i, 5) * 0.05}>
+                <a
+                  href={`https://www.youtube.com/watch?v=${v.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block"
+                >
+                  <div className="relative overflow-hidden bg-ink-800">
+                    <img
+                      src={`/photos/video/${v.id}.webp`}
+                      alt=""
+                      width="640"
+                      height="360"
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-video w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
+                    />
+                    <span
+                      className="absolute inset-0 grid place-items-center bg-ink-950/25 transition-colors group-hover:bg-ink-950/10"
+                      aria-hidden="true"
+                    >
+                      <span className="grid h-14 w-14 place-items-center rounded-full bg-brand-500/95 text-ink-900 transition-transform duration-300 group-hover:scale-110">
+                        <FaPlay className="ml-0.5" />
+                      </span>
+                    </span>
+                  </div>
+                  <p className="mt-4 font-sans text-sm font-medium leading-snug text-white transition-colors group-hover:text-brand-300">
+                    {v.title}
+                    <span className="sr-only"> — watch on YouTube (opens in a new tab)</span>
+                  </p>
+                  {v.telugu && (
+                    <p lang="te" className="mt-1.5 line-clamp-2 text-xs text-white/55">
+                      {v.telugu}
+                    </p>
+                  )}
+                  <time dateTime={v.published} className="mt-2 block text-xs text-white/45">
+                    {formatDate(v.published)}
+                  </time>
+                </a>
+              </Reveal>
+            ))}
+          </ul>
         </div>
       </section>
+
+      {/* ---- Newsroom ------------------------------------------------------ */}
+      <section className="section bg-ink-50">
+        <div className="container-custom">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">Press Releases</p>
+            <h2 className="mt-5 font-display text-display">From the office</h2>
+          </Reveal>
+
+          <div className="mt-12">
+            {updates.length === 0 ? (
+              <EmptyNewsroom />
+            ) : (
+              <div className="grid gap-5 md:grid-cols-2">
+                {updates.map((update, i) => (
+                  <Reveal
+                    key={update.title}
+                    delay={i * 0.06}
+                    as="article"
+                    className="h-full border-t hairline pt-6"
+                  >
+                    <time
+                      dateTime={update.date}
+                      className="font-sans text-micro uppercase text-brand-800"
+                    >
+                      {formatDate(update.date)}
+                    </time>
+                    <h3 className="mt-3 font-display text-headline text-ink-900">
+                      {update.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-600">{update.summary}</p>
+                  </Reveal>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Social --------------------------------------------------------- */}
+      <section className="section bg-white">
+        <div className="container-custom">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">Follow Along</p>
+            <h2 className="mt-5 font-display text-display">Real-time updates on social</h2>
+          </Reveal>
+
+          <div className="mt-12 grid gap-5 sm:grid-cols-3">
+            {social.map((s, i) => {
+              const Glyph = socialIcons[s.name]
+              return (
+                <Reveal key={s.name} delay={i * 0.07}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer me"
+                    className="group flex h-full items-center gap-4 border-t hairline py-6 transition-colors hover:border-ink-900"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center bg-ink-900 text-base text-brand-400 transition-transform duration-300 group-hover:scale-105">
+                      <Glyph aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-display text-base font-semibold text-ink-900">
+                        {s.name}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </span>
+                      <span className="block truncate text-sm text-ink-500">{s.handle}</span>
+                    </span>
+                    <FaArrowRight
+                      className="ml-auto shrink-0 text-ink-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-brand-700"
+                      aria-hidden="true"
+                    />
+                  </a>
+                </Reveal>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {lightbox !== null && (
+        <Lightbox
+          items={shown}
+          index={lightbox}
+          onClose={() => setLightbox(null)}
+          onStep={step}
+        />
+      )}
     </>
   )
 }

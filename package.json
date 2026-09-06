@@ -1,25 +1,26 @@
 {
   "name": "hari-krishna-talikota-website",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "Official website for Hari Krishna Talikota - iTDP Telangana State President",
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "prebuild": "node scripts/generate-sitemap.js",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js && node scripts/check-csp-hash.js",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "photos": "python scripts/process-photos.py",
+    "assets": "python scripts/generate-assets.py",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "fonts": "python scripts/fetch-fonts.py",
+    "preview:prod": "node scripts/preview-prod.js"
   },
   "dependencies": {
-    "aos": "^2.3.4",
-    "framer-motion": "^11.0.5",
+    "@vercel/analytics": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-helmet-async": "^2.0.4",
     "react-icons": "^5.0.1",
-    "react-intersection-observer": "^9.8.1",
-    "react-router-dom": "^6.22.0",
-    "swiper": "^11.0.6"
+    "react-router-dom": "^6.22.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",

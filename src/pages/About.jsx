@@ -1,202 +1,220 @@
-import { Helmet } from 'react-helmet-async'
-import { motion } from 'framer-motion'
-import { FaAward, FaHandshake, FaHeart, FaUsers, FaGavel, FaChartLine } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { FaArrowRight } from 'react-icons/fa6'
+import Seo from '../components/Seo'
+import PageHero from '../components/PageHero'
+import Reveal from '../components/Reveal'
+import Picture from '../components/Picture'
+import { site, party, biography, values, responsibilities, roles, faqs } from '../data/site'
+import { photos } from '../data/photos'
 
 const About = () => {
-  const values = [
-    {
-      icon: FaGavel,
-      title: 'Integrity in Public Service',
-      description: 'Maintaining the highest standards of honesty and ethical conduct in all political activities.',
-    },
-    {
-      icon: FaUsers,
-      title: 'Service to Community',
-      description: 'Putting the needs of constituents first and working tirelessly for their welfare.',
-    },
-    {
-      icon: FaHandshake,
-      title: 'Transparency & Accountability',
-      description: 'Open communication and taking responsibility for all actions and decisions.',
-    },
-    {
-      icon: FaHeart,
-      title: 'Cultural Preservation',
-      description: 'Protecting and promoting Telugu language, culture, and heritage.',
-    },
-    {
-      icon: FaChartLine,
-      title: 'Development & Progress',
-      description: 'Driving economic growth and infrastructure development for a better future.',
-    },
-    {
-      icon: FaAward,
-      title: 'Good Governance',
-      description: 'Ensuring efficient, transparent, and citizen-centric administration.',
-    },
-  ]
+  const schema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'AboutPage',
+        name: `About ${site.name}`,
+        url: `${site.url}/about`,
+        mainEntity: { '@id': `${site.url}/#person` },
+      },
+      // FAQPage: gives search and AI answer engines explicit question/answer
+      // pairs about who he is, rather than leaving them to infer it from prose.
+      {
+        '@type': 'FAQPage',
+        '@id': `${site.url}/about#faq`,
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      },
+    ],
+  }
 
   return (
     <>
-      <Helmet>
-        <title>About - Hari Krishna Talikota | iTDP Telangana State President</title>
-        <meta name="description" content="Learn about Hari Krishna Talikota's journey, values, and commitment to serving the people of Telangana as iTDP State President." />
-      </Helmet>
+      <Seo
+        title="Biography & Public Service"
+        description="Biography of Hari Krishna Talikota — Board Member of the Sri Kanaka Durga Devasthanam, Indrakeeladri, and iTDP Telangana State President, TDP."
+        schema={schema}
+      />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center justify-center bg-tdp-yellow pt-20">
-        <div className="container-custom relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">About Hari Krishna Talikota</h1>
-            <p className="text-xl md:text-2xl text-gray-800 max-w-3xl mx-auto font-semibold">
-              A dedicated leader committed to serving the people of Telangana with integrity, passion, and vision
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="About"
+        title="A life in public service"
+        lead="Two offices, one commitment — to the traditions that shape Telugu life, and to the development that will carry it forward."
+        photo={photos.bannerAbout}
+      />
 
-      {/* Biography Section */}
-      <section className="section-padding bg-white">
-        <div className="container-custom max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="space-y-6"
-          >
-            <h2 className="text-4xl font-bold text-gray-900 text-center mb-8">Political Biography</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-8"></div>
-            
-            <div className="space-y-6 text-gray-700 leading-relaxed text-lg">
-              <p>
-                Hari Krishna Talikota is a dedicated political leader and community servant who has committed his life to advancing the interests of the Telugu people. As the iTDP Telangana State President, he leads the Telugu Desam Party's efforts in Telangana, working to promote development, good governance, and Telugu cultural pride.
-              </p>
-              
-              <p>
-                His commitment to public service extends beyond politics to his role as a Board Member of the prestigious Sri Kanaka Durga Devasthanam in Vijayawada, one of South India's most revered temples. This role reflects his deep commitment to preserving cultural and religious traditions while ensuring excellent service to millions of devotees.
-              </p>
-              
-              <p>
-                As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party's vision in Telangana. He is committed to the party's founding principles established by the legendary N.T. Rama Rao - Telugu pride, regional development, and good governance.
-              </p>
-              
-              <p>
-                His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana's citizens are heard at all levels of government.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Vision Section */}
-      <section className="section-padding bg-gray-50">
+      {/* ---- Biography ------------------------------------------------------ */}
+      <section className="section bg-white">
         <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto"
-          >
-            <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">Vision for Telangana</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-8"></div>
-            <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border-t-4 border-tdp-yellow">
-              <p className="text-xl text-gray-700 leading-relaxed text-center">
-                Hari Krishna envisions a Telangana that honors its rich Telugu heritage while embracing modern development. His focus is on creating economic opportunities for youth, improving infrastructure, ensuring good governance, and preserving the cultural identity that makes Telangana unique.
-              </p>
-            </div>
-          </motion.div>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-7">
+              <p className="eyebrow">Biography</p>
+              <div className="mt-8 space-y-6 text-lead text-ink-600">
+                <p className="first-letter:float-left first-letter:mr-3 first-letter:mt-1.5 first-letter:font-display first-letter:text-[4.2rem] first-letter:font-bold first-letter:leading-[0.75] first-letter:text-brand-700">
+                  {biography.intro}
+                </p>
+                <p>{biography.community}</p>
+                <p>{biography.journey}</p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.1} className="lg:col-span-5">
+              <div className="lg:sticky lg:top-28">
+                <Picture
+                  photo={photos.about}
+                  rounded=""
+                  sizes="(max-width: 1024px) 90vw, 400px"
+                  className="shadow-frame"
+                />
+                <dl className="mt-8 divide-y hairline border-y hairline">
+                  {[
+                    ...roles.map((r) => [r.title, r.org]),
+                    ['Party', `${party.name} (${party.abbr})`],
+                    ['Based in', `${site.location.locality}, ${site.location.region}`],
+                  ].map(([term, desc]) => (
+                    <div key={term} className="py-4">
+                      <dt className="font-sans text-micro uppercase text-ink-500">{term}</dt>
+                      <dd className="mt-1.5 text-sm font-medium text-ink-900">{desc}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* Core Values */}
-      <section className="section-padding bg-white">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="section-title">Core Values</h2>
-            <div className="w-24 h-1 bg-tdp-yellow mx-auto mb-6"></div>
-            <p className="section-subtitle">
-              The principles that guide every decision and action in service to the people
+      {/* ---- Vision --------------------------------------------------------- */}
+      <section className="bg-ink-950 py-24 lg:py-32">
+        <div className="on-dark container-text text-center">
+          <Reveal>
+            <p className="eyebrow">Vision for Telangana</p>
+            <p className="mt-8 font-display text-[clamp(1.35rem,1.05rem+1.5vw,2.3rem)] font-semibold leading-[1.35] tracking-[-0.015em] text-white">
+              {biography.vision}
             </p>
-          </motion.div>
+          </Reveal>
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {values.map((value, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-t-4 border-tdp-yellow"
+      {/* ---- Values --------------------------------------------------------- */}
+      <section className="section bg-white">
+        <div className="container-custom">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">Core Values</p>
+            <h2 className="mt-5 font-display text-display">The principles behind the work</h2>
+          </Reveal>
+
+          <div className="mt-14 grid gap-x-12 gap-y-11 sm:grid-cols-2 lg:grid-cols-3">
+            {values.map((value, i) => (
+              <Reveal
+                key={value.title}
+                delay={Math.min(i, 5) * 0.05}
+                className="border-t hairline pt-6"
               >
-                <div className="w-16 h-16 bg-tdp-yellow rounded-full flex items-center justify-center text-gray-900 text-3xl mx-auto mb-4">
-                  <value.icon />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{value.title}</h3>
-                <p className="text-gray-600 leading-relaxed text-center">{value.description}</p>
-              </motion.div>
+                <h3 className="font-display text-headline text-ink-900">{value.title}</h3>
+                <p className="mt-3 leading-relaxed text-ink-600">{value.description}</p>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* TDP Legacy */}
-      <section className="section-padding bg-tdp-yellow text-gray-900">
+      {/* ---- Responsibilities ----------------------------------------------- */}
+      <section className="section bg-ink-50">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-4xl font-bold mb-6">Carrying Forward NTR's Legacy</h2>
-              <div className="w-24 h-1 bg-gray-900 mx-auto mb-8"></div>
-              <p className="text-xl leading-relaxed mb-6 font-semibold text-gray-800">
-                The Telugu Desam Party was founded in 1982 by legendary actor and statesman N.T. Rama Rao (NTR) with the vision of promoting Telugu self-respect and regional development.
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <p className="eyebrow">The Party Office</p>
+              <h2 className="mt-5 font-display text-title">What the State President does</h2>
+              <p className="mt-6 text-ink-600">
+                As {site.secondaryRole}, the work spans organisation-building, representation,
+                and keeping the party answerable to the citizens it serves.
               </p>
-              <p className="text-lg leading-relaxed text-gray-800">
-                Under the current leadership of N. Chandrababu Naidu, the party continues to champion development-oriented governance and technological innovation. As iTDP Telangana State President, Hari Krishna upholds these founding principles while adapting to the modern needs of Telangana's citizens.
-              </p>
-            </motion.div>
+            </Reveal>
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="bg-white rounded-2xl p-8 shadow-lg"
-            >
-              <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">Party Principles</h3>
-              <ul className="grid md:grid-cols-2 gap-4">
-                {[
-                  'Telugu cultural identity and pride',
-                  'Economic development and industrialization',
-                  'Good governance and transparency',
-                  'Social welfare and inclusive growth',
-                  'Technology-driven administration',
-                  'Infrastructure development',
-                ].map((principle, index) => (
-                  <li key={index} className="flex items-start space-x-3 text-gray-700">
-                    <span className="w-2 h-2 bg-gray-900 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>{principle}</span>
+            <Reveal delay={0.1} className="lg:col-span-7">
+              <ul className="divide-y hairline border-y hairline">
+                {responsibilities.map((item, i) => (
+                  <li key={item} className="flex items-baseline gap-6 py-4">
+                    {/* brand-800, not brand-700: at 14px this is small text and
+                        brand-700 measures 3.99:1 against the ink-50 ground. */}
+                    <span
+                      className="font-display text-sm font-bold tabular-nums text-brand-800"
+                      aria-hidden="true"
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-ink-700">{item}</span>
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- FAQ ------------------------------------------------------------ */}
+      <section className="section bg-white">
+        <div className="container-custom">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-4">
+              <p className="eyebrow">Frequently Asked</p>
+              <h2 className="mt-5 font-display text-title">Common questions</h2>
+              <p className="mt-6 text-ink-600">
+                Straight answers about his roles, party and public service.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.1} className="lg:col-span-8">
+              <dl className="divide-y hairline border-y hairline">
+                {faqs.map((f) => (
+                  <div key={f.q} className="py-7">
+                    <dt className="font-display text-headline text-ink-900">{f.q}</dt>
+                    <dd className="mt-3 leading-relaxed text-ink-600">{f.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- NTR legacy ------------------------------------------------------ */}
+      <section className="bg-brand-500 py-24 lg:py-32">
+        <div className="on-brand container-custom">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <p className="label-rule !text-ink-800 before:!bg-ink-900/40">Party Heritage</p>
+              <h2 className="mt-7 font-display text-title text-ink-900">
+                Carrying forward NTR’s legacy
+              </h2>
+              <p className="mt-6 text-ink-800">{party.heritage}</p>
+              <Link to="/political" className="btn-outline mt-9">
+                Political leadership <FaArrowRight aria-hidden="true" />
+              </Link>
+            </Reveal>
+
+            <Reveal delay={0.1} className="lg:col-span-7">
+              <ul className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+                {party.principles.map((principle, i) => (
+                  <li key={principle} className="border-t border-ink-900/20 pt-4">
+                    {/* /70, not /60: composited over the party yellow, 60%
+                        black lands at 4.36:1 — just under the 4.5 small-text
+                        minimum. 70% clears it at 5.9:1. */}
+                    <span
+                      className="font-display text-sm font-bold tabular-nums text-ink-900/70"
+                      aria-hidden="true"
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="mt-1.5 font-medium leading-snug text-ink-900">{principle}</p>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
           </div>
         </div>
       </section>

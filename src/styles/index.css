@@ -2,209 +2,236 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #FFD700;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #FFC700;
-}
-
-/* Smooth Scroll */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Base Styles */
-body {
-  @apply font-body text-gray-800 antialiased;
-  overflow-x: hidden;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  @apply font-heading font-bold;
-}
-
-/* Custom Utilities */
-@layer utilities {
-  .bg-gradient-tdp {
-    background: linear-gradient(to right, #FFD700, #FFC700);
+@layer base {
+  :root {
+    --nav-h: 4.5rem;
   }
-  
-  .shadow-tdp {
-    box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--nav-h) + 1rem);
+    -webkit-text-size-adjust: 100%;
   }
-  
-  .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-2;
+
+  body {
+    @apply bg-white font-body text-ink-700 antialiased;
+    text-rendering: optimizeLegibility;
   }
-  
-  .section-padding {
-    @apply py-16 md:py-24 px-4 md:px-8;
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-ink-900;
+    text-wrap: balance;
   }
-  
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4;
+
+  p { text-wrap: pretty; }
+
+  /* Telugu runs in its own face — Inter has no Telugu coverage, so without
+     this the browser silently substitutes and the captions look broken.
+     Declared literally rather than via `@apply font-telugu`: @apply resolves
+     against the Tailwind config at build time, and a dev server started before
+     the family was added keeps a stale config, which fails the whole stylesheet
+     with "The `font-telugu` class does not exist". A plain declaration has no
+     such dependency. */
+  [lang='te'] {
+    font-family: 'Noto Sans Telugu', 'Noto Sans', sans-serif;
+    line-height: 1.7;
+  }
+
+  :focus-visible {
+    outline: 3px solid theme('colors.ink.900');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .on-dark :focus-visible { outline-color: theme('colors.brand.400'); }
+
+  ::selection { @apply bg-brand-500 text-ink-900; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-/* Custom Components */
 @layer components {
-  .btn-primary {
-    @apply bg-tdp-yellow text-gray-900 font-semibold py-3 px-8 rounded-full 
-           transition-all duration-300 hover:shadow-tdp hover:scale-105 
-           active:scale-95 inline-flex items-center gap-2;
+  .container-custom {
+    @apply mx-auto w-full max-w-[86rem] px-5 sm:px-8 lg:px-12;
   }
-  
-  .btn-secondary {
-    @apply bg-gray-900 text-white font-semibold py-3 px-8 rounded-full 
-           transition-all duration-300 hover:bg-gray-800 hover:shadow-lg 
-           active:scale-95 inline-flex items-center gap-2;
+
+  /* Narrower measure for editorial text blocks. */
+  .container-text {
+    @apply mx-auto w-full max-w-3xl px-5 sm:px-8;
   }
-  
-  .btn-outline {
-    @apply border-2 border-tdp-yellow text-gray-900 font-semibold py-3 px-8 
-           rounded-full transition-all duration-300 hover:bg-tdp-yellow 
-           active:scale-95 inline-flex items-center gap-2;
+
+  .section { @apply py-20 sm:py-24 lg:py-32; }
+
+  /* ---- Buttons ------------------------------------------------------- */
+  /* Square-ish, not pill. Pills at every size are a stock-kit signature. */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-sm px-7 py-4
+           font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em]
+           transition-all duration-300 ease-out
+           active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
   }
-  
-  .card {
-    @apply bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 
-           hover:shadow-2xl hover:-translate-y-1;
+
+  .btn-primary { @apply btn bg-ink-900 text-white hover:bg-ink-800; }
+  .btn-brand   { @apply btn bg-brand-500 text-ink-900 hover:bg-brand-400; }
+  .btn-outline { @apply btn border border-ink-900/25 text-ink-900 hover:border-ink-900 hover:bg-ink-900 hover:text-white; }
+  .btn-ghost-light {
+    @apply btn border border-white/30 text-white hover:border-white hover:bg-white hover:text-ink-900;
   }
-  
-  .section-title {
-    @apply text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900;
+
+  /* ---- Type ---------------------------------------------------------- */
+  .eyebrow {
+    @apply font-sans text-micro uppercase text-brand-800;
   }
-  
-  .section-subtitle {
-    @apply text-lg md:text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto;
+
+  .on-dark .eyebrow { @apply text-brand-400; }
+
+  .lede { @apply max-w-prose text-lead text-ink-600; }
+
+  /* A hairline + label, used instead of the repeated icon-in-a-tile motif. */
+  /* ink-500, not ink-400: at 11px this is small text and ink-400 measures
+     3.38:1 on white, under the 4.5 minimum. ink-500 is 6.4:1. */
+  .label-rule {
+    @apply flex items-center gap-4 font-sans text-micro uppercase text-ink-500
+           before:h-px before:w-8 before:bg-ink-300 before:content-[''];
   }
-  
+
   .nav-link {
-    @apply text-gray-700 hover:text-tdp-yellow transition-colors duration-300 
-           font-medium relative after:absolute after:bottom-0 after:left-0 
-           after:w-0 after:h-0.5 after:bg-tdp-yellow after:transition-all 
-           after:duration-300 hover:after:w-full;
+    @apply relative py-2 font-sans text-[0.82rem] font-medium text-ink-600
+           transition-colors duration-200
+           after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-0
+           after:bg-ink-900 after:transition-all after:duration-300
+           hover:text-ink-900 hover:after:w-full;
+  }
+
+  .nav-link-active { @apply text-ink-900 after:w-full after:bg-brand-600; }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100]
+           focus:bg-ink-900 focus:px-5 focus:py-3
+           focus:font-sans focus:text-sm focus:font-semibold focus:text-white;
+  }
+
+  /* Editorial number, used for ordered lists of policy areas. */
+  .index-num {
+    @apply font-display text-[2.6rem] font-bold leading-none text-brand-700;
   }
 }
 
-/* Animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+@layer components {
+  /**
+   * Entry and scroll reveals.
+   *
+   * TRANSITIONS, not animations, and the distinction matters. An
+   * `animation: … both` holds its `from` keyframe — opacity 0 — until the
+   * document timeline advances. If that clock never advances (a background
+   * tab, a throttled renderer, an embedded webview) the element stays
+   * invisible forever: it fails HIDDEN. A transition has no such state; when
+   * the class flips, the property takes its new value and merely interpolates
+   * if it can. Worst case the reveal is instant instead of smooth, so it fails
+   * VISIBLE.
+   *
+   * The whole thing is additionally gated on `.js`, set by an inline script in
+   * <head> before first paint and removed again by a timeout if the app never
+   * mounts. Without that class nothing is hidden at all, so a visitor with
+   * JavaScript off, blocked, or broken reads the prerendered page normally.
+   */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
   }
-  50% {
-    transform: translateY(-20px);
+
+  .js [data-reveal='fade'] {
+    transform: scale(0.985);
   }
-}
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Loading Animation */
-.loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #FFD700;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Parallax Effect */
-.parallax {
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-/* Image Overlay */
-.image-overlay {
-  @apply relative overflow-hidden;
-}
-
-.image-overlay::after {
-  content: '';
-  @apply absolute inset-0 bg-gradient-to-t from-black/70 to-transparent 
-         opacity-0 transition-opacity duration-300;
-}
-
-.image-overlay:hover::after {
-  @apply opacity-100;
-}
-
-/* Responsive Typography */
-@media (max-width: 640px) {
-  .section-title {
-    @apply text-3xl;
-  }
-  
-  .section-subtitle {
-    @apply text-base;
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
   }
 }
 
-/* Print Styles */
-@media print {
-  .no-print {
-    display: none !important;
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  /* Scrim for text sitting over photography.
+     On narrow screens the copy sits at the BOTTOM of a tall viewport, so an
+     angled left-to-right gradient leaves it on bare image — the type has to be
+     grounded from below instead. The angled version only makes sense once
+     there is horizontal room for a text column beside the subject. */
+  .scrim-left {
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 9, 0.95) 0%,
+      rgba(10, 10, 9, 0.80) 34%,
+      rgba(10, 10, 9, 0.42) 62%,
+      rgba(10, 10, 9, 0.28) 100%
+    );
   }
-}
 
-/* Accessibility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
+  @media (min-width: 1024px) {
+    .scrim-left {
+      background: linear-gradient(
+        100deg,
+        rgba(10, 10, 9, 0.94) 0%,
+        rgba(10, 10, 9, 0.86) 32%,
+        rgba(10, 10, 9, 0.45) 58%,
+        rgba(10, 10, 9, 0.18) 100%
+      );
+    }
+  }
 
-/* Focus Visible */
-*:focus-visible {
-  @apply outline-2 outline-offset-2 outline-tdp-yellow;
-}
+  /*
+   * Banner scrim. These numbers are measured, not chosen by eye.
+   *
+   * The previous curve fell to 0.05 alpha at 78% height, but PageHero's text
+   * stack (eyebrow + display h1 + lead) reaches about two thirds up the band —
+   * so the eyebrow and the top of the heading sat over almost bare photograph.
+   * scripts/audit-images.py composites this exact gradient over the real pixels
+   * of every banner and computes the WCAG contrast of white text against it.
+   * Five of six banners failed: the Community banner bottomed out at 1.31:1 on
+   * mobile, against the 4.5:1 AA threshold, which is why the white text
+   * disappeared into the photograph.
+   *
+   * The stop at 78% is the one that governs. 0.50 cleared every banner except
+   * Community on a phone — the temple gopuram is bright sky and the text stack
+   * fills 80% of a narrow band — so it is 0.60. Worst case across all five
+   * banners at both viewports is now 5.51:1 against the 4.5 threshold, with no
+   * pixel of any text area below it.
+   * Re-run the script after changing any banner photograph or this gradient.
+   */
+  /*
+   * Playfair Display's ink runs to about 1.33em, but text-display sets
+   * line-height 1.0 — so on any heading that wraps, the descenders of one line
+   * touch the capitals of the next. Applied here rather than on the token so
+   * single-line uses keep their tight setting.
+   */
+  .display-wrap {
+    line-height: 1.07;
+  }
 
-/* Selection */
-::selection {
-  @apply bg-tdp-yellow text-white;
-}
+  .scrim-bottom {
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 9, 0.94) 0%,
+      rgba(10, 10, 9, 0.72) 44%,
+      rgba(10, 10, 9, 0.60) 78%
+    );
+  }
 
-::-moz-selection {
-  @apply bg-tdp-yellow text-white;
+  .hairline { @apply border-ink-200; }
+  .hairline-dark { @apply border-white/10; }
 }
