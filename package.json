@@ -7,11 +7,13 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/generate-sitemap.js",
-    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js && node scripts/check-csp-hash.js",
     "preview": "vite preview",
     "photos": "python scripts/process-photos.py",
     "assets": "python scripts/generate-assets.py",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "fonts": "python scripts/fetch-fonts.py",
+    "preview:prod": "node scripts/preview-prod.js"
   },
   "dependencies": {
     "react": "^18.2.0",

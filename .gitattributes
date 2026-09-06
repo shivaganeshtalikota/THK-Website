@@ -1,0 +1,19 @@
+# Normalise line endings in the repository to LF.
+#
+# This is not cosmetic. The production CSP whitelists the inline <script> in
+# index.html by sha256 hash, and that hash is computed over the exact bytes —
+# newlines included. A Windows checkout with CRLF produces a different digest
+# than Vercel's Linux build, so a hash generated locally would be rejected in
+# production and the script silently blocked. Pinning eol=lf makes the digest
+# identical on every machine.
+*           text=auto eol=lf
+
+# Binary assets must never be touched by newline conversion.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.webp      binary
+*.ico       binary
+*.woff2     binary
+*.gif       binary
+*.pdf       binary

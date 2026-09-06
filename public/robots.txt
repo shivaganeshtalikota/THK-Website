@@ -51,4 +51,4 @@ Allow: /
 User-agent: meta-externalagent
 Allow: /
 
-Sitemap: https://harikrishnatalikota.com/sitemap.xml
+Sitemap: https://talikotaharikrishna.com/sitemap.xml

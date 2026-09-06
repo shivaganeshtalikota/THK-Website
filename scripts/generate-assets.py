@@ -147,66 +147,113 @@ def make_og():
 
 
 # ---------------------------------------------------------------- Favicons
+# Official Telugu Desam Party emblem, from the party's own site
+# (telugudesam.org). Vendored to public/tdp-logo.png so the build needs no
+# network and the asset is served same-origin — the CSP is `img-src 'self'`,
+# so a hotlinked logo would simply not render.
+TDP_LOGO = ROOT / "public" / "tdp-logo.png"
+TDP_YELLOW = (253, 216, 0)
+
+
+def _bicycle():
+    """
+    Cut the cycle symbol out of the party emblem.
+
+    The full emblem is the cycle on yellow above a red band reading TELUGU
+    DESAM PARTY. That band is the whole point at poster size and pure noise at
+    16px, where it collapses into two muddy stripes. The cycle alone is what
+    carries the identity in a browser tab.
+    """
+    im = Image.open(TDP_LOGO).convert("RGBA")
+    w, h = im.size
+    px = im.load()
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a > 200 and r < 90 and g < 90 and b < 90:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        raise SystemExit("no dark pixels in tdp-logo.png — is it the right image?")
+    pad = 4
+    box = (max(0, min(xs) - pad), max(0, min(ys) - pad),
+           min(w, max(xs) + pad), min(h, max(ys) + pad))
+    crop = im.crop(box).convert("RGB")
+
+    # Key the cycle out rather than pasting the cropped rectangle. The emblem's
+    # yellow is a subtle vertical gradient, so pasting the rectangle onto a flat
+    # yellow canvas left a visible seam where the two yellows met. Deriving an
+    # alpha mask from luminance keeps the anti-aliased stroke edges and drops
+    # the background entirely, so it composites cleanly onto any colour.
+    cw, ch = crop.size
+    cpx = crop.load()
+    lum = lambda p: 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
+    base = max(lum(cpx[0, 0]), lum(cpx[cw - 1, 0]), 1.0)  # background luminance
+    out = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+    opx = out.load()
+    for y in range(ch):
+        for x in range(cw):
+            a = (base - lum(cpx[x, y])) / base
+            opx[x, y] = (0, 0, 0, max(0, min(255, int(a * 255))))
+    return out
+
+
 def make_icons():
     """
-    Browser-tab icon: his face, not an "HK" monogram.
+    Browser-tab icon: the Telugu Desam Party cycle on party yellow.
 
-    A face at 16px is inevitably mushy, so the crop is tight — head filling the
-    frame — which is the only way a portrait stays recognisable at tab size. A
-    thin party-yellow border separates it from the browser chrome.
+    It replaced a tight crop of his face. A photograph cannot survive a 16px
+    tab — the head landed in roughly nine pixels and read as a brown smudge,
+    indistinguishable from any other photo favicon. The party emblem is the
+    opposite: two flat colours, one hard-edged silhouette, and a shape that
+    every voter in Andhra Pradesh and Telangana recognises instantly. It also
+    matches the site's yellow header, so tab and page read as one thing.
     """
     S = 512
-    src = ROOT / "public" / "photos" / "portrait-headshot-621.webp"
-    if src.exists():
-        p = Image.open(src).convert("RGB")
-        # Tight square centred on the head. The headshot is 3:4 with the face
-        # high and slightly right of centre, so the box is anchored on the face
-        # rather than the frame — a centred crop left him off to one side.
-        w, h = p.size
-        side = int(w * 0.74)
-        left = int(w * 0.55 - side / 2)
-        top = int(h * 0.02)
-        left = max(0, min(left, w - side))
-        img = p.crop((left, top, left + side, top + side)).resize((S, S), Image.LANCZOS)
-        img = img.convert("RGBA")
-        d = ImageDraw.Draw(img)
-        d.rectangle([0, 0, S - 1, S - 1], outline=BRAND, width=26)
-    else:
-        img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-        d = ImageDraw.Draw(img)
-        d.rounded_rectangle([0, 0, S, S], radius=104, fill=BRAND)
-        f = font("Montserrat-ExtraBold.ttf", 232)
-        box = d.textbbox((0, 0), "HK", font=f)
-        d.text(((S - (box[2] - box[0])) / 2 - box[0],
-                (S - (box[3] - box[1])) / 2 - box[1] - 6), "HK", font=f, fill=INK)
-        print("  (no portrait — monogram icon fallback)")
+    bike = _bicycle()
+
+    # Full-bleed rather than a rounded tile: browsers, OSes and bookmark bars
+    # all apply their own masking, and a tile inside a tile loses size twice.
+    img = Image.new("RGBA", (S, S), TDP_YELLOW + (255,))
+    target_w = int(S * 0.84)
+    scale = target_w / bike.width
+    bike = bike.resize((target_w, max(1, int(bike.height * scale))), Image.LANCZOS)
+    img.paste(bike, ((S - bike.width) // 2, (S - bike.height) // 2), bike)
 
     img.save(OUT / "android-chrome-512x512.png", "PNG", optimize=True)
+
+    # Maskable variant: Android crops these to a circle (or squircle, or
+    # whatever the launcher uses), so the artwork has to live inside the inner
+    # 80% "safe zone". At the standard 84% the wheels would be sliced off.
+    mask = Image.new("RGBA", (S, S), TDP_YELLOW + (255,))
+    mw = int(S * 0.56)
+    mb = bike.resize((mw, max(1, int(bike.height * mw / bike.width))), Image.LANCZOS)
+    mask.paste(mb, ((S - mb.width) // 2, (S - mb.height) // 2), mb)
+    mask.save(OUT / "android-chrome-maskable-512x512.png", "PNG", optimize=True)
+    print("  android-chrome-maskable-512x512.png")
+    img.convert("RGB").save(OUT / "favicon-512.png", "PNG", optimize=True)
     for size, name in [
         (192, "android-chrome-192x192.png"),
-        (180, "apple-touch-icon.png"),
         (32, "favicon-32x32.png"),
         (16, "favicon-16x16.png"),
     ]:
         img.resize((size, size), Image.LANCZOS).save(OUT / name, "PNG", optimize=True)
         print(f"  {name}")
 
-    # apple-touch-icon must be opaque — iOS renders alpha as black.
-    apple = Image.new("RGB", (180, 180), BRAND)
-    apple.paste(img.resize((180, 180), Image.LANCZOS), (0, 0), img.resize((180, 180), Image.LANCZOS))
+    # apple-touch-icon must be opaque — iOS composites alpha onto black.
+    apple = Image.new("RGB", (180, 180), TDP_YELLOW)
+    small = img.resize((180, 180), Image.LANCZOS)
+    apple.paste(small, (0, 0), small)
     apple.save(OUT / "apple-touch-icon.png", "PNG", optimize=True)
+    print("  apple-touch-icon.png")
 
-    # Multi-resolution .ico for legacy browsers and the Windows taskbar.
-    img.resize((256, 256), Image.LANCZOS).save(
-        OUT / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48), (256, 256)]
+    # 16/32/48 only. The old file carried a 256px frame too, which is why it
+    # weighed 124KB — for an image the browser draws at 16 pixels.
+    img.resize((48, 48), Image.LANCZOS).save(
+        OUT / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)]
     )
-    print("  favicon.ico  (16/32/48/256)")
-
-    # A 512px PNG doubles as the "SVG" slot's replacement — the icon is now a
-    # photograph, which SVG cannot carry without embedding the whole bitmap.
-    img.convert("RGB").resize((512, 512), Image.LANCZOS).save(
-        OUT / "favicon-512.png", "PNG", optimize=True
-    )
+    print("  favicon.ico  (16/32/48)")
     print("  favicon-512.png")
 
 

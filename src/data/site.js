@@ -20,7 +20,7 @@ export const site = {
 
   // TODO(office): confirm the production domain before launch. Every canonical
   // URL, the sitemap and the social preview tags are derived from this.
-  url: 'https://harikrishnatalikota.com',
+  url: 'https://talikotaharikrishna.com',
 
   tagline: 'Serving Telangana with Dedication',
   description:
@@ -71,8 +71,8 @@ export const roles = [
  * out of the structured data — flip to true once real values are supplied.
  */
 export const contact = {
-  email: { value: 'contact@harikrishnatalikota.com', verified: false },
-  press: { value: 'press@harikrishnatalikota.com', verified: false },
+  email: { value: 'contact@talikotaharikrishna.com', verified: false },
+  press: { value: 'press@talikotaharikrishna.com', verified: false },
   phone: { value: '', display: '', verified: false },
   office: { value: 'Hyderabad, Telangana, India', verified: true },
   hours: { value: '', verified: false },

@@ -14,6 +14,13 @@
       "runtimeArgs": ["run", "preview", "--", "--port", "4173"],
       "port": 4173,
       "autoPort": true
+    },
+    {
+      "name": "thk-prod-headers",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/preview-prod.js"],
+      "port": 4180,
+      "autoPort": true
     }
   ]
 }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FaArrowRight } from 'react-icons/fa6'
+import PartyMark from '../components/PartyMark'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
@@ -80,6 +81,8 @@ const Political = () => {
         <div className="on-dark container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-6">
+              {/* Standalone here, so the emblem carries the alt text itself. */}
+              <PartyMark size={72} showName={false} className="mb-7" />
               <p className="eyebrow">Telugu Desam Party</p>
               <h2 className="mt-5 font-display text-display text-white">
                 A legacy of Telugu self-respect

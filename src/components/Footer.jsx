@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
+import PartyMark from './PartyMark'
 import { site, social, contact, party } from '../data/site'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
@@ -53,6 +54,18 @@ const Footer = () => {
               leadership and community service. Working for Telugu pride and regional
               development.
             </p>
+
+            {/* Party affiliation. He is a TDP office-bearer, so the emblem
+                belongs here rather than in the wordmark, which stays
+                typographic. */}
+            <a
+              href={party.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex rounded-sm py-1 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500"
+            >
+              <PartyMark size={40} tone="dark" />
+            </a>
 
             <ul className="flex gap-2.5">
               {social.map((s) => {

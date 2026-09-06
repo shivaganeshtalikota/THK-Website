@@ -76,7 +76,7 @@ Create a `.env` file for production:
 
 ```env
 VITE_API_URL=your_api_url
-VITE_CONTACT_EMAIL=contact@harikrishnatalikota.com
+VITE_CONTACT_EMAIL=contact@talikotaharikrishna.com
 VITE_GOOGLE_ANALYTICS_ID=your_ga_id
 ```
 
@@ -244,5 +244,5 @@ If routes don't work after deployment:
 ## 📞 Support
 
 For deployment issues:
-- Email: tech@harikrishnatalikota.com
+- Email: tech@talikotaharikrishna.com
 - Documentation: Check README.md
