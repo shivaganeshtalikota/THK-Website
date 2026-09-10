@@ -64,6 +64,7 @@ const Community = () => {
         title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
         description="Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri — governance and devotee services."
         schema={schema}
+        preloadPhoto={{ ...photos.bannerCommunity, sizes: '100vw' }}
       />
 
       <PageHero

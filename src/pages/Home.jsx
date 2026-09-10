@@ -20,7 +20,7 @@ const Home = () => {
   return (
     <>
       {/* No title prop: the homepage takes the full descriptive title. */}
-      <Seo description={site.description} schema={schema} />
+      <Seo description={site.description} schema={schema} preloadPhoto={{ ...photos.hero, sizes: '(max-width: 1024px) 92vw, 55vw' }} />
 
       {/* ================= HERO =================
           Split: type on the left, a 4:3 photograph on the right. The previous

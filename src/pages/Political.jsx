@@ -72,6 +72,7 @@ const Political = () => {
         title="iTDP Telangana State President"
         description="Talikota Hari Krishna, iTDP Telangana State President — leading the Telugu Desam Party’s organisation in Telangana, and the Wipro Circle mobilisation."
         schema={schema}
+        preloadPhoto={{ ...photos.bannerPolitical, sizes: '100vw' }}
       />
 
       <PageHero

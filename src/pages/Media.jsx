@@ -192,6 +192,7 @@ const Media = () => {
         title="Photo Gallery & Updates"
         description="Photographs and video from Talikota Hari Krishna’s political and temple service work across Telangana and Andhra Pradesh."
         schema={schema}
+        preloadPhoto={{ ...photos.bannerMedia, sizes: '100vw' }}
       />
 
       <PageHero

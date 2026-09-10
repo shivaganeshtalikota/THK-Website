@@ -15,6 +15,7 @@ import { site } from '../data/site'
  */
 const Seo = ({
   title,
+  preloadPhoto,
   description = site.description,
   image = `${site.url}/og-image.jpg`,
   type = 'website',
@@ -24,6 +25,36 @@ const Seo = ({
   const { pathname } = useLocation()
 
   const head = useMemo(() => {
+    /*
+     * Preload the LCP image.
+     *
+     * Without this the browser cannot start the hero download until it has
+     * parsed the HTML, fetched the blocking stylesheet and reached the
+     * <picture>. On a phone that serialised chain put LCP at 4.2s. A preload
+     * with imagesrcset lets it begin immediately, in parallel with the CSS,
+     * and — because it repeats the same srcset and sizes — the browser picks
+     * exactly the variant it would have picked anyway rather than downloading
+     * a second one.
+     *
+     * Per route, not in index.html: every page has a different hero, so a
+     * shared preload would fetch the wrong image on five of them.
+     */
+    const preloadTags = preloadPhoto
+      ? [
+          {
+            _tag: 'link',
+            rel: 'preload',
+            as: 'image',
+            type: 'image/webp',
+            href: `/photos/${preloadPhoto.slug}-${preloadPhoto.widths[Math.min(1, preloadPhoto.widths.length - 1)]}.webp`,
+            imagesrcset: (preloadPhoto.widths ?? [])
+              .map((w) => `/photos/${preloadPhoto.slug}-${w}.webp ${w}w`)
+              .join(', '),
+            imagesizes: preloadPhoto.sizes ?? '100vw',
+            fetchpriority: 'high',
+          },
+        ]
+      : []
     const canonical = `${site.url}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}`
 
     // No `title` means the homepage, which gets the full descriptive title
@@ -37,6 +68,7 @@ const Seo = ({
     const alt = `${site.name} — ${site.role}`
 
     const tags = [
+      ...preloadTags,
       { _tag: 'meta', name: 'description', content: description },
       { _tag: 'link', rel: 'canonical', href: canonical },
 
@@ -90,7 +122,7 @@ const Seo = ({
     }
 
     return { title: fullTitle, tags }
-  }, [pathname, title, description, image, type, noindex, schema])
+  }, [pathname, title, description, image, type, noindex, schema, preloadPhoto])
 
   useHead(head)
   return null

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaCommentDots, FaXmark, FaChevronLeft, FaArrowRight } from 'react-icons/fa6'
+import { FaCircleQuestion, FaXmark, FaChevronLeft, FaArrowRight } from 'react-icons/fa6'
 import { site, contact, social, party, temple } from '../data/site'
 
 /**
@@ -93,6 +93,10 @@ const AskPanel = () => {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
   const [picked, setPicked] = useState(null)
+  // Introduces itself, then gets out of the way. The label is shown for three
+  // seconds so a first-time visitor knows what the button is, then it collapses
+  // to the icon; hover or keyboard focus brings the label back.
+  const [introducing, setIntroducing] = useState(true)
   const panelRef = useRef(null)
   const buttonRef = useRef(null)
 
@@ -100,6 +104,11 @@ const AskPanel = () => {
     setOpen(false)
     setPicked(null)
     buttonRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const id = setTimeout(() => setIntroducing(false), 3000)
+    return () => clearTimeout(id)
   }, [])
 
   useEffect(() => {
@@ -125,18 +134,36 @@ const AskPanel = () => {
       <button
         ref={buttonRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setIntroducing(false)
+          setOpen((v) => !v)
+        }}
         aria-expanded={open}
         aria-controls="ask-panel"
-        className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2.5 rounded-full bg-ink-900 py-3.5 pl-5 pr-5 font-sans text-sm font-semibold text-white shadow-lift transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500 sm:pr-6"
+        aria-label={open ? 'Close the questions panel' : 'Ask about him'}
+        className="group fixed bottom-5 right-5 z-50 inline-flex h-14 items-center rounded-full bg-ink-900 pl-[1.15rem] pr-[1.15rem] font-sans text-sm font-semibold text-white shadow-lift transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-ink-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500 sm:right-6"
       >
         {open ? (
-          <FaXmark aria-hidden="true" />
+          <FaXmark size={19} className="shrink-0" aria-hidden="true" />
         ) : (
-          <FaCommentDots className="text-brand-400" aria-hidden="true" />
+          <FaCircleQuestion size={21} className="shrink-0 text-brand-400" aria-hidden="true" />
         )}
-        <span className={open ? 'sr-only' : ''}>Ask about him</span>
-        {open && <span aria-hidden="true">Close</span>}
+        {/*
+          Collapsing on max-width rather than unmounting, so the label slides
+          away instead of disappearing. aria-hidden because the button already
+          carries the same text as its accessible name — without it a screen
+          reader announces "Ask about him" twice.
+        */}
+        <span
+          aria-hidden="true"
+          className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-300 ease-out ${
+            open || introducing
+              ? 'ml-2.5 max-w-[9rem] opacity-100'
+              : 'ml-0 max-w-0 opacity-0 group-hover:ml-2.5 group-hover:max-w-[9rem] group-hover:opacity-100 group-focus-visible:ml-2.5 group-focus-visible:max-w-[9rem] group-focus-visible:opacity-100'
+          }`}
+        >
+          {open ? 'Close' : 'Ask about him'}
+        </span>
       </button>
 
       <div

@@ -38,6 +38,7 @@ const About = () => {
         title="Biography & Public Service"
         description="Biography of Talikota Hari Krishna — Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, and iTDP Telangana State President, TDP."
         schema={schema}
+        preloadPhoto={{ ...photos.bannerAbout, sizes: '100vw' }}
       />
 
       <PageHero
