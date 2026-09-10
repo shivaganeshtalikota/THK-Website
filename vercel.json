@@ -6,6 +6,17 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "admin.talikotaharikrishna.com"
+        }
+      ],
+      "destination": "/admin",
+      "permanent": false
+    },
+    {
       "source": "/(.*)",
       "has": [
         {
@@ -168,18 +179,6 @@
           "value": "public, max-age=3600"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "admin.talikotaharikrishna.com"
-        }
-      ],
-      "destination": "/admin"
     }
   ]
 }
