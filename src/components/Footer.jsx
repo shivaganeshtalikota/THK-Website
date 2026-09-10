@@ -50,9 +50,8 @@ const Footer = () => {
             </div>
 
             <p className="max-w-sm text-sm leading-relaxed text-ink-400">
-              Dedicated to serving the people of Telangana through principled political
-              leadership and community service. Working for Telugu pride and regional
-              development.
+              Regional development, good governance and Telugu cultural preservation in
+              Telangana — through party organisation and temple board service.
             </p>
 
             {/* Party affiliation. He is a TDP office-bearer, so the emblem

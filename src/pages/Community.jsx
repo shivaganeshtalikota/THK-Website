@@ -74,7 +74,7 @@ const Community = () => {
         // band and left no photograph visible below it. temple.intro moved into
         // the body section below, which was its only other home — dropping it
         // from the hero alone would have removed it from the site.
-        lead="One of South India's most revered temples — board service covering governance, devotee facilities and the continuity of tradition."
+        lead="One of India’s Shakti Peethas — board service covering governance, devotee facilities and the continuity of tradition."
         photo={photos.bannerCommunity}
       />
 

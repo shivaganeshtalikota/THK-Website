@@ -24,6 +24,35 @@ const Political = () => {
       founder: { '@type': 'Person', name: 'N.T. Rama Rao' },
       member: { '@type': 'Person', '@id': `${site.url}/#person`, name: site.name },
     },
+    /*
+     * The campaigns as Event entities, each carrying its press citations.
+     *
+     * `subjectOf` on the Person would be wrong and is deliberately not used:
+     * the coverage reports the demonstration, not him, and none of those
+     * articles names him. Attaching the citations to the EVENT says exactly
+     * what is true — this event happened and here is who reported it — while
+     * his own role stays a first-party statement on the page, which is what it
+     * is. Overstating that link is the fastest way to have the whole source
+     * dismissed.
+     */
+    mentions: campaigns.map((c) => ({
+      '@type': 'Event',
+      name: c.title,
+      startDate: c.date,
+      eventStatus: 'https://schema.org/EventScheduled',
+      location: {
+        '@type': 'Place',
+        name: c.place,
+        address: { '@type': 'PostalAddress', addressLocality: 'Hyderabad', addressRegion: 'Telangana', addressCountry: 'IN' },
+      },
+      description: c.summary,
+      subjectOf: (c.coverage ?? []).map((v) => ({
+        '@type': 'NewsArticle',
+        headline: v.title,
+        url: v.url,
+        publisher: { '@type': 'NewsMediaOrganization', name: v.outlet },
+      })),
+    })),
   }
 
   const facts = [

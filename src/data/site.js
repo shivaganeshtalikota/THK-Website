@@ -20,14 +20,14 @@ export const site = {
 
   // TODO(office): confirm the production domain before launch. Every canonical
   // URL, the sitemap and the social preview tags are derived from this.
-  url: 'https://talikotaharikrishna.vercel.app',
+  url: 'https://www.talikotaharikrishna.com',
 
   tagline: 'Serving Telangana with Dedication',
   description:
     'Talikota Hari Krishna — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), and iTDP Telangana State President, TDP.',
 
   mission:
-    'Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.',
+    'Working on regional development, good governance and Telugu cultural preservation in Telangana and Andhra Pradesh, through party organisation and temple service.',
 
   location: {
     locality: 'Hyderabad',
@@ -71,8 +71,8 @@ export const roles = [
  * out of the structured data — flip to true once real values are supplied.
  */
 export const contact = {
-  email: { value: 'contact@talikotaharikrishna.vercel.app', verified: false },
-  press: { value: 'press@talikotaharikrishna.vercel.app', verified: false },
+  email: { value: 'contact@www.talikotaharikrishna.com', verified: false },
+  press: { value: 'press@www.talikotaharikrishna.com', verified: false },
   phone: { value: '', display: '', verified: false },
   office: { value: 'Hyderabad, Telangana, India', verified: true },
   hours: { value: '', verified: false },
@@ -151,7 +151,7 @@ export const party = {
   colors: 'Yellow and Green',
   url: 'https://www.telugudesam.org',
   heritage:
-    'The Telugu Desam Party was founded in 1982 by legendary actor and statesman N.T. Rama Rao (NTR) with the vision of promoting Telugu self-respect and regional development. Under the current leadership of N. Chandrababu Naidu, the party continues to champion development-oriented governance and technological innovation.',
+    'The Telugu Desam Party was founded in 1982 by the actor and later Chief Minister N.T. Rama Rao (NTR), on a platform of Telugu self-respect and regional development. Under the current leadership of N. Chandrababu Naidu, the party continues to champion development-oriented governance and technological innovation.',
   principles: [
     'Telugu cultural identity and pride',
     'Economic development and industrialisation',
@@ -166,9 +166,9 @@ export const biography = {
   intro:
     'Talikota Hari Krishna is a dedicated political leader and community servant who has committed his life to advancing the interests of the Telugu people. As the iTDP Telangana State President, he leads the Telugu Desam Party’s efforts in Telangana, working to promote development, good governance, and Telugu cultural pride.',
   journey:
-    'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles established by the legendary N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.',
+    'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles, set out by its founder N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.',
   community:
-    'Serving as a Board Member of the prestigious Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, Hari Krishna contributes to the administration and development of one of South India’s most revered temples. This role reflects his deep commitment to preserving cultural and religious traditions while ensuring excellent service to millions of devotees.',
+    'As a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, he takes part in the administration of one of India’s Shakti Peethas, a temple that receives millions of visitors each year. The role covers governance, financial oversight and devotee services.',
   vision:
     'Hari Krishna envisions a Telangana that honours its rich Telugu heritage while embracing modern development. His focus is on creating economic opportunities for youth, improving infrastructure, ensuring good governance, and preserving the cultural identity that makes Telangana unique.',
 }
@@ -194,7 +194,7 @@ export const values = [
     icon: 'users',
     title: 'Service to Community',
     description:
-      'Putting the needs of constituents first and working tirelessly for their welfare.',
+      'Taking up constituents’ concerns and following them through with the relevant departments.',
   },
   {
     icon: 'handshake',
@@ -310,11 +310,11 @@ export const temple = {
   location: 'Indrakeeladri Hill, Vijayawada, Andhra Pradesh',
   river: 'Krishna River',
   significance:
-    'Located on the Indrakeeladri Hill on the banks of the Krishna River in Vijayawada, Andhra Pradesh, the Kanaka Durga Temple is dedicated to Goddess Kanaka Durga. The temple attracts millions of devotees annually and is particularly renowned for its Navaratri celebrations.',
+    'Located on the Indrakeeladri Hill on the banks of the Krishna River in Vijayawada, Andhra Pradesh, the Kanaka Durga Temple is dedicated to Goddess Kanaka Durga. The temple attracts millions of devotees annually and is best known for its Dasara Navaratri festival.',
   history:
     'The temple has a rich history spanning centuries and is considered one of the most powerful Shakti Peethas in India. It plays a central role in the spiritual and cultural life of the Telugu people.',
   intro:
-    'Talikota Hari Krishna serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of the most revered Hindu temples in South India. This role reflects his commitment to preserving religious and cultural traditions while ensuring excellent service to devotees.',
+    'Talikota Hari Krishna serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of India’s Shakti Peethas. The role covers temple administration, financial oversight, devotee services and the upkeep of tradition.',
   duties: [
     {
       title: 'Temple Administration',
