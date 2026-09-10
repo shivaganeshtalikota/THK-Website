@@ -20,6 +20,21 @@
   "headers": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "admin.talikotaharikrishna.com"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
@@ -153,6 +168,18 @@
           "value": "public, max-age=3600"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "admin.talikotaharikrishna.com"
+        }
+      ],
+      "destination": "/admin"
     }
   ]
 }
