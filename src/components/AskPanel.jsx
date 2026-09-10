@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaCircleQuestion, FaXmark, FaChevronLeft, FaArrowRight } from 'react-icons/fa6'
+import { FaCommentDots, FaXmark, FaChevronLeft, FaArrowRight } from 'react-icons/fa6'
 import { site, contact, social, party, temple } from '../data/site'
 
 /**
@@ -146,7 +146,7 @@ const AskPanel = () => {
         {open ? (
           <FaXmark size={19} className="shrink-0" aria-hidden="true" />
         ) : (
-          <FaCircleQuestion size={21} className="shrink-0 text-brand-400" aria-hidden="true" />
+          <FaCommentDots size={22} className="shrink-0 text-brand-400" aria-hidden="true" />
         )}
         {/*
           Collapsing on max-width rather than unmounting, so the label slides
