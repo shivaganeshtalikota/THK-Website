@@ -110,6 +110,49 @@ const cleanSources = (list) =>
 const detect = (buf) =>
   SIGNATURES.find((s) => s.magic.every((byte, i) => buf[i] === byte)) ?? null
 
+/**
+ * Brute-force resistance for a password-protected endpoint on the open web.
+ *
+ * There is no shared store here — serverless instances do not see each other —
+ * so this cannot be a true global rate limit. It does two things that matter
+ * anyway:
+ *
+ *  1. Every REJECTED attempt costs a fixed second. Credential stuffing depends
+ *     on volume; at one second per try a strong password is out of reach, and a
+ *     legitimate user typing a wrong password never notices.
+ *  2. A per-instance counter locks an IP out for fifteen minutes after ten
+ *     failures, which stops one warm instance being hammered.
+ *
+ * Both are cheap. Neither replaces a long random ADMIN_PASSWORD, which is what
+ * actually protects this.
+ */
+const ATTEMPTS = new Map()
+const WINDOW_MS = 15 * 60 * 1000
+const MAX_FAILURES = 10
+
+const clientIp = (req) =>
+  (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+  req.socket?.remoteAddress ||
+  'unknown'
+
+const lockedOut = (ip) => {
+  const rec = ATTEMPTS.get(ip)
+  if (!rec) return false
+  if (Date.now() - rec.first > WINDOW_MS) {
+    ATTEMPTS.delete(ip)
+    return false
+  }
+  return rec.count >= MAX_FAILURES
+}
+
+const noteFailure = (ip) => {
+  const rec = ATTEMPTS.get(ip)
+  if (!rec || Date.now() - rec.first > WINDOW_MS) ATTEMPTS.set(ip, { count: 1, first: Date.now() })
+  else rec.count += 1
+}
+
+const penalty = () => new Promise((r) => setTimeout(r, 1000))
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -129,12 +172,17 @@ export default async function handler(req, res) {
 
   // ADMIN_ID is optional: if it is set in the environment it must match, so the
   // panel needs both halves. Both comparisons are constant-time.
-  if (ADMIN_ID && !passwordOk(adminId, ADMIN_ID)) {
+  const ip = clientIp(req)
+  if (lockedOut(ip)) {
+    await penalty()
+    return res.status(429).json({ error: 'Too many attempts. Try again in fifteen minutes.' })
+  }
+  if ((ADMIN_ID && !passwordOk(adminId, ADMIN_ID)) || !passwordOk(password, ADMIN_PASSWORD)) {
+    noteFailure(ip)
+    await penalty()
     return res.status(401).json({ error: 'Wrong ID or password.' })
   }
-  if (!passwordOk(password, ADMIN_PASSWORD)) {
-    return res.status(401).json({ error: 'Wrong ID or password.' })
-  }
+  ATTEMPTS.delete(ip)
   if (!['create', 'update', 'delete', 'list'].includes(action)) {
     return res.status(400).json({ error: 'Unknown action.' })
   }

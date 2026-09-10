@@ -146,8 +146,22 @@ const AskPanel = () => {
         role="dialog"
         aria-modal="false"
         aria-label="Questions about Talikota Hari Krishna"
-        hidden={!open}
-        className="ask-panel fixed bottom-24 right-5 z-50 flex max-h-[min(34rem,calc(100vh-9rem))] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden border border-ink-200 bg-white shadow-frame"
+        /*
+         * `hidden` cannot be used here. The element also carries Tailwind's
+         * `flex`, and a class selector beats the user-agent's [hidden]
+         * { display: none } on specificity — so the panel stayed laid out at
+         * opacity 0, 361x216, fixed over the bottom right of every page, with
+         * pointer-events: auto. It silently swallowed taps, swipes and text
+         * selection in that whole area on every route.
+         *
+         * The open state is a class instead, and the closed state sets
+         * visibility: hidden and pointer-events: none in CSS, which is both
+         * genuinely inert and still animatable.
+         */
+        aria-hidden={!open}
+        className={`ask-panel fixed bottom-24 right-5 z-50 flex max-h-[min(34rem,calc(100vh-9rem))] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden border border-ink-200 bg-white shadow-frame ${
+          open ? 'is-open' : ''
+        }`}
       >
         <div className="flex items-center gap-3 border-b hairline bg-brand-500 px-5 py-4">
           {answer !== null && (

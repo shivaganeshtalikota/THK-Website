@@ -1,6 +1,9 @@
 import { StrictMode } from 'react'
 import { renderToString } from 'react-dom/server'
-import { StaticRouter } from 'react-router-dom/server'
+// react-router, not react-router-dom/server: that subpath was removed in
+// React Router 7, which is the first release without the open-redirect
+// advisories that affect every 6.x. StaticRouter now lives in the core package.
+import { StaticRouter } from 'react-router'
 import { HeadCollector } from './components/Head'
 import App from './App'
 
