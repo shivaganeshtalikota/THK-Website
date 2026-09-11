@@ -146,14 +146,14 @@ const Home = () => {
           <div className="on-dark flex items-center px-6 py-16 sm:px-10 lg:px-16 lg:py-24">
             <Reveal className="max-w-xl">
               <p className="label-rule !text-brand-400 before:!bg-brand-500">
-                {t('Devasthanam Board')}
+                {t('Trust Board · Sri Kanaka Durga Devasthanam, Vijayawada')}
               </p>
               <h2 className="mt-7 font-display text-title text-white">
-                {t('Board Member, Sri Durga Malleswara Swamy Varla Devasthanam')}
+                {t('Trust Board Member — Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, Vijayawada')}
               </h2>
               <p className="mt-6 text-lead text-white/70">{t(temple.intro)}</p>
               <p className="mt-5 text-white/60">
-                {t('The Devasthanam at Indrakeeladri in Vijayawada is one of South India’s most visited Shakti Peethas, drawing millions of devotees each year. Board service covers temple administration, financial stewardship, devotee facilities and the continuity of tradition.')}
+                {t('The Devasthanam at Indrakeeladri in Vijayawada is one of the most visited Devi temples in South India, drawing millions of devotees each year. Talikota Hari Krishna sits on its trust board — one of several members, not the chairman — with responsibility for temple administration, financial stewardship, devotee facilities and the continuity of tradition.')}
               </p>
               <Link
                 to="/community"

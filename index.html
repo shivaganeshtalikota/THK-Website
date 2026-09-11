@@ -37,7 +37,7 @@
       pointed at /og-image.jpg, a file that was never created.
     -->
 
-    <title>Talikota Hari Krishna · Devasthanam Board Member</title>
+    <title>Talikota Hari Krishna · Kanaka Durga Temple Board Member</title>
     <meta name="description" content="Talikota Hari Krishna — Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada, and iTDP Telangana State President of the Telugu Desam Party. Temple service, regional development and Telugu cultural preservation." />
     <meta name="author" content="Talikota Hari Krishna" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
@@ -48,8 +48,8 @@
     <meta property="og:site_name" content="Talikota Hari Krishna Official" />
     <meta property="og:locale" content="en_IN" />
     <meta property="og:url" content="https://www.talikotaharikrishna.com/" />
-    <meta property="og:title" content="Talikota Hari Krishna — Devasthanam Board Member &amp; iTDP Telangana State President" />
-    <meta property="og:description" content="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri · iTDP Telangana State President, Telugu Desam Party." />
+    <meta property="og:title" content="Talikota Hari Krishna — Kanaka Durga Temple Board Member, Vijayawada &amp; iTDP Telangana State President" />
+    <meta property="og:description" content="Board Member of the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada · iTDP Telangana State President, Telugu Desam Party." />
     <meta property="og:image" content="https://www.talikotaharikrishna.com/og-image.jpg" />
     <meta property="og:image:secure_url" content="https://www.talikotaharikrishna.com/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -63,10 +63,10 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@THK_iTDP" />
     <meta name="twitter:creator" content="@THK_iTDP" />
-    <meta name="twitter:title" content="Talikota Hari Krishna — Devasthanam Board Member &amp; iTDP Telangana State President" />
-    <meta name="twitter:description" content="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri · iTDP Telangana State President, Telugu Desam Party." />
+    <meta name="twitter:title" content="Talikota Hari Krishna — Kanaka Durga Temple Board Member, Vijayawada &amp; iTDP Telangana State President" />
+    <meta name="twitter:description" content="Board Member of the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada · iTDP Telangana State President, Telugu Desam Party." />
     <meta name="twitter:image" content="https://www.talikotaharikrishna.com/og-image.jpg" />
-    <meta name="twitter:image:alt" content="Talikota Hari Krishna — Devasthanam Board Member &amp; iTDP Telangana State President" />
+    <meta name="twitter:image:alt" content="Talikota Hari Krishna — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam, and iTDP Telangana State President" />
 
     <!-- Geo signals (local/regional search) -->
     <meta name="geo.region" content="IN-TG" />
@@ -155,24 +155,25 @@
             "Regional development policy in Telangana"
           ],
           "worksFor": { "@id": "https://www.talikotaharikrishna.com/#party" },
-          "memberOf": { "@id": "https://www.talikotaharikrishna.com/#party" },
+          "memberOf": [
+            {
+              "@type": "OrganizationRole",
+              "roleName": "iTDP Telangana State President",
+              "memberOf": { "@id": "https://www.talikotaharikrishna.com/#party" }
+            },
+            {
+              "@type": "OrganizationRole",
+              "roleName": "Trust Board Member",
+              "description": "One of several members of the trust board, not the chairman.",
+              "memberOf": { "@id": "https://www.talikotaharikrishna.com/#devasthanam" }
+            }
+          ],
           "hasOccupation": {
             "@type": "Occupation",
             "name": "Politician",
             "occupationLocation": { "@type": "State", "name": "Telangana" }
           },
-          "affiliation": {
-            "@type": "Organization",
-            "@id": "https://www.talikotaharikrishna.com/#devasthanam",
-            "name": "Sri Durga Malleswara Swamy Varla Devasthanam",
-            "alternateName": "Sri Kanaka Durga Temple, Indrakeeladri",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Vijayawada",
-              "addressRegion": "Andhra Pradesh",
-              "addressCountry": "IN"
-            }
-          },
+          "affiliation": { "@id": "https://www.talikotaharikrishna.com/#devasthanam" },
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Hyderabad",
@@ -182,9 +183,32 @@
           "sameAs": [
             "https://www.instagram.com/hari_krishna_talikota/",
             "https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/",
-            "https://x.com/THK_iTDP",
-            "https://www.youtube.com/@TeamHaranna"
+            "https://x.com/THK_iTDP"
           ]
+        },
+        {
+          "@type": ["Organization", "HinduTemple"],
+          "@id": "https://www.talikotaharikrishna.com/#devasthanam",
+          "name": "Sri Durga Malleswara Swamy Varla Devasthanam",
+          "alternateName": [
+            "Sri Kanaka Durga Temple",
+            "Kanaka Durga Temple, Indrakeeladri",
+            "Indrakeeladri Temple",
+            "Vijayawada Durga Temple"
+          ],
+          "description": "The Devasthanam that administers the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada, one of the most visited Devi temples in South India. It is run by a trust board under the Andhra Pradesh Endowments Department.",
+          "sameAs": [
+            "https://en.wikipedia.org/wiki/Kanaka_Durga_Temple",
+            "https://www.wikidata.org/wiki/Q6360375"
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Indrakeeladri Hill",
+            "addressLocality": "Vijayawada",
+            "addressRegion": "Andhra Pradesh",
+            "addressCountry": "IN"
+          },
+          "subjectOf": { "@id": "https://www.talikotaharikrishna.com/community" }
         },
         {
           "@type": "PoliticalParty",
@@ -192,6 +216,10 @@
           "name": "Telugu Desam Party",
           "alternateName": "TDP",
           "url": "https://www.telugudesam.org",
+          "sameAs": [
+            "https://en.wikipedia.org/wiki/Telugu_Desam_Party",
+            "https://www.wikidata.org/wiki/Q2279320"
+          ],
           "foundingDate": "1982-03-29",
           "founder": { "@type": "Person", "name": "N.T. Rama Rao" },
           "areaServed": [

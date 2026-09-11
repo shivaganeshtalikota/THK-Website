@@ -15,7 +15,11 @@ export const site = {
   shortName: 'HK Talikota',
   alternateNames: ['Talikota Harikrishna', 'Hari Krishna Talikota', 'Harikrishna Talikota', 'Hari TDP', 'Haranna'],
   role: 'Board Member, Sri Durga Malleswara Swamy Varla Devasthanam',
-  roleShort: 'Devasthanam Board Member',
+  // Names the temple, not just the category. "Devasthanam Board Member" was the
+  // root of the problem the office raised: there are many Devasthanam board
+  // members across the two Telugu states, so the phrase identifies nobody. This
+  // is the shortest form that still says which institution.
+  roleShort: 'Board Member, Sri Kanaka Durga Devasthanam',
   secondaryRole: 'iTDP Telangana State President',
 
   // TODO(office): confirm the production domain before launch. Every canonical
@@ -24,7 +28,7 @@ export const site = {
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Talikota Hari Krishna — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), and iTDP Telangana State President, TDP.',
+    'Talikota Hari Krishna — Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri, Vijayawada, and iTDP Telangana State President, Telugu Desam Party.',
 
   mission:
     'Working on regional development, good governance and Telugu cultural preservation in Telangana and Andhra Pradesh, through party organisation and temple service.',
@@ -168,7 +172,7 @@ export const biography = {
   journey:
     'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles, set out by its founder N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.',
   community:
-    'As a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, he takes part in the administration of one of India’s Shakti Peethas, a temple that receives millions of visitors each year. The role covers governance, financial oversight and devotee services.',
+    'He serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — the Sri Kanaka Durga Temple, one of the most visited Devi temples in South India, which receives millions of pilgrims a year. The Devasthanam is administered by a trust board under the Andhra Pradesh Endowments Department; the role covers governance, financial oversight and devotee services. He is one of several board members, not the chairman.',
   vision:
     'Hari Krishna envisions a Telangana that honours its rich Telugu heritage while embracing modern development. His focus is on creating economic opportunities for youth, improving infrastructure, ensuring good governance, and preserving the cultural identity that makes Telangana unique.',
 }
@@ -312,9 +316,9 @@ export const temple = {
   significance:
     'Located on the Indrakeeladri Hill on the banks of the Krishna River in Vijayawada, Andhra Pradesh, the Kanaka Durga Temple is dedicated to Goddess Kanaka Durga. The temple attracts millions of devotees annually and is best known for its Dasara Navaratri festival.',
   history:
-    'The temple has a rich history spanning centuries and is considered one of the most powerful Shakti Peethas in India. It plays a central role in the spiritual and cultural life of the Telugu people.',
+    'The temple has a history spanning centuries and is widely revered as a Shakti Peetha. It plays a central role in the spiritual and cultural life of the Telugu people.',
   intro:
-    'Talikota Hari Krishna serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of India’s Shakti Peethas. The role covers temple administration, financial oversight, devotee services and the upkeep of tradition.',
+    'Talikota Hari Krishna serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada, one of the most visited Devi temples in South India. He is one of several board members, not the chairman. The role covers temple administration, financial oversight, devotee services and the upkeep of tradition.',
   duties: [
     {
       title: 'Temple Administration',
@@ -370,7 +374,7 @@ export const temple = {
   ],
 
   governance:
-    'The Devasthanam is administered by a trust board under the oversight of the Andhra Pradesh Endowments Department, with professional management handling day-to-day operations. Board members carry responsibility for administration, transparent use of temple funds, the quality of devotee services, and the continuity of ritual tradition.',
+    'The Devasthanam is administered by a trust board under the oversight of the Andhra Pradesh Endowments Department, with professional management handling day-to-day operations. Board members carry responsibility for administration, transparent use of temple funds, the quality of devotee services, and the continuity of ritual tradition. Talikota Hari Krishna sits on this board as one of its members — not as its chairman, and not as an executive officer of the temple.',
 }
 
 /**
@@ -431,6 +435,95 @@ export const faqs = [
  * a first-party site — and must never be dressed up as press reporting.
  * Anything unverified stays out until the office confirms it.
  */
+/**
+ * The trust board, and the public record behind the seat.
+ *
+ * WHY THIS EXISTS
+ * The site asserted the board role on six pages and gave a reader no way to
+ * check any of it -- no board, no date, no appointing authority, no chairman, no
+ * citation. "Devasthanam Board Member" identifies nobody on its own: there are
+ * hundreds of Devasthanam trustees across the two Telugu states. This is the
+ * record behind the claim, and it is what the office asked for.
+ *
+ * WHAT THE CITATIONS ESTABLISH
+ * That the Andhra Pradesh government constituted a new trust board for this
+ * Devasthanam in September 2025; that it was sworn in before the Rajagopuram on
+ * Indrakeeladri on 11 October 2025; that Borra Radhakrishna (Gandhi) chairs it
+ * and seventeen members sit alongside him; and that the nominated list records a
+ * member as "Harikrishna -- Hyderabad -- TDP Telangana". The Hans India of
+ * 22 March 2026 names "T Harikrishna" among the members attending a temple
+ * programme, with the chairman listed separately.
+ *
+ * WHAT THEY DO NOT ESTABLISH -- read before adding more.
+ * No published report found spells the surname "Talikota" beside the temple
+ * seat. The identification rests on the government list's own tag (Hyderabad,
+ * TDP Telangana, a member rather than the chairman) and on the "T" initial.
+ * That is strong; it is not a printed surname. So the sources below are
+ * presented as the record OF THE BOARD -- which is exactly what they are -- and
+ * never captioned as proof of identity.
+ *
+ * The single document that would settle it is the Endowments Department G.O.
+ * constituting this board, which carries full legal names. It is not online.
+ * When the office supplies it, put it first in `sources`.
+ *
+ * NOT CLAIMED ANYWHERE: that he chairs the board. He does not. Borra
+ * Radhakrishna does, and the site says so in as many words -- which is also why
+ * a reader can tell the two apart.
+ */
+export const templeBoard = {
+  seat: 'Member of the trust board — one of several members, not the chairman',
+  chairman: 'Borra Radhakrishna (Gandhi)',
+  sworn: '11 October 2025',
+  swornPlace: 'Before the Rajagopuram, Indrakeeladri, Vijayawada',
+  authority: 'Andhra Pradesh Endowments Department',
+
+  facts: [
+    ['Institution', 'Sri Durga Malleswara Swamy Varla Devasthanam'],
+    ['Temple', 'Sri Kanaka Durga Temple, Indrakeeladri hill, Vijayawada'],
+    ['Governing body', 'Non-hereditary trust board, Andhra Pradesh Endowments Department'],
+    ['Board chairman', 'Borra Radhakrishna (Gandhi) — not Talikota Hari Krishna'],
+    ['His seat', 'Trust board member, one of seventeen alongside the chairman'],
+    ['Sworn in', '11 October 2025, before the Rajagopuram on Indrakeeladri'],
+  ],
+
+  /*
+   * Devotee numbers from the Endowments Minister, not from temple publicity.
+   * The site used to say "millions", which is true and says nothing.
+   */
+  footfall: {
+    value: '119.34 lakh devotees in 2025-26, up from 93.40 lakh in 2023-24',
+    attribution: 'Figures given by the Andhra Pradesh Endowments Minister',
+    url: 'https://www.deccanchronicle.com/lifestyle/culture-and-society/temple-revenue-devotee-footfall-record-strong-growth-minister-1969409',
+  },
+
+  sources: [
+    {
+      label: 'Deccan Chronicle',
+      title: 'New members of Kanakadurga temple trust board sworn in',
+      date: '11 October 2025',
+      url: 'https://www.deccanchronicle.com/southern-states/andhra-pradesh/new-members-of-kanakadurga-temple-trust-board-sworn-in-1909523',
+    },
+    {
+      label: 'The Hans India',
+      title: 'Radhakrishna is new chairman of Durga temple board',
+      date: 'September 2025',
+      url: 'https://www.thehansindia.com/andhra-pradesh/radhakrishna-is-new-chairman-of-durga-temple-board-1010381',
+    },
+    {
+      label: 'NTV Telugu',
+      title: 'దుర్గ గుడి ఆలయ బోర్డు సభ్యులుగా 16 మంది నియామకం.. లిస్ట్ ఇదే!',
+      date: 'September 2025',
+      url: 'https://ntvtelugu.com/news/vijayawada-durga-temple-board-16-new-members-appointed-full-list-869264.html',
+    },
+    {
+      label: 'The Hans India',
+      title: 'Devotees first at Durga temple, says commissioner',
+      date: '22 March 2026',
+      url: 'https://www.thehansindia.com/andhra-pradesh/devotees-first-at-durga-temple-says-commissioner-1058511',
+    },
+  ],
+}
+
 export const campaigns = [
   {
     slug: 'wipro-circle-protest',

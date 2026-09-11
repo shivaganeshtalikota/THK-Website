@@ -91,7 +91,7 @@ const Seo = ({
      */
     const fullTitle = title
       ? `${t(title)} | ${t(site.name)}`
-      : `${t(site.name)} · ${t('Devasthanam Board Member')}`
+      : `${t(site.name)} · ${t('Kanaka Durga Temple Board Member')}`
 
     const alt = `${site.name} — ${site.role}`
 

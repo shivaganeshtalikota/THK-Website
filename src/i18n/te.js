@@ -126,10 +126,10 @@ export const te = {
   // ---- Homepage: prose ---------------------------------------------------
   'Working on regional development, good governance and Telugu cultural preservation in Telangana and Andhra Pradesh, through party organisation and temple service.':
     'పార్టీ సంస్థాగత కృషి, ఆలయ సేవల ద్వారా తెలంగాణ, ఆంధ్రప్రదేశ్‌లలో ప్రాంతీయ అభివృద్ధి, సుపరిపాలన, తెలుగు సాంస్కృతిక పరిరక్షణ కోసం కృషి.',
-  'Talikota Hari Krishna serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of India’s Shakti Peethas. The role covers temple administration, financial oversight, devotee services and the upkeep of tradition.':
-    'భారతదేశంలోని శక్తి పీఠాలలో ఒకటైన విజయవాడలోని శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం బోర్డు సభ్యుడిగా తాళికోట హరికృష్ణ సేవలందిస్తున్నారు. ఆలయ నిర్వహణ, ఆర్థిక పర్యవేక్షణ, భక్తుల సేవలు, సంప్రదాయ పరిరక్షణ ఈ బాధ్యతలో భాగం.',
-  'The Devasthanam at Indrakeeladri in Vijayawada is one of South India’s most visited Shakti Peethas, drawing millions of devotees each year. Board service covers temple administration, financial stewardship, devotee facilities and the continuity of tradition.':
-    'విజయవాడ ఇంద్రకీలాద్రిపై ఉన్న ఈ దేవస్థానం దక్షిణ భారతదేశంలో అత్యధిక మంది భక్తులు దర్శించుకునే శక్తి పీఠాలలో ఒకటి; ప్రతి సంవత్సరం లక్షలాది మంది భక్తులు ఇక్కడికి వస్తారు. ఆలయ నిర్వహణ, ఆర్థిక బాధ్యత, భక్తుల సౌకర్యాలు, సంప్రదాయ కొనసాగింపు బోర్డు సేవలో ఉంటాయి.',
+  'Talikota Hari Krishna serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada, one of the most visited Devi temples in South India. He is one of several board members, not the chairman. The role covers temple administration, financial oversight, devotee services and the upkeep of tradition.':
+    'విజయవాడ ఇంద్రకీలాద్రిపై ఉన్న శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — శ్రీ కనకదుర్గ ఆలయం — ధర్మకర్తల మండలిలో తాళికోట హరికృష్ణ సభ్యుడిగా సేవలందిస్తున్నారు. ఇది దక్షిణ భారతదేశంలో అత్యధిక మంది భక్తులు దర్శించుకునే అమ్మవారి ఆలయాలలో ఒకటి. ఆయన బోర్డు సభ్యులలో ఒకరు, ఛైర్మన్ కాదు. ఆలయ నిర్వహణ, ఆర్థిక పర్యవేక్షణ, భక్తుల సేవలు, సంప్రదాయ పరిరక్షణ ఈ బాధ్యతలో భాగం.',
+  'The Devasthanam at Indrakeeladri in Vijayawada is one of the most visited Devi temples in South India, drawing millions of devotees each year. Talikota Hari Krishna sits on its trust board — one of several members, not the chairman — with responsibility for temple administration, financial stewardship, devotee facilities and the continuity of tradition.':
+    'విజయవాడ ఇంద్రకీలాద్రిపై ఉన్న ఈ దేవస్థానం దక్షిణ భారతదేశంలో అత్యధిక మంది భక్తులు దర్శించుకునే అమ్మవారి ఆలయాలలో ఒకటి; ప్రతి సంవత్సరం లక్షలాది మంది భక్తులు ఇక్కడికి వస్తారు. దీని ధర్మకర్తల మండలిలో తాళికోట హరికృష్ణ సభ్యుడిగా ఉన్నారు — అనేక సభ్యులలో ఒకరు, ఛైర్మన్ కాదు — ఆలయ నిర్వహణ, ఆర్థిక బాధ్యత, భక్తుల సౌకర్యాలు, సంప్రదాయ కొనసాగింపు ఆయన బాధ్యతలో ఉన్నాయి.',
   'Leading the Telugu Desam Party’s organisation across Telangana — building membership, representing citizens’ interests, and carrying forward the founding principles set by N.T. Rama Rao.':
     'తెలంగాణ వ్యాప్తంగా తెలుగుదేశం పార్టీ సంస్థాగత నిర్మాణానికి నాయకత్వం — సభ్యత్వ విస్తరణ, ప్రజల ప్రయోజనాల ప్రాతినిధ్యం, నందమూరి తారక రామారావు నెలకొల్పిన మూల సూత్రాల కొనసాగింపు.',
   'Party Office': 'పార్టీ బాధ్యత',
@@ -285,8 +285,8 @@ export const te = {
     'తెలుగు ప్రజల ప్రయోజనాల కోసం తన జీవితాన్ని అంకితం చేసిన రాజకీయ నాయకుడు, ప్రజా సేవకుడు తాళికోట హరికృష్ణ. ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షుడిగా తెలంగాణలో తెలుగుదేశం పార్టీ కార్యకలాపాలకు ఆయన నాయకత్వం వహిస్తూ, అభివృద్ధి, సుపరిపాలన, తెలుగు సాంస్కృతిక గౌరవం కోసం కృషి చేస్తున్నారు.',
   'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles, set out by its founder N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.':
     'ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షుడిగా తెలంగాణలో తెలుగుదేశం పార్టీ దార్శనికతకు హరికృష్ణ ప్రాతినిధ్యం వహిస్తున్నారు. పార్టీ వ్యవస్థాపకుడు నందమూరి తారక రామారావు నిర్దేశించిన మూల సూత్రాలకు — తెలుగు ఆత్మగౌరవం, ప్రాంతీయ అభివృద్ధి, సుపరిపాలన — ఆయన కట్టుబడి ఉన్నారు. ఆర్థిక అవకాశాల కల్పన, మౌలిక సదుపాయాల మెరుగుదల, పాలనలో ప్రతి స్థాయిలోనూ తెలంగాణ ప్రజల గొంతు వినిపించేలా చూడటం ఆయన రాజకీయ కృషిలో ప్రధానాంశాలు.',
-  'As a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, he takes part in the administration of one of India’s Shakti Peethas, a temple that receives millions of visitors each year. The role covers governance, financial oversight and devotee services.':
-    'విజయవాడలోని శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం బోర్డు సభ్యుడిగా, ఏటా లక్షలాది మంది భక్తులు దర్శించుకునే భారతదేశ శక్తి పీఠాలలో ఒకదాని నిర్వహణలో ఆయన పాలుపంచుకుంటున్నారు. పాలన, ఆర్థిక పర్యవేక్షణ, భక్తుల సేవలు ఈ బాధ్యతలో భాగం.',
+  'He serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — the Sri Kanaka Durga Temple, one of the most visited Devi temples in South India, which receives millions of pilgrims a year. The Devasthanam is administered by a trust board under the Andhra Pradesh Endowments Department; the role covers governance, financial oversight and devotee services. He is one of several board members, not the chairman.':
+    'విజయవాడ ఇంద్రకీలాద్రిలోని శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — శ్రీ కనకదుర్గ ఆలయం — ధర్మకర్తల మండలిలో ఆయన సేవలందిస్తున్నారు. ఇది దక్షిణ భారతదేశంలో అత్యధిక మంది భక్తులు దర్శించుకునే అమ్మవారి ఆలయాలలో ఒకటి; ప్రతి సంవత్సరం లక్షలాది మంది యాత్రికులు వస్తారు. ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ పర్యవేక్షణలో ధర్మకర్తల మండళి దేవస్థానాన్ని నిర్వహిస్తుంది; పాలన, ఆర్థిక పర్యవేక్షణ, భక్తుల సేవలు ఈ బాధ్యతలో ఉంటాయి. ఆయన బోర్డు సభ్యులలో ఒకరు, ఛైర్మన్ కాదు.',
   'Hari Krishna envisions a Telangana that honours its rich Telugu heritage while embracing modern development. His focus is on creating economic opportunities for youth, improving infrastructure, ensuring good governance, and preserving the cultural identity that makes Telangana unique.':
     'సుసంపన్నమైన తెలుగు వారసత్వాన్ని గౌరవిస్తూనే ఆధునిక అభివృద్ధిని స్వీకరించే తెలంగాణను హరికృష్ణ ఆకాంక్షిస్తున్నారు. యువతకు ఆర్థిక అవకాశాలు కల్పించడం, మౌలిక సదుపాయాలను మెరుగుపరచడం, సుపరిపాలనను నిర్ధారించడం, తెలంగాణకు ప్రత్యేకతను ఇచ్చే సాంస్కృతిక అస్తిత్వాన్ని పరిరక్షించడం ఆయన ప్రాధాన్యాంశాలు.',
   'Two offices, one commitment — to the traditions that shape Telugu life, and to the development that will carry it forward.':
@@ -319,8 +319,8 @@ export const te = {
     'తెలంగాణ వ్యాప్తంగా తెలుగుదేశం పార్టీ కృషికి నాయకత్వం — అభివృద్ధి, సుపరిపాలన, తెలుగు ఆత్మగౌరవం కోసం.',
   'Board Member · Devasthanam': 'బోర్డు సభ్యుడు · దేవస్థానం',
   'Sri Durga Malleswara Swamy Varla Devasthanam': 'శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం',
-  'One of India’s Shakti Peethas — board service covering governance, devotee facilities and the continuity of tradition.':
-    'భారతదేశ శక్తి పీఠాలలో ఒకటి — పాలన, భక్తుల సౌకర్యాలు, సంప్రదాయ కొనసాగింపును కలిగిన బోర్డు సేవ.',
+  'Talikota Hari Krishna serves on the trust board of the Sri Kanaka Durga Temple at Indrakeeladri, Vijayawada — governance, devotee facilities and the continuity of tradition.':
+    'విజయవాడ ఇంద్రకీలాద్రిలోని శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలిలో తాళికోట హరికృష్ణ సేవలందిస్తున్నారు — పాలన, భక్తుల సౌకర్యాలు, సంప్రదాయ కొనసాగింపు.',
   'A life in public service': 'ప్రజా సేవలో ఒక జీవితం',
   'Media & Updates': 'మీడియా, తాజా సమాచారం',
   'In pictures': 'చిత్రాల్లో',
@@ -344,10 +344,10 @@ export const te = {
   // ---- Temple: significance, history, governance --------------------------
   'Located on the Indrakeeladri Hill on the banks of the Krishna River in Vijayawada, Andhra Pradesh, the Kanaka Durga Temple is dedicated to Goddess Kanaka Durga. The temple attracts millions of devotees annually and is best known for its Dasara Navaratri festival.':
     'ఆంధ్రప్రదేశ్‌లోని విజయవాడలో కృష్ణా నదీ తీరాన ఇంద్రకీలాద్రిపై ఉన్న కనకదుర్గ ఆలయం కనకదుర్గమ్మవారికి అంకితమైనది. ఏటా లక్షలాది మంది భక్తులు ఈ ఆలయాన్ని దర్శించుకుంటారు; దసరా నవరాత్రి ఉత్సవాలకు ఇది ప్రసిద్ధి.',
-  'The temple has a rich history spanning centuries and is considered one of the most powerful Shakti Peethas in India. It plays a central role in the spiritual and cultural life of the Telugu people.':
-    'శతాబ్దాల చరిత్ర కలిగిన ఈ ఆలయం భారతదేశంలోని అత్యంత మహిమాన్విత శక్తి పీఠాలలో ఒకటిగా పరిగణించబడుతుంది. తెలుగు ప్రజల ఆధ్యాత్మిక, సాంస్కృతిక జీవనంలో ఇది కేంద్ర స్థానం వహిస్తుంది.',
-  'The Devasthanam is administered by a trust board under the oversight of the Andhra Pradesh Endowments Department, with professional management handling day-to-day operations. Board members carry responsibility for administration, transparent use of temple funds, the quality of devotee services, and the continuity of ritual tradition.':
-    'ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ పర్యవేక్షణలో ధర్మకర్తల మండలి దేవస్థానాన్ని నిర్వహిస్తుంది; నిత్య కార్యకలాపాలను వృత్తిపరమైన యాజమాన్యం చూస్తుంది. పాలన, ఆలయ నిధుల పారదర్శక వినియోగం, భక్తుల సేవల నాణ్యత, కైంకర్య సంప్రదాయ కొనసాగింపు — వీటికి బోర్డు సభ్యులు బాధ్యత వహిస్తారు.',
+  'The temple has a history spanning centuries and is widely revered as a Shakti Peetha. It plays a central role in the spiritual and cultural life of the Telugu people.':
+    'శతాబ్దాల చరిత్ర కలిగిన ఈ ఆలయం శక్తి పీఠంగా వ్యాపకంగా పూజింపబడుతుంది. తెలుగు ప్రజల ఆధ్యాత్మిక, సాంస్కృతిక జీవనంలో ఇది కేంద్ర స్థానం వహిస్తుంది.',
+  'The Devasthanam is administered by a trust board under the oversight of the Andhra Pradesh Endowments Department, with professional management handling day-to-day operations. Board members carry responsibility for administration, transparent use of temple funds, the quality of devotee services, and the continuity of ritual tradition. Talikota Hari Krishna sits on this board as one of its members — not as its chairman, and not as an executive officer of the temple.':
+    'ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ పర్యవేక్షణలో ధర్మకర్తల మండళి దేవస్థానాన్ని నిర్వహిస్తుంది; నిత్య కార్యకలాపాలను వృత్తిపరమైన యాజమాన్యం చూస్తుంది. పాలన, ఆలయ నిధుల పారదర్శక వినియోగం, భక్తుల సేవల నాణ్యత, కైంకర్య సంప్రదాయ కొనసాగింపు — వీటికి బోర్డు సభ్యులు బాధ్యత వహిస్తారు. ఈ మండలిలో సభ్యుడిగా తాళికోట హరికృష్ణ కొనసాగుతున్నారు — ఛైర్మన్ గా కాదు, ఆలయ కార్యనిర్వాహణాధికారి గా కాదు.',
 
   // ---- Temple: board duty points ------------------------------------------
   'Overseeing day-to-day temple operations': 'ఆలయ నిత్య కార్యకలాపాల పర్యవేక్షణ',
@@ -707,4 +707,62 @@ export const te = {
   'Bazaar Hemanth Goud': 'బజార్ హేమంత్ గౌడ్',
   'Brahmam Chowdary': 'బ్రహ్మం చౌదరి',
   'Balakrishna Goud': 'బాలకృష్ణ గౌడ్',
+
+  // ---- Naming the board and the temple ------------------------------------
+  // "Devasthanam Board Member" on its own identifies nobody — there are many
+  // Devasthanam board members across the two Telugu states. Every string here
+  // says which board, of which temple, and where it is.
+  'Kanaka Durga Temple Board Member': 'కనకదుర్గ ఆలయ బోర్డు సభ్యుడు',
+  'Board Member, Sri Kanaka Durga Devasthanam': 'శ్రీ కనకదుర్గ దేవస్థానం బోర్డు సభ్యుడు',
+  'Trust Board · Sri Kanaka Durga Devasthanam, Vijayawada':
+    'ధర్మకర్తల మండలి · శ్రీ కనకదుర్గ దేవస్థానం, విజయవాడ',
+  'Trust Board Member — Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, Vijayawada':
+    'ధర్మకర్తల మండలి సభ్యుడు — శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం, ఇంద్రకీలాద్రి, విజయవాడ',
+  'Trust Board Member · Sri Kanaka Durga Devasthanam':
+    'ధర్మకర్తల మండలి సభ్యుడు · శ్రీ కనకదుర్గ దేవస్థానం',
+  'Widely revered as a Shakti Peetha': 'శక్తి పీఠంగా విస్తృతంగా పూజింపబడుతుంది',
+  'Governing body': 'పాలక వ్యవస్థ',
+  'Trust board, under the A.P. Endowments Department':
+    'ధర్మకర్తల మండలి — ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ పరిధిలో',
+  'His role': 'ఆయన బాధ్యత',
+  'Trust Board Member — one of several members, not the chairman':
+    'ధర్మకర్తల మండలి సభ్యుడు — పలువురు సభ్యులలో ఒకరు, ఛైర్మన్ కాదు',
+  'Talikota Hari Krishna — Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri, Vijayawada, and iTDP Telangana State President, Telugu Desam Party.':
+    'తాళికోట హరికృష్ణ — శ్రీ కనకదుర్గ దేవస్థానం, ఇంద్రకీలాద్రి, విజయవాడ బోర్డు సభ్యుడు; తెలుగుదేశం పార్టీ ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షుడు.',
+
+  // ---- The appointment record ---------------------------------------------
+  'The Appointment': 'నియామకం',
+  'The seat, and the record': 'బాధ్యత, దానికి ఆధారాలు',
+  'Sworn in on 11 October 2025 before the Rajagopuram on Indrakeeladri, as one of seventeen members of the trust board alongside its chairman.':
+    '2025 అక్టోబరు 11న ఇంద్రకీలాద్రిపై రాజగోపురం ఎదుట ప్రమాణ స్వీకారం — ధర్మకర్తల మండలి ఛైర్మన్‌తో పాటు పదిహేడు మంది సభ్యులలో ఒకరిగా.',
+  '119.34 lakh devotees in 2025-26, up from 93.40 lakh in 2023-24':
+    '2025-26లో 119.34 లక్షల మంది భక్తులు; 2023-24లో ఇది 93.40 లక్షలు',
+  'Figures given by the Andhra Pradesh Endowments Minister':
+    'ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ మంత్రి వెల్లడించిన గణాంకాలు',
+  'Reported by': 'కథనాలు ప్రచురించినవి',
+
+  // Fact table
+  Institution: 'సంస్థ',
+  Temple: 'ఆలయం',
+  'Sri Kanaka Durga Temple, Indrakeeladri hill, Vijayawada':
+    'శ్రీ కనకదుర్గ ఆలయం, ఇంద్రకీలాద్రి, విజయవాడ',
+  'Non-hereditary trust board, Andhra Pradesh Endowments Department':
+    'వంశపారంపర్యేతర ధర్మకర్తల మండలి, ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ',
+  'Board chairman': 'మండలి ఛైర్మన్',
+  'Borra Radhakrishna (Gandhi) — not Talikota Hari Krishna':
+    'బొర్రా రాధాకృష్ణ (గాంధీ) — తాళికోట హరికృష్ణ కాదు',
+  'His seat': 'ఆయన బాధ్యత',
+  'Trust board member, one of seventeen alongside the chairman':
+    'ధర్మకర్తల మండలి సభ్యుడు — ఛైర్మన్‌తో పాటు ఉన్న పదిహేడు మందిలో ఒకరు',
+  'Sworn in': 'ప్రమాణ స్వీకారం',
+  '11 October 2025, before the Rajagopuram on Indrakeeladri':
+    '2025 అక్టోబరు 11, ఇంద్రకీలాద్రిపై రాజగోపురం ఎదుట',
+
+  // Source labels and dates
+  'Deccan Chronicle': 'డెక్కన్ క్రానికల్',
+  'The Hans India': 'ది హన్స్ ఇండియా',
+  'NTV Telugu': 'ఎన్టీవీ తెలుగు',
+  '11 October 2025': '2025 అక్టోబరు 11',
+  'September 2025': '2025 సెప్టెంబరు',
+  '22 March 2026': '2026 మార్చి 22',
 }
