@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from '../components/LocaleLink'
 import { FaArrowRight } from 'react-icons/fa6'
 import PartyMark from '../components/PartyMark'
 import Seo from '../components/Seo'
@@ -7,8 +7,10 @@ import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
 import { site, party, focusAreas, campaigns } from '../data/site'
 import { photos, gallery } from '../data/photos'
+import { useT } from '../i18n/useT'
 
 const Political = () => {
+  const t = useT()
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -57,7 +59,7 @@ const Political = () => {
 
   const facts = [
     ['Founded', party.founded],
-    ['Founder', party.founder],
+    ['Founder', t(party.founder)],
     ['National President', party.nationalPresident],
     ['Working President', party.workingPresident],
     ['Party symbol', party.symbol],
@@ -87,17 +89,14 @@ const Political = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-5">
-              <p className="eyebrow">The Mandate</p>
+              <p className="eyebrow">{t("The Mandate")}</p>
               <h2 className="mt-5 font-display text-display">
-                Representing the citizens of Telangana
+                {t("Representing the citizens of Telangana")}
               </h2>
             </Reveal>
             <Reveal delay={0.1} className="lg:col-span-7">
               <p className="text-lead text-ink-600">
-                His political work focuses on representing the interests of Telangana’s
-                citizens and building a stronger, more prosperous state — creating economic
-                opportunity, improving infrastructure, and ensuring that people’s voices are
-                heard at every level of government.
+                {t("His political work focuses on representing the interests of Telangana’s citizens and building a stronger, more prosperous state — creating economic opportunity, improving infrastructure, and ensuring that people’s voices are heard at every level of government.")}
               </p>
             </Reveal>
           </div>
@@ -111,19 +110,19 @@ const Political = () => {
             <Reveal className="lg:col-span-6">
               {/* Standalone here, so the emblem carries the alt text itself. */}
               <PartyMark size={72} showName={false} className="mb-7" />
-              <p className="eyebrow">Telugu Desam Party</p>
+              <p className="eyebrow">{t("Telugu Desam Party")}</p>
               <h2 className="mt-5 font-display text-display text-white">
-                A legacy of Telugu self-respect
+                {t("A legacy of Telugu self-respect")}
               </h2>
-              <p className="mt-8 text-lead text-white/70">{party.heritage}</p>
+              <p className="mt-8 text-lead text-white/70">{t(party.heritage)}</p>
               <a
                 href={party.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
-                Official TDP site
-                <span className="sr-only"> (opens in a new tab)</span>
+                {t('Official TDP site')}
+                <span className="sr-only"> {t("(opens in a new tab)")}</span>
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
                   aria-hidden="true"
@@ -135,8 +134,8 @@ const Political = () => {
               <dl className="divide-y hairline-dark border-y hairline-dark">
                 {facts.map(([term, desc]) => (
                   <div key={term} className="grid grid-cols-[9rem_1fr] gap-4 py-4">
-                    <dt className="font-sans text-micro uppercase text-white/55">{term}</dt>
-                    <dd className="text-sm font-medium text-white">{desc}</dd>
+                    <dt className="font-sans text-micro uppercase text-white/55">{t(term)}</dt>
+                    <dd className="text-sm font-medium text-white">{t(desc)}</dd>
                   </div>
                 ))}
               </dl>
@@ -149,9 +148,9 @@ const Political = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Focus Areas</p>
+            <p className="eyebrow">{t("Focus Areas")}</p>
             <h2 className="mt-5 font-display text-display">
-              Initiatives for a prosperous Telangana
+              {t("Initiatives for a prosperous Telangana")}
             </h2>
           </Reveal>
 
@@ -167,7 +166,7 @@ const Political = () => {
                   <span className="index-num" aria-hidden="true">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="font-display text-headline text-ink-900">{area.title}</h3>
+                  <h3 className="font-display text-headline text-ink-900">{t(area.title)}</h3>
                   <ul className="space-y-2.5 lg:pt-1">
                     {area.points.map((point) => (
                       <li key={point} className="flex items-start gap-3 text-ink-600">
@@ -175,7 +174,7 @@ const Political = () => {
                           className="mt-[0.6rem] h-px w-3 shrink-0 bg-brand-600"
                           aria-hidden="true"
                         />
-                        <span className="text-[0.95rem] leading-relaxed">{point}</span>
+                        <span className="text-[0.95rem] leading-relaxed">{t(point)}</span>
                       </li>
                     ))}
                   </ul>
@@ -191,9 +190,9 @@ const Political = () => {
         <section className="section bg-ink-950">
           <div className="on-dark container-custom">
             <Reveal className="max-w-2xl">
-              <p className="eyebrow">Leadership in Action</p>
+              <p className="eyebrow">{t("Leadership in Action")}</p>
               <h2 className="mt-5 font-display text-display text-white">
-                Campaigns &amp; mobilisations
+                {t("Campaigns & mobilisations")}
               </h2>
             </Reveal>
 
@@ -207,14 +206,14 @@ const Political = () => {
                 >
                   <div className="lg:col-span-4">
                     <p className="font-sans text-micro uppercase text-brand-400">
-                      {c.dateLabel}
+                      {t(c.dateLabel)}
                     </p>
-                    <h3 className="mt-3 font-display text-headline text-white">{c.title}</h3>
-                    <p className="mt-2 text-sm text-white/55">{c.place}</p>
+                    <h3 className="mt-3 font-display text-headline text-white">{t(c.title)}</h3>
+                    <p className="mt-2 text-sm text-white/55">{t(c.place)}</p>
                   </div>
 
                   <div className="lg:col-span-8">
-                    <p className="text-lead text-white/75">{c.summary}</p>
+                    <p className="text-lead text-white/75">{t(c.summary)}</p>
                     <p className="mt-5 border-l-2 border-brand-500 pl-5 text-white/70">
                       {c.role}
                     </p>
@@ -222,7 +221,7 @@ const Political = () => {
                     {c.coverage?.length > 0 && (
                       <div className="mt-7">
                         <p className="font-sans text-micro uppercase text-white/45">
-                          Press coverage
+                          {t("Press coverage")}
                         </p>
                         <ul className="mt-3 space-y-2">
                           {c.coverage.map((m) => (
@@ -237,7 +236,7 @@ const Political = () => {
                                 <span className="underline-offset-4 group-hover:underline">
                                   {m.title}
                                 </span>
-                                <span className="sr-only"> (opens in a new tab)</span>
+                                <span className="sr-only"> {t("(opens in a new tab)")}</span>
                               </a>
                             </li>
                           ))}
@@ -258,14 +257,14 @@ const Political = () => {
           <div className="container-custom">
             <Reveal className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <p className="eyebrow">In Pictures</p>
-                <h2 className="mt-5 font-display text-display">Party &amp; leadership</h2>
+                <p className="eyebrow">{t("In Pictures")}</p>
+                <h2 className="mt-5 font-display text-display">{t("Party & leadership")}</h2>
               </div>
               <Link
                 to="/media"
                 className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-800 transition-opacity hover:opacity-70"
               >
-                Full gallery
+                {t('Full gallery')}
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
                   aria-hidden="true"
@@ -287,7 +286,7 @@ const Political = () => {
                       />
                     </div>
                     <p className="mt-4 text-sm leading-snug text-ink-600 transition-colors group-hover:text-ink-900">
-                      {item.caption}
+                      {t(item.caption)}
                     </p>
                   </Link>
                 </Reveal>
@@ -301,12 +300,12 @@ const Political = () => {
       <section className="bg-brand-500 py-24 lg:py-32">
         <div className="on-brand container-custom">
           <Reveal className="max-w-2xl">
-            <p className="label-rule !text-ink-800 before:!bg-ink-900/40">Get Involved</p>
+            <p className="label-rule !text-ink-800 before:!bg-ink-900/40">{t("Get Involved")}</p>
             <h2 className="mt-7 font-display text-display text-ink-900">
-              Be part of the movement
+              {t("Be part of the movement")}
             </h2>
             <p className="mt-6 text-lead text-ink-800">
-              Join the Telugu Desam Party and contribute to building a better Telangana.
+              {t("Join the Telugu Desam Party and contribute to building a better Telangana.")}
             </p>
           </Reveal>
 
@@ -324,13 +323,13 @@ const Political = () => {
               },
             ].map((card, i) => (
               <Reveal key={card.title} delay={i * 0.08} className="border-t border-ink-900/25 pt-6">
-                <h3 className="font-display text-headline text-ink-900">{card.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink-800">{card.body}</p>
+                <h3 className="font-display text-headline text-ink-900">{t(card.title)}</h3>
+                <p className="mt-3 leading-relaxed text-ink-800">{t(card.body)}</p>
                 <Link
                   to="/contact"
                   className="group mt-6 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900 transition-opacity hover:opacity-70"
                 >
-                  {card.cta}
+                  {t(card.cta)}
                   <FaArrowRight
                     className="transition-transform duration-300 group-hover:translate-x-1.5"
                     aria-hidden="true"

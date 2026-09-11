@@ -45,9 +45,96 @@
      the family was added keeps a stale config, which fails the whole stylesheet
      with "The `font-telugu` class does not exist". A plain declaration has no
      such dependency. */
-  [lang='te'] {
+  [lang='te'],
+  [lang='te-IN'],
+  html[lang^='te'] body {
     font-family: 'Noto Sans Telugu', 'Noto Sans', sans-serif;
     line-height: 1.7;
+  }
+
+  /*
+   * TELUGU TYPOGRAPHY
+   * ------------------------------------------------------------------------
+   * Telugu is not Latin with different glyphs, and three of this design's
+   * habits actively break it.
+   *
+   * 1. LETTER-SPACING. The design tracks small caps at 0.1em. Telugu builds
+   *    syllables by stacking a consonant with its vowel sign and any secondary
+   *    consonants into one cluster; forcing space between those parts pulls the
+   *    cluster apart and it reads as broken type rather than as emphasis.
+   *    Tracking is reset to normal everywhere in Telugu, including the utility
+   *    classes that set it inline.
+   *
+   * 2. TEXT-TRANSFORM: UPPERCASE. Telugu is unicameral — it has no capitals —
+   *    so uppercase does nothing at best. It is switched off so the rule cannot
+   *    interact badly with a fallback face that does have cased glyphs.
+   *
+   * 3. LINE-HEIGHT. Telugu carries vowel signs above the headline and below the
+   *    baseline, so a cluster occupies far more vertical space than a Latin
+   *    lowercase letter. The display sizes here run as tight as 0.95, which
+   *    collides the marks of one line with the next. Headings get 1.35 and body
+   *    text 1.75 — measured against the tallest clusters in the copy, such as
+   *    దేవస్థానం and ఐటీడీపీ.
+   *
+   * Telugu also sets 15-20% longer than the same sentence in English, so
+   *    buttons and nav items get a little more horizontal room rather than
+   *    wrapping or overflowing their container.
+   */
+  html[lang^='te'] {
+    /* Reset tracking wherever it is set — including Tailwind's utilities,
+       which carry it as an inline-weight class on the element itself. */
+    letter-spacing: normal;
+  }
+
+  html[lang^='te'] *,
+  [lang='te'] * {
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+
+  /*
+   * The display face has to be reached through the CLASS, not just the heading.
+   *
+   * Measured on the Telugu homepage before this rule existed: the hero name
+   * computed to Playfair Display at 44px with a line-height of 43.12px — a
+   * ratio of 0.98. Playfair carries no Telugu glyphs at all, so every
+   * character was silently falling through to whatever the system offered,
+   * and at 0.98 the vowel signs that sit above and below a Telugu cluster had
+   * nowhere to go.
+   *
+   * The cause is that the headline text is not in the <h1> itself but in a
+   * <span class="font-display text-hero"> inside it, and a font utility on the
+   * span beats a rule written against the heading. Targeting the utility
+   * classes fixes it wherever they appear. `html[lang^='te'] .font-display` is
+   * two classes plus an element, so it also outranks `leading-none` and the
+   * other single-class leading utilities without needing !important.
+   */
+  html[lang^='te'] h1,
+  html[lang^='te'] h2,
+  html[lang^='te'] h3,
+  html[lang^='te'] h4,
+  html[lang^='te'] .font-display,
+  html[lang^='te'] .font-heading {
+    font-family: 'Noto Sans Telugu', 'Noto Sans', sans-serif;
+    line-height: 1.35;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  html[lang^='te'] p,
+  html[lang^='te'] li {
+    line-height: 1.75;
+  }
+
+  /* Room for the longer string and the taller cluster. */
+  html[lang^='te'] .btn {
+    @apply px-6 py-3.5 text-[0.85rem] leading-normal;
+  }
+
+  html[lang^='te'] .nav-link,
+  html[lang^='te'] .eyebrow,
+  html[lang^='te'] .label-rule {
+    @apply text-[0.9rem] leading-normal;
   }
 
   :focus-visible {

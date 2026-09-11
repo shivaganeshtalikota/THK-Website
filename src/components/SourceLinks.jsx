@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6'
+import { useT } from '../i18n/useT'
 
 /**
  * Press citations for a photograph or an update.
@@ -25,6 +26,7 @@ const linkCls =
 
 const SourceLinks = ({ sources, tone = 'light', className = '' }) => {
   const [expanded, setExpanded] = useState(false)
+  const t = useT()
   const list = (sources ?? []).filter((s) => s?.url)
   if (list.length === 0) return null
 
@@ -36,7 +38,7 @@ const SourceLinks = ({ sources, tone = 'light', className = '' }) => {
 
   return (
     <p className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs ${base} ${className}`}>
-      <span className={dark ? 'text-white/45' : 'text-ink-500'}>Source</span>
+      <span className={dark ? 'text-white/45' : 'text-ink-500'}>{t('Source')}</span>
       {shown.map((s) => (
         <a
           key={s.url}

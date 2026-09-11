@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import Link, { LocaleNavLink as NavLink } from './LocaleLink'
 // fa6 renames the FA5 icons: FaTimes -> FaXmark, FaTwitter -> FaXTwitter.
 import { FaBars, FaXmark, FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { nav, social, site } from '../data/site'
+import { useT } from '../i18n/useT'
+import LanguageToggle from './LanguageToggle'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
@@ -13,7 +16,9 @@ const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitt
  * than AnimatePresence. It is one line of CSS, needs no JS to settle, and
  * `aria-hidden` plus `inert` keep the collapsed panel out of the tab order.
  */
-const MobilePanel = ({ isOpen }) => (
+const MobilePanel = ({ isOpen, onNavigate }) => {
+  const t = useT()
+  return (
   <div
     id="mobile-menu"
     className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out lg:hidden ${
@@ -37,11 +42,17 @@ const MobilePanel = ({ isOpen }) => (
                 }`
               }
             >
-              {link.name}
+              {t(link.name)}
             </NavLink>
           </li>
         ))}
       </ul>
+
+      {/* The toggle again inside the mobile panel: on a phone the header row
+          has no space for it beside the wordmark and the menu button. */}
+      <div className="flex justify-center border-t border-ink-900/15 py-4">
+        <LanguageToggle onNavigate={onNavigate} />
+      </div>
 
       <div className="flex items-center justify-center gap-2 border-t border-ink-900/15 py-4">
         {social.map((s) => {
@@ -52,7 +63,7 @@ const MobilePanel = ({ isOpen }) => (
               href={s.url}
               target="_blank"
               rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
-              aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
+              aria-label={`${t(site.name)} on ${s.name} ${t('(opens in a new tab)')}`}
               className="grid h-11 w-11 place-items-center bg-ink-900/10 text-ink-900 transition-colors hover:bg-ink-900 hover:text-brand-500"
             >
               <Glyph className="text-lg" aria-hidden="true" />
@@ -62,7 +73,8 @@ const MobilePanel = ({ isOpen }) => (
       </div>
     </div>
   </div>
-)
+  )
+}
 
 /**
  * Header.
@@ -75,6 +87,7 @@ const MobilePanel = ({ isOpen }) => (
  */
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const t = useT()
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
 
@@ -106,7 +119,7 @@ const Navbar = () => {
         scrolled ? 'shadow-[0_2px_20px_-6px_rgba(10,10,9,0.35)]' : ''
       }`}
     >
-      <nav className="container-custom" aria-label="Primary">
+      <nav className="container-custom" aria-label={t('Primary')}>
         <div className="flex h-[var(--nav-h)] items-center justify-between gap-4">
           {/* Wordmark. Both names carry equal weight — the surname is not a
               subtitle, and a single rule runs under the whole name. */}
@@ -116,7 +129,7 @@ const Navbar = () => {
             aria-label={`${site.name} — home`}
           >
             <span className="relative font-display text-[1.02rem] font-bold leading-none tracking-tight text-ink-900 sm:text-[1.3rem]">
-              Talikota Hari Krishna
+              {t('Talikota Hari Krishna')}
               <span
                 className="absolute -bottom-1.5 left-0 h-[2px] w-full origin-left bg-ink-900 transition-transform duration-300 group-hover:scale-x-105"
                 aria-hidden="true"
@@ -142,7 +155,7 @@ const Navbar = () => {
                     ].join(' ')
                   }
                 >
-                  {link.name}
+                  {t(link.name)}
                 </NavLink>
               </li>
             ))}
@@ -158,7 +171,7 @@ const Navbar = () => {
                       href={s.url}
                       target="_blank"
                       rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
-                      aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
+                      aria-label={`${t(site.name)} on ${s.name} ${t('(opens in a new tab)')}`}
                       className="grid h-9 w-9 place-items-center rounded-sm text-ink-900/70 transition-colors hover:bg-ink-900/10 hover:text-ink-900"
                     >
                       <Glyph className="text-[1rem]" aria-hidden="true" />
@@ -168,18 +181,22 @@ const Navbar = () => {
               })}
             </ul>
 
+            {/* Desktop only — the phone gets it inside the menu panel, where
+                there is room for both scripts without crowding the wordmark. */}
+            <LanguageToggle className="hidden lg:inline-flex" />
+
             <Link
               to="/contact"
               className="tap-round hidden rounded-sm bg-ink-900 px-5 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink-800 xl:inline-flex"
             >
-              Get Involved
+              {t('Get Involved')}
             </Link>
 
             <button
               type="button"
               onClick={() => setIsOpen((v) => !v)}
               className="tap-round grid h-11 w-11 place-items-center rounded-sm text-ink-900 hover:bg-ink-900/10 lg:hidden"
-              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-label={isOpen ? t('Close menu') : t('Open menu')}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
             >
@@ -188,7 +205,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <MobilePanel isOpen={isOpen} />
+        <MobilePanel isOpen={isOpen} onNavigate={() => setIsOpen(false)} />
       </nav>
     </header>
   )

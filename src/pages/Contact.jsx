@@ -5,6 +5,7 @@ import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import { site, contact, social, subjectOptions } from '../data/site'
+import { useT } from '../i18n/useT'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
@@ -25,6 +26,7 @@ const IS_CONFIGURED = ACCESS_KEY.length > 0
 const EMPTY = { name: '', email: '', phone: '', subject: '', location: '', message: '' }
 
 const Contact = () => {
+  const t = useT()
   const [formData, setFormData] = useState(EMPTY)
   const [status, setStatus] = useState({ state: 'idle', message: '' })
 
@@ -101,8 +103,8 @@ const Contact = () => {
         <div className="container-custom grid gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Sidebar */}
           <Reveal className="lg:col-span-4">
-            <p className="eyebrow">Direct Contact</p>
-            <h2 className="mt-5 font-display text-title">Reach the office</h2>
+            <p className="eyebrow">{t("Direct Contact")}</p>
+            <h2 className="mt-5 font-display text-title">{t("Reach the office")}</h2>
 
             <ul className="mt-8 space-y-6">
               <li className="flex gap-4">
@@ -110,8 +112,8 @@ const Contact = () => {
                   <FaMapMarkerAlt aria-hidden="true" />
                 </span>
                 <div>
-                  <h3 className="font-sans text-sm font-semibold text-ink-900">Office</h3>
-                  <p className="mt-0.5 text-sm text-ink-600">{contact.office.value}</p>
+                  <h3 className="font-sans text-sm font-semibold text-ink-900">{t("Office")}</h3>
+                  <p className="mt-0.5 text-sm text-ink-600">{t(contact.office.value)}</p>
                 </div>
               </li>
 
@@ -121,7 +123,7 @@ const Contact = () => {
                     <FaEnvelope aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
-                    <h3 className="font-sans text-sm font-semibold text-ink-900">Email</h3>
+                    <h3 className="font-sans text-sm font-semibold text-ink-900">{t("Email")}</h3>
                     <a
                       href={`mailto:${contact.email.value}`}
                       className="mt-0.5 block break-all text-sm text-brand-800 underline-offset-2 hover:underline"
@@ -135,15 +137,14 @@ const Contact = () => {
                 // mail into a void. Better to show nothing than something wrong.
                 <li className="border-l-2 border-ink-300 bg-ink-50 p-4">
                   <p className="text-xs leading-relaxed text-ink-500">
-                    Direct email and phone details will be published here once confirmed by
-                    the office. Until then, please use the form or the social channels below.
+                    {t("Direct email and phone details will be published here once confirmed by the office. Until then, please use the form or the social channels below.")}
                   </p>
                 </li>
               )}
             </ul>
 
             <h3 className="mt-12 font-sans text-micro uppercase text-ink-500">
-              Social
+              {t("Social")}
             </h3>
             <ul className="mt-4 flex gap-2.5">
               {social.map((s) => {
@@ -168,9 +169,9 @@ const Contact = () => {
           {/* Form */}
           <Reveal delay={0.1} className="lg:col-span-8">
             <div className="border hairline bg-white p-7 sm:p-10">
-              <h2 className="font-display text-title">Send a message</h2>
+              <h2 className="font-display text-title">{t("Send a message")}</h2>
               <p className="mt-2 text-sm text-ink-500">
-                Fields marked with an asterisk are required.
+                {t("Fields marked with an asterisk are required.")}
               </p>
 
               {!IS_CONFIGURED && (
@@ -183,13 +184,12 @@ const Contact = () => {
                     aria-hidden="true"
                   />
                   <p className="text-sm leading-relaxed text-amber-900">
-                    <strong className="font-bold">This form isn’t connected yet.</strong>{' '}
+                    <strong className="font-bold">{t("This form isn’t connected yet.")}</strong>{' '}
                     Message delivery needs a Web3Forms key in{' '}
                     <code className="rounded bg-amber-100 px-1 py-0.5 text-xs">
                       VITE_WEB3FORMS_KEY
                     </code>
-                    . It is disabled until then, so that nobody is told their message was
-                    sent when it wasn’t.
+                    {t(". It is disabled until then, so that nobody is told their message was sent when it wasn’t.")}
                   </p>
                 </div>
               )}
@@ -216,14 +216,14 @@ const Contact = () => {
                       placeholder="+91 00000 00000"
                     />
                     <div>
-                      <Label htmlFor="subject" required>Subject</Label>
+                      <Label htmlFor="subject" required>{t("Subject")}</Label>
                       <select
                         id="subject" name="subject" value={formData.subject}
                         onChange={handleChange} required className={controlClass}
                       >
-                        <option value="">Select a subject</option>
+                        <option value="">{t("Select a subject")}</option>
                         {subjectOptions.map((o) => (
-                          <option key={o} value={o}>{o}</option>
+                          <option key={o} value={o}>{t(o)}</option>
                         ))}
                       </select>
                     </div>
@@ -231,11 +231,11 @@ const Contact = () => {
 
                   <Field
                     label="Location / constituency" name="location" value={formData.location}
-                    onChange={handleChange} placeholder="Your city or constituency"
+                    onChange={handleChange} placeholder={t("Your city or constituency")}
                   />
 
                   <div>
-                    <Label htmlFor="message" required>Message</Label>
+                    <Label htmlFor="message" required>{t("Message")}</Label>
                     <textarea
                       id="message" name="message" rows="6" value={formData.message}
                       onChange={handleChange} required
@@ -251,10 +251,10 @@ const Contact = () => {
                           className="h-4 w-4 animate-spin rounded-full border-2 border-ink-900/30 border-t-ink-900"
                           aria-hidden="true"
                         />
-                        Sending…
+                        {t("Sending…")}
                       </>
                     ) : (
-                      <>Send message <FaPaperPlane aria-hidden="true" /></>
+                      <>{t("Send message")} <FaPaperPlane aria-hidden="true" /></>
                     )}
                   </button>
                 </fieldset>
@@ -288,23 +288,28 @@ const controlClass =
   'focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15 ' +
   'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-400'
 
-const Label = ({ htmlFor, required, children }) => (
+const Label = ({ htmlFor, required, children }) => {
+  const t = useT()
+  return (
   <label
     htmlFor={htmlFor}
     className="mb-2 block font-sans text-xs font-semibold text-ink-700"
   >
-    {children}
+    {t(children)}
     {required && (
       <>
         <span aria-hidden="true" className="ml-0.5 text-brand-800">*</span>
-        <span className="sr-only"> (required)</span>
+        <span className="sr-only"> {t("(required)")}</span>
       </>
     )}
   </label>
-)
+  )
+}
 
 const Field = ({ label, name, required, ...rest }) => (
   <div>
+    {/* Label runs the text through t(), so every field on the form is
+        translated from one place rather than at each call site. */}
     <Label htmlFor={name} required={required}>{label}</Label>
     <input id={name} name={name} required={required} className={controlClass} {...rest} />
   </div>

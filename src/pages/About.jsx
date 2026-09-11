@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from '../components/LocaleLink'
 import { FaArrowRight } from 'react-icons/fa6'
 import PostsFeed from '../components/PostsFeed'
 import Seo from '../components/Seo'
@@ -7,8 +7,10 @@ import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
 import { site, party, biography, values, responsibilities, roles, faqs } from '../data/site'
 import { photos } from '../data/photos'
+import { useT } from '../i18n/useT'
 
 const About = () => {
+  const t = useT()
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -54,13 +56,13 @@ const About = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-7">
-              <p className="eyebrow">Biography</p>
+              <p className="eyebrow">{t("Biography")}</p>
               <div className="mt-8 space-y-6 text-lead text-ink-600">
                 <p className="first-letter:float-left first-letter:mr-3 first-letter:mt-1.5 first-letter:font-display first-letter:text-[4.2rem] first-letter:font-bold first-letter:leading-[0.75] first-letter:text-brand-700">
-                  {biography.intro}
+                  {t(biography.intro)}
                 </p>
-                <p>{biography.community}</p>
-                <p>{biography.journey}</p>
+                <p>{t(biography.community)}</p>
+                <p>{t(biography.journey)}</p>
               </div>
             </Reveal>
 
@@ -74,9 +76,9 @@ const About = () => {
                 />
                 <dl className="mt-8 divide-y hairline border-y hairline">
                   {[
-                    ...roles.map((r) => [r.title, r.org]),
-                    ['Party', `${party.name} (${party.abbr})`],
-                    ['Based in', `${site.location.locality}, ${site.location.region}`],
+                    ...roles.map((r) => [t(r.title), t(r.org)]),
+                    [t('Party'), t(`${party.name} (${party.abbr})`)],
+                    [t('Based in'), t(`${site.location.locality}, ${site.location.region}`)],
                   ].map(([term, desc]) => (
                     <div key={term} className="py-4">
                       <dt className="font-sans text-micro uppercase text-ink-500">{term}</dt>
@@ -94,9 +96,9 @@ const About = () => {
       <section className="bg-ink-950 py-24 lg:py-32">
         <div className="on-dark container-text text-center">
           <Reveal>
-            <p className="eyebrow">Vision for Telangana</p>
+            <p className="eyebrow">{t("Vision for Telangana")}</p>
             <p className="mt-8 font-display text-[clamp(1.35rem,1.05rem+1.5vw,2.3rem)] font-semibold leading-[1.35] tracking-[-0.015em] text-white">
-              {biography.vision}
+              {t(biography.vision)}
             </p>
           </Reveal>
         </div>
@@ -106,8 +108,8 @@ const About = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Core Values</p>
-            <h2 className="mt-5 font-display text-display">The principles behind the work</h2>
+            <p className="eyebrow">{t("Core Values")}</p>
+            <h2 className="mt-5 font-display text-display">{t("The principles behind the work")}</h2>
           </Reveal>
 
           <div className="mt-14 grid gap-x-12 gap-y-11 sm:grid-cols-2 lg:grid-cols-3">
@@ -117,8 +119,8 @@ const About = () => {
                 delay={Math.min(i, 5) * 0.05}
                 className="border-t hairline pt-6"
               >
-                <h3 className="font-display text-headline text-ink-900">{value.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink-600">{value.description}</p>
+                <h3 className="font-display text-headline text-ink-900">{t(value.title)}</h3>
+                <p className="mt-3 leading-relaxed text-ink-600">{t(value.description)}</p>
               </Reveal>
             ))}
           </div>
@@ -130,11 +132,14 @@ const About = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-5">
-              <p className="eyebrow">The Party Office</p>
-              <h2 className="mt-5 font-display text-title">What the iTDP State President does</h2>
+              <p className="eyebrow">{t("The Party Office")}</p>
+              <h2 className="mt-5 font-display text-title">{t("What the iTDP State President does")}</h2>
               <p className="mt-6 text-ink-600">
-                As {site.secondaryRole}, the work spans organisation-building, representation,
-                and keeping the party answerable to the citizens it serves.
+                {/* One unit with the title substituted, so Telugu can order
+                    the clause its own way rather than around a fixed slot. */}
+                {t(
+                  `As ${site.secondaryRole}, the work spans organisation-building, representation, and keeping the party answerable to the citizens it serves.`
+                )}
               </p>
             </Reveal>
 
@@ -150,7 +155,7 @@ const About = () => {
                     >
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-ink-700">{item}</span>
+                    <span className="text-ink-700">{t(item)}</span>
                   </li>
                 ))}
               </ul>
@@ -164,11 +169,10 @@ const About = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-4">
-              <p className="eyebrow">In His Own Words</p>
-              <h2 className="mt-5 font-display text-title">Recent posts</h2>
+              <p className="eyebrow">{t("In His Own Words")}</p>
+              <h2 className="mt-5 font-display text-title">{t("Recent posts")}</h2>
               <p className="mt-6 text-ink-600">
-                The office posts on X as events happen — party programmes, temple
-                service and constituency work.
+                {t("The office posts on X as events happen — party programmes, temple service and constituency work.")}
               </p>
             </Reveal>
             <Reveal delay={0.1} className="lg:col-span-8">
@@ -183,10 +187,10 @@ const About = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-4">
-              <p className="eyebrow">Frequently Asked</p>
-              <h2 className="mt-5 font-display text-title">Common questions</h2>
+              <p className="eyebrow">{t("Frequently Asked")}</p>
+              <h2 className="mt-5 font-display text-title">{t("Common questions")}</h2>
               <p className="mt-6 text-ink-600">
-                Straight answers about his roles, party and public service.
+                {t("Straight answers about his roles, party and public service.")}
               </p>
             </Reveal>
 
@@ -194,8 +198,8 @@ const About = () => {
               <dl className="divide-y hairline border-y hairline">
                 {faqs.map((f) => (
                   <div key={f.q} className="py-7">
-                    <dt className="font-display text-headline text-ink-900">{f.q}</dt>
-                    <dd className="mt-3 leading-relaxed text-ink-600">{f.a}</dd>
+                    <dt className="font-display text-headline text-ink-900">{t(f.q)}</dt>
+                    <dd className="mt-3 leading-relaxed text-ink-600">{t(f.a)}</dd>
                   </div>
                 ))}
               </dl>
@@ -209,13 +213,13 @@ const About = () => {
         <div className="on-brand container-custom">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-5">
-              <p className="label-rule !text-ink-800 before:!bg-ink-900/40">Party Heritage</p>
+              <p className="label-rule !text-ink-800 before:!bg-ink-900/40">{t("Party Heritage")}</p>
               <h2 className="mt-7 font-display text-title text-ink-900">
-                Carrying forward NTR’s legacy
+                {t("Carrying forward NTR’s legacy")}
               </h2>
-              <p className="mt-6 text-ink-800">{party.heritage}</p>
+              <p className="mt-6 text-ink-800">{t(party.heritage)}</p>
               <Link to="/political" className="btn-outline mt-9">
-                Political leadership <FaArrowRight aria-hidden="true" />
+                {t('Political leadership')} <FaArrowRight aria-hidden="true" />
               </Link>
             </Reveal>
 
@@ -232,7 +236,7 @@ const About = () => {
                     >
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <p className="mt-1.5 font-medium leading-snug text-ink-900">{principle}</p>
+                    <p className="mt-1.5 font-medium leading-snug text-ink-900">{t(principle)}</p>
                   </li>
                 ))}
               </ul>

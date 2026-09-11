@@ -24,7 +24,20 @@ const ROOT = join(HERE, '..')
 const DIST = join(ROOT, 'dist')
 
 // Keep in sync with the <Routes> in src/App.jsx and scripts/generate-sitemap.js.
-const ROUTES = ['/', '/about', '/political', '/community', '/media', '/contact', '/privacy', '/terms']
+const EN_ROUTES = ['/', '/about', '/political', '/community', '/media', '/contact', '/privacy', '/terms']
+
+/**
+ * The same eight pages again under /te.
+ *
+ * Prerendering both trees is what makes the Telugu real to a search engine:
+ * /te/about becomes a static HTML file with Telugu in the body, its own title
+ * and description, and an hreflang pair pointing at its English twin. Without
+ * it the Telugu would exist only after JavaScript ran — exactly the situation
+ * the rest of this script was written to fix.
+ */
+const TE_ROUTES = EN_ROUTES.map((r) => (r === '/' ? '/te' : `/te${r}`))
+
+const ROUTES = [...EN_ROUTES, ...TE_ROUTES]
 
 // Rendered so a direct visit to /admin serves a real file rather than the 404
 // page — every route on a static host needs one. It is deliberately NOT in
@@ -91,8 +104,18 @@ function stripTemplateHead(html) {
     .replace(/<meta\s+property="profile:[^"]*"[^>]*>\s*/gi, '')
 }
 
-function compose(template, head, bodyHtml) {
+function compose(template, head, bodyHtml, route = '/') {
+  /*
+   * <html lang> has to match the page, not the template.
+   *
+   * The template hardcodes en-IN. Left alone, every Telugu page would declare
+   * itself English — which mispronounces the page in a screen reader, tells
+   * Google the Telugu pages are English (undoing the hreflang pair), and gives
+   * the font stack no reason to reach for the Telugu face.
+   */
+  const isTe = route === '/te' || route.startsWith('/te/')
   return stripTemplateHead(template)
+    .replace(/<html lang="[^"]*">/i, `<html lang="${isTe ? 'te-IN' : 'en-IN'}">`)
     .replace('</head>', `  ${serialiseHead(head)}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
 }
@@ -112,7 +135,7 @@ async function main() {
   let count = 0
   for (const route of [...ROUTES, ...UNLISTED_ROUTES]) {
     const { html, head } = render(route)
-    const page = compose(template, head, html)
+    const page = compose(template, head, html, route)
 
     const outDir = route === '/' ? DIST : join(DIST, route)
     mkdirSync(outDir, { recursive: true })

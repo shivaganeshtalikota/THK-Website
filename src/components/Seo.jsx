@@ -1,7 +1,9 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useHead } from './Head'
 import { site } from '../data/site'
+import { langFromPath, localePath, LOCALE, OG_LOCALE } from '../i18n'
+import { useT } from '../i18n/useT'
 
 /**
  * Per-page SEO / social metadata.
@@ -23,6 +25,7 @@ const Seo = ({
   schema,
 }) => {
   const { pathname } = useLocation()
+  const t = useT()
 
   const head = useMemo(() => {
     /*
@@ -55,31 +58,62 @@ const Seo = ({
           },
         ]
       : []
-    const canonical = `${site.url}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}`
+    const clean = (p) => `${site.url}${p === '/' ? '/' : p.replace(/\/$/, '')}`
+    const canonical = clean(pathname)
+
+    /*
+     * hreflang.
+     *
+     * Each page names itself and its twin in the other language. This is what
+     * stops Google treating /about and /te/about as duplicates competing with
+     * each other, and what lets it serve the Telugu page to a Telugu searcher
+     * and the English one to everyone else.
+     *
+     * Three links, not two. x-default names the version to show a searcher
+     * whose language matches neither — without it Google picks one itself.
+     * Every page must list every alternate INCLUDING itself, or the set is
+     * ignored; that is why `en` is emitted on the Telugu pages too.
+     */
+    const lang = langFromPath(pathname)
+    const other = lang === 'te' ? 'en' : 'te'
+    const enHref = clean(localePath(pathname, 'en'))
+    const teHref = clean(localePath(pathname, 'te'))
 
     // No `title` means the homepage, which gets the full descriptive title
     // rather than a suffix. "Home | Talikota Hari Krishna" would waste the
     // single most valuable string on the site — the one Google shows for his
     // name.
+    /*
+     * The title and description are translated here rather than at each call
+     * site. They are the two strings a searcher actually reads in a result, so
+     * a Telugu page whose <title> is English is a Telugu page that looks
+     * English in Google — which would waste the whole /te tree.
+     */
     const fullTitle = title
-      ? `${title} | ${site.name}`
-      : `${site.name} · Devasthanam Board Member`
+      ? `${t(title)} | ${t(site.name)}`
+      : `${t(site.name)} · ${t('Devasthanam Board Member')}`
 
     const alt = `${site.name} — ${site.role}`
 
     const tags = [
       ...preloadTags,
-      { _tag: 'meta', name: 'description', content: description },
+      { _tag: 'meta', name: 'description', content: t(description) },
       { _tag: 'link', rel: 'canonical', href: canonical },
+      { _tag: 'link', rel: 'alternate', hreflang: 'en-IN', href: enHref },
+      { _tag: 'link', rel: 'alternate', hreflang: 'te-IN', href: teHref },
+      { _tag: 'link', rel: 'alternate', hreflang: 'x-default', href: enHref },
 
       // Open Graph — what WhatsApp, Facebook, LinkedIn and Telegram read to
       // build the link preview card.
       { _tag: 'meta', property: 'og:type', content: type },
       { _tag: 'meta', property: 'og:site_name', content: `${site.name} Official` },
-      { _tag: 'meta', property: 'og:locale', content: 'en_IN' },
+      { _tag: 'meta', property: 'og:locale', content: OG_LOCALE[lang] },
+      // The other language, so a share card on a Telugu page tells Facebook and
+      // WhatsApp that an English version exists, and the reverse.
+      { _tag: 'meta', property: 'og:locale:alternate', content: OG_LOCALE[other] },
       { _tag: 'meta', property: 'og:url', content: canonical },
       { _tag: 'meta', property: 'og:title', content: fullTitle },
-      { _tag: 'meta', property: 'og:description', content: description },
+      { _tag: 'meta', property: 'og:description', content: t(description) },
       { _tag: 'meta', property: 'og:image', content: image },
       { _tag: 'meta', property: 'og:image:secure_url', content: image },
       // WhatsApp and Facebook use this as a decoding hint. index.html
@@ -94,7 +128,7 @@ const Seo = ({
       { _tag: 'meta', name: 'twitter:site', content: '@THK_iTDP' },
       { _tag: 'meta', name: 'twitter:creator', content: '@THK_iTDP' },
       { _tag: 'meta', name: 'twitter:title', content: fullTitle },
-      { _tag: 'meta', name: 'twitter:description', content: description },
+      { _tag: 'meta', name: 'twitter:description', content: t(description) },
       { _tag: 'meta', name: 'twitter:image', content: image },
       { _tag: 'meta', name: 'twitter:image:alt', content: alt },
     ]
@@ -152,9 +186,25 @@ const Seo = ({
     }
 
     return { title: fullTitle, tags }
-  }, [pathname, title, description, image, type, noindex, schema, preloadPhoto])
+  }, [pathname, title, description, image, type, noindex, schema, preloadPhoto, t])
 
   useHead(head)
+
+  /*
+   * Keep <html lang> in step with client-side navigation.
+   *
+   * The prerendered file already carries the right value, so a visitor landing
+   * on /te/about from a search result is correct before any JavaScript runs.
+   * But React Router navigations do not reload the document — toggling to
+   * Telugu from the nav would have swapped every string while the document
+   * still claimed to be English. A screen reader would have carried on
+   * pronouncing Telugu with English phonetics for the rest of the session.
+   */
+  useEffect(() => {
+    const lang = langFromPath(pathname)
+    document.documentElement.lang = LOCALE[lang]
+  }, [pathname])
+
   return null
 }
 
