@@ -113,7 +113,7 @@ const Contact = () => {
                 </span>
                 <div>
                   <h3 className="font-sans text-sm font-semibold text-ink-900">{t("Office")}</h3>
-                  <p className="mt-0.5 text-sm text-ink-600">{contact.office.value}</p>
+                  <p className="mt-0.5 text-sm text-ink-600">{t(contact.office.value)}</p>
                 </div>
               </li>
 
@@ -231,7 +231,7 @@ const Contact = () => {
 
                   <Field
                     label="Location / constituency" name="location" value={formData.location}
-                    onChange={handleChange} placeholder="Your city or constituency"
+                    onChange={handleChange} placeholder={t("Your city or constituency")}
                   />
 
                   <div>
@@ -254,7 +254,7 @@ const Contact = () => {
                         {t("Sending…")}
                       </>
                     ) : (
-                      <>Send message <FaPaperPlane aria-hidden="true" /></>
+                      <>{t("Send message")} <FaPaperPlane aria-hidden="true" /></>
                     )}
                   </button>
                 </fieldset>
@@ -295,7 +295,7 @@ const Label = ({ htmlFor, required, children }) => {
     htmlFor={htmlFor}
     className="mb-2 block font-sans text-xs font-semibold text-ink-700"
   >
-    {children}
+    {t(children)}
     {required && (
       <>
         <span aria-hidden="true" className="ml-0.5 text-brand-800">*</span>
@@ -308,6 +308,8 @@ const Label = ({ htmlFor, required, children }) => {
 
 const Field = ({ label, name, required, ...rest }) => (
   <div>
+    {/* Label runs the text through t(), so every field on the form is
+        translated from one place rather than at each call site. */}
     <Label htmlFor={name} required={required}>{label}</Label>
     <input id={name} name={name} required={required} className={controlClass} {...rest} />
   </div>

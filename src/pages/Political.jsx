@@ -121,7 +121,7 @@ const Political = () => {
                 rel="noopener noreferrer"
                 className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
-                Official TDP site
+                {t('Official TDP site')}
                 <span className="sr-only"> {t("(opens in a new tab)")}</span>
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
@@ -166,7 +166,7 @@ const Political = () => {
                   <span className="index-num" aria-hidden="true">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="font-display text-headline text-ink-900">{area.title}</h3>
+                  <h3 className="font-display text-headline text-ink-900">{t(area.title)}</h3>
                   <ul className="space-y-2.5 lg:pt-1">
                     {area.points.map((point) => (
                       <li key={point} className="flex items-start gap-3 text-ink-600">
@@ -206,7 +206,7 @@ const Political = () => {
                 >
                   <div className="lg:col-span-4">
                     <p className="font-sans text-micro uppercase text-brand-400">
-                      {c.dateLabel}
+                      {t(c.dateLabel)}
                     </p>
                     <h3 className="mt-3 font-display text-headline text-white">{t(c.title)}</h3>
                     <p className="mt-2 text-sm text-white/55">{t(c.place)}</p>
@@ -264,7 +264,7 @@ const Political = () => {
                 to="/media"
                 className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-800 transition-opacity hover:opacity-70"
               >
-                Full gallery
+                {t('Full gallery')}
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
                   aria-hidden="true"
@@ -323,13 +323,13 @@ const Political = () => {
               },
             ].map((card, i) => (
               <Reveal key={card.title} delay={i * 0.08} className="border-t border-ink-900/25 pt-6">
-                <h3 className="font-display text-headline text-ink-900">{card.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink-800">{card.body}</p>
+                <h3 className="font-display text-headline text-ink-900">{t(card.title)}</h3>
+                <p className="mt-3 leading-relaxed text-ink-800">{t(card.body)}</p>
                 <Link
                   to="/contact"
                   className="group mt-6 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900 transition-opacity hover:opacity-70"
                 >
-                  {card.cta}
+                  {t(card.cta)}
                   <FaArrowRight
                     className="transition-transform duration-300 group-hover:translate-x-1.5"
                     aria-hidden="true"

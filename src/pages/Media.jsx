@@ -11,15 +11,27 @@ import { photos, gallery, galleryGroups } from '../data/photos'
 import { videos, channel } from '../data/videos'
 import uploads from '../data/uploads.json'
 import SourceLinks from '../components/SourceLinks'
-import { useT } from '../i18n/useT'
+import { useT, useLang } from '../i18n/useT'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
-const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+/*
+ * Dates in the reader's language.
+ *
+ * Intl already carries Telugu month names, so this needs no dictionary entries
+ * and cannot drift out of step with the rest of the translation. Hardcoding
+ * 'en-IN' left "10 August 2026" sitting under a Telugu video title.
+ */
+const formatDate = (iso, lang = 'en') =>
+  new Date(iso).toLocaleDateString(lang === 'te' ? 'te-IN' : 'en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 
 /** Full-screen viewer. Keyboard-navigable and focus-trapped at the edges. */
 const Lightbox = ({ items, index, onClose, onStep }) => {
+  const t = useT()
   const item = items[index]
 
   // Mount at rest, then flip on the next frame so the CSS transition has two
@@ -132,6 +144,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
 
 const Media = () => {
   const t = useT()
+  const lang = useLang()
   const [group, setGroup] = useState('all')
   const [lightbox, setLightbox] = useState(null)
 
@@ -374,7 +387,7 @@ const Media = () => {
                     </p>
                   )}
                   <time dateTime={v.published} className="mt-2 block text-xs text-white/45">
-                    {formatDate(v.published)}
+                    {formatDate(v.published, lang)}
                   </time>
                 </a>
               </Reveal>
@@ -410,7 +423,7 @@ const Media = () => {
                       dateTime={update.date}
                       className="font-sans text-micro uppercase text-brand-800"
                     >
-                      {formatDate(update.date)}
+                      {formatDate(update.date, lang)}
                     </time>
                     <h3 className="mt-3 font-display text-headline text-ink-900">
                       {update.title}
@@ -459,7 +472,7 @@ const Media = () => {
                           accounts the office actually runs. */}
                       {s.official === false && (
                         <span className="mt-0.5 block text-xs text-ink-400">
-                          {s.note ?? 'Not run by the office'}
+                          {t(s.note ?? 'Not run by the office')}
                         </span>
                       )}
                     </span>

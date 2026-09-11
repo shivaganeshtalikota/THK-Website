@@ -637,4 +637,58 @@ export const te = {
     'తాళికోట హరికృష్ణ అధికారిక వెబ్‌సైట్ సందర్శకుల సమాచారాన్ని ఎలా నిర్వహిస్తుంది.',
   'Terms governing the use of the official website of Talikota Hari Krishna.':
     'తాళికోట హరికృష్ణ అధికారిక వెబ్‌సైట్ వినియోగానికి వర్తించే నిబంధనలు.',
+
+  // ---- Footer and chrome --------------------------------------------------
+  'Skip to main content': 'నేరుగా విషయానికి వెళ్లండి',
+  Explore: 'విభాగాలు',
+  Resources: 'ఇతర సమాచారం',
+  'All rights reserved.': 'సర్వ హక్కులూ రిజర్వ్ చేయబడ్డాయి.',
+
+  // ---- About: infobox and party office ------------------------------------
+  Party: 'పార్టీ',
+  'Telugu Desam Party (TDP)': 'తెలుగుదేశం పార్టీ (టీడీపీ)',
+  'Based in': 'కేంద్రం',
+  'Hyderabad, Telangana': 'హైదరాబాద్, తెలంగాణ',
+  'Political leadership': 'రాజకీయ నాయకత్వం',
+  'As iTDP Telangana State President, the work spans organisation-building, representation, and keeping the party answerable to the citizens it serves.':
+    'ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షుడిగా ఈ బాధ్యతలో సంస్థాగత నిర్మాణం, ప్రజా ప్రాతినిధ్యం, తాను సేవ చేసే ప్రజలకు పార్టీ జవాబుదారీగా ఉండేలా చూడటం ఉంటాయి.',
+
+  // ---- X accounts ---------------------------------------------------------
+  'on X (opens in a new tab)': 'X లో (కొత్త ట్యాబ్‌లో తెరుచుకుంటుంది)',
+  'His own account': 'ఆయన సొంత ఖాతా',
+  'The party’s national account': 'పార్టీ జాతీయ ఖాతా',
+
+  // ---- Political: party facts and action cards ----------------------------
+  'September 2023': '2023 సెప్టెంబరు',
+  'Party membership': 'పార్టీ సభ్యత్వం',
+  'Join now': 'ఇప్పుడే చేరండి',
+
+  // ---- Temple facts -------------------------------------------------------
+  'Official name': 'అధికారిక నామం',
+  'Also known as': 'ప్రసిద్ధ నామం',
+  'Sri Kanaka Durga Temple': 'శ్రీ కనకదుర్గ ఆలయం',
+  Deity: 'అమ్మవారు',
+  'Goddess Kanaka Durga': 'శ్రీ కనకదుర్గ అమ్మవారు',
+  Location: 'ప్రాంతం',
+  River: 'నది',
+  'Krishna River': 'కృష్ణా నది',
+  Significance: 'విశిష్టత',
+  'Shakti Peetha': 'శక్తి పీఠం',
+
+  // ---- Media --------------------------------------------------------------
+  Source: 'మూలం',
+  'Talikota Harikrishna': 'తాళికోట హరికృష్ణ',
+  'Supporter-run channel': 'అభిమానులు నడిపే ఛానల్',
+
+  // ---- Contact form -------------------------------------------------------
+  'Full name': 'పూర్తి పేరు',
+  'Email address': 'ఇ-మెయిల్ చిరునామా',
+  'Phone number': 'ఫోన్ నంబరు',
+  'Location / constituency': 'ప్రాంతం / నియోజకవర్గం',
+  'Your city or constituency': 'మీ నగరం లేదా నియోజకవర్గం',
+  'Send message': 'సందేశం పంపండి',
+
+  // ---- Final sweep --------------------------------------------------------
+  'Bicycle symbol': 'సైకిల్ గుర్తు',
+  'Not run by the office': 'కార్యాలయం నిర్వహించేది కాదు',
 }

@@ -179,7 +179,7 @@ const AskPanel = () => {
                         >
                           {t(l.label)}
                           <FaArrowRight className="text-xs" aria-hidden="true" />
-                          <span className="sr-only"> (opens in a new tab)</span>
+                          <span className="sr-only"> {t('(opens in a new tab)')}</span>
                         </a>
                       )}
                     </li>

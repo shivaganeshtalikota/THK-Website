@@ -1,5 +1,6 @@
 import { FaXTwitter, FaArrowRight } from 'react-icons/fa6'
 import { xAccounts } from '../data/site'
+import { useT } from '../i18n/useT'
 
 /**
  * Links to the X accounts, in place of an embedded timeline.
@@ -18,7 +19,9 @@ import { xAccounts } from '../data/site'
  *
  * It shows his account and the party's, per the office.
  */
-const PostsFeed = ({ className = '' }) => (
+const PostsFeed = ({ className = '' }) => {
+  const t = useT()
+  return (
   <div className={`grid gap-4 sm:grid-cols-2 ${className}`}>
     {xAccounts.map((a) => (
       <a
@@ -33,11 +36,11 @@ const PostsFeed = ({ className = '' }) => (
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-display text-base font-semibold text-ink-900">
-            {a.name}
-            <span className="sr-only"> on X (opens in a new tab)</span>
+            {t(a.name)}
+            <span className="sr-only"> {t('on X (opens in a new tab)')}</span>
           </span>
           <span className="block truncate text-sm text-ink-500">
-            {a.handle} · {a.description}
+            {a.handle} · {t(a.description)}
           </span>
         </span>
         <FaArrowRight
@@ -47,6 +50,7 @@ const PostsFeed = ({ className = '' }) => (
       </a>
     ))}
   </div>
-)
+  )
+}
 
 export default PostsFeed

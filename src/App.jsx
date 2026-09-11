@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { PREFIX } from './i18n'
+import { useT } from './i18n/useT'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
@@ -48,9 +49,10 @@ const PAGES = [
 ]
 
 function App() {
+  const t = useT()
   return (
     <div className="flex min-h-screen flex-col">
-      <a href="#main" className="skip-link">Skip to main content</a>
+      <a href="#main" className="skip-link">{t('Skip to main content')}</a>
 
       <ScrollReset />
       <Navbar />

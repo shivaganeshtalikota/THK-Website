@@ -72,7 +72,17 @@ const PageHero = ({
   if (photo && titleBelow) {
     return (
       <section className="border-b-[6px] border-brand-500 bg-ink-950">
-        <div className="relative overflow-hidden pt-[var(--nav-h)]">
+        {/*
+          No top padding here.
+
+          <main> already carries pt-[var(--nav-h)] to clear the fixed masthead
+          (src/App.jsx), so padding for it again put a band of bg-ink-950
+          exactly one nav-height tall above the photograph — measured at 72px.
+          On every other hero the image sits behind the type and absorbs it; on
+          this variant the image starts below the padding, so it read as a black
+          border across the top of the page.
+        */}
+        <div className="relative overflow-hidden">
           {/* Taller than the overlay band. Nothing is written over this one, so
                 the height is set by what the photograph needs rather than by
                 what the type needs: at 30vw the standing speaker's head was
@@ -92,13 +102,17 @@ const PageHero = ({
             {/* Only a foot-fade, to seat the photograph on the dark ground
                 below it. Nothing is written over the image, so it needs no
                 scrim of its own. */}
+            {/* h-16 on a phone, not h-24: this band is 272px tall there, so a
+                96px fade darkened over a third of the photograph and read as
+                dead space rather than as a seam. Desktop keeps the fuller
+                fade, where the band is three times the height. */}
             <div
-              className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink-950 to-transparent"
+              className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink-950 to-transparent sm:h-24"
               aria-hidden="true"
             />
           </div>
         </div>
-        <div className="on-dark container-custom pb-16 pt-10 sm:pt-12">{Copy}</div>
+        <div className="on-dark container-custom pb-12 pt-7 sm:pb-16 sm:pt-10">{Copy}</div>
       </section>
     )
   }
@@ -127,9 +141,16 @@ const PageHero = ({
         </div>
       )}
 
-      {/* pt clears the fixed masthead explicitly rather than by eye — the
-          heading was touching the navigation on short viewports. */}
-      <div className="on-dark container-custom relative z-10 pb-16 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3rem)]">
+      {/*
+        Breathing room under the masthead, not a second copy of its height.
+
+        This used to add var(--nav-h) on top of the 2rem, but <main> already
+        clears the fixed nav (src/App.jsx), so the total came to 104px and the
+        heading sat a third of the way down a 386px band — measured — with the
+        copy crammed against the bottom edge. The office asked for the type at
+        the TOP of the banner, which is also what scrim-top is drawn for.
+      */}
+      <div className="on-dark container-custom relative z-10 pb-14 pt-8 sm:pb-16 sm:pt-12">
         {Copy}
       </div>
     </section>

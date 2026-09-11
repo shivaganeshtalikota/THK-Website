@@ -77,8 +77,8 @@ const About = () => {
                 <dl className="mt-8 divide-y hairline border-y hairline">
                   {[
                     ...roles.map((r) => [t(r.title), t(r.org)]),
-                    ['Party', `${party.name} (${party.abbr})`],
-                    ['Based in', `${site.location.locality}, ${site.location.region}`],
+                    [t('Party'), t(`${party.name} (${party.abbr})`)],
+                    [t('Based in'), t(`${site.location.locality}, ${site.location.region}`)],
                   ].map(([term, desc]) => (
                     <div key={term} className="py-4">
                       <dt className="font-sans text-micro uppercase text-ink-500">{term}</dt>
@@ -135,8 +135,11 @@ const About = () => {
               <p className="eyebrow">{t("The Party Office")}</p>
               <h2 className="mt-5 font-display text-title">{t("What the iTDP State President does")}</h2>
               <p className="mt-6 text-ink-600">
-                As {site.secondaryRole}, the work spans organisation-building, representation,
-                and keeping the party answerable to the citizens it serves.
+                {/* One unit with the title substituted, so Telugu can order
+                    the clause its own way rather than around a fixed slot. */}
+                {t(
+                  `As ${site.secondaryRole}, the work spans organisation-building, representation, and keeping the party answerable to the citizens it serves.`
+                )}
               </p>
             </Reveal>
 
@@ -216,7 +219,7 @@ const About = () => {
               </h2>
               <p className="mt-6 text-ink-800">{t(party.heritage)}</p>
               <Link to="/political" className="btn-outline mt-9">
-                Political leadership <FaArrowRight aria-hidden="true" />
+                {t('Political leadership')} <FaArrowRight aria-hidden="true" />
               </Link>
             </Reveal>
 

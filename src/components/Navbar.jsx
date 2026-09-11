@@ -63,7 +63,7 @@ const MobilePanel = ({ isOpen, onNavigate }) => {
               href={s.url}
               target="_blank"
               rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
-              aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
+              aria-label={`${t(site.name)} on ${s.name} ${t('(opens in a new tab)')}`}
               className="grid h-11 w-11 place-items-center bg-ink-900/10 text-ink-900 transition-colors hover:bg-ink-900 hover:text-brand-500"
             >
               <Glyph className="text-lg" aria-hidden="true" />
@@ -171,7 +171,7 @@ const Navbar = () => {
                       href={s.url}
                       target="_blank"
                       rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
-                      aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
+                      aria-label={`${t(site.name)} on ${s.name} ${t('(opens in a new tab)')}`}
                       className="grid h-9 w-9 place-items-center rounded-sm text-ink-900/70 transition-colors hover:bg-ink-900/10 hover:text-ink-900"
                     >
                       <Glyph className="text-[1rem]" aria-hidden="true" />

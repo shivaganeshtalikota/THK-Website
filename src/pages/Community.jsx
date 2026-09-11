@@ -87,7 +87,7 @@ const Community = () => {
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-7">
               <p className="eyebrow">{t("Indrakeeladri, Vijayawada")}</p>
-              <h2 className="mt-5 font-display text-display">{temple.popularName}</h2>
+              <h2 className="mt-5 font-display text-display">{t(temple.popularName)}</h2>
               <div className="mt-8 space-y-5 text-lead text-ink-600">
                 <p>{t(temple.intro)}</p>
                 <p>{t(temple.significance)}</p>
@@ -109,8 +109,8 @@ const Community = () => {
                   ['Significance', 'Shakti Peetha'],
                 ].map(([term, desc]) => (
                   <div key={term} className="grid grid-cols-[7.5rem_1fr] gap-4 py-4">
-                    <dt className="font-sans text-micro uppercase text-ink-500">{term}</dt>
-                    <dd className="text-sm text-ink-800">{desc}</dd>
+                    <dt className="font-sans text-micro uppercase text-ink-500">{t(term)}</dt>
+                    <dd className="text-sm text-ink-800">{t(desc)}</dd>
                   </div>
                 ))}
               </dl>
@@ -229,7 +229,7 @@ const Community = () => {
                 to="/media"
                 className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
-                Full gallery
+                {t('Full gallery')}
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
                   aria-hidden="true"
