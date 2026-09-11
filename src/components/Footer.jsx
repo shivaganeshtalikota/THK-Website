@@ -1,12 +1,14 @@
-import { Link } from 'react-router-dom'
+import Link from './LocaleLink'
 import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import PartyMark from './PartyMark'
 import { site, social, contact, party } from '../data/site'
+import { useT } from '../i18n/useT'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 const Footer = () => {
+  const t = useT()
   const year = new Date().getFullYear()
 
   const columns = [
@@ -39,7 +41,7 @@ const Footer = () => {
             {/* Wordmark, matching the header: both names carry equal weight. */}
             <div>
               <span className="relative inline-block font-display text-[1.7rem] font-bold leading-tight tracking-tight text-white">
-                Talikota Hari Krishna
+                {t('Talikota Hari Krishna')}
                 <span
                   className="absolute -bottom-2 left-0 h-[2px] w-full bg-brand-500"
                   aria-hidden="true"
@@ -50,8 +52,7 @@ const Footer = () => {
             </div>
 
             <p className="max-w-sm text-sm leading-relaxed text-ink-400">
-              Regional development, good governance and Telugu cultural preservation in
-              Telangana — through party organisation and temple board service.
+              {t("Regional development, good governance and Telugu cultural preservation in Telangana — through party organisation and temple board service.")}
             </p>
 
             {/* Party affiliation. He is a TDP office-bearer, so the emblem
@@ -111,7 +112,7 @@ const Footer = () => {
           {/* Contact — only renders details that are actually confirmed. */}
           <div className="lg:col-span-3">
             <h2 className="mb-4 font-sans text-micro uppercase text-brand-300">
-              Contact
+              {t("Contact")}
             </h2>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
@@ -145,7 +146,7 @@ const Footer = () => {
                   to="/contact"
                   className="inline-block py-1.5 text-sm font-semibold text-brand-300 hover:text-brand-200"
                 >
-                  Send a message →
+                  {t("Send a message →")}
                 </Link>
               </li>
             </ul>
@@ -159,7 +160,7 @@ const Footer = () => {
         <div className="container-custom flex flex-col items-center justify-between gap-3 py-6 text-xs text-ink-400 sm:flex-row">
           <p>© {year} {site.name}. All rights reserved.</p>
           <p className="text-center sm:text-right">
-            Published by the office of {site.name}, {site.roleShort}, {party.name}.
+            {t(`Published by the office of ${site.name}, ${site.roleShort}, ${party.name}.`)}
           </p>
         </div>
       </div>

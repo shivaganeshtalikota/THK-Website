@@ -11,6 +11,7 @@ import { photos, gallery, galleryGroups } from '../data/photos'
 import { videos, channel } from '../data/videos'
 import uploads from '../data/uploads.json'
 import SourceLinks from '../components/SourceLinks'
+import { useT } from '../i18n/useT'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
@@ -103,7 +104,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
             className="max-h-[62vh] w-auto max-w-full object-contain"
           />
           <figcaption className="max-w-2xl px-2 text-center">
-            <p className="text-sm font-medium text-white sm:text-base">{item.caption}</p>
+            <p className="text-sm font-medium text-white sm:text-base">{t(item.caption)}</p>
             {item.telugu && (
               <p lang="te" className="mt-2 text-xs leading-relaxed text-white/60">
                 {item.telugu}
@@ -130,6 +131,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
 }
 
 const Media = () => {
+  const t = useT()
   const [group, setGroup] = useState('all')
   const [lightbox, setLightbox] = useState(null)
 
@@ -206,8 +208,8 @@ const Media = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Photo Gallery</p>
-            <h2 className="mt-5 font-display text-display">Recent activity</h2>
+            <p className="eyebrow">{t("Photo Gallery")}</p>
+            <h2 className="mt-5 font-display text-display">{t("Recent activity")}</h2>
           </Reveal>
 
           {/* Filters */}
@@ -242,7 +244,7 @@ const Media = () => {
                         : 'border border-ink-200 text-ink-600 hover:border-ink-900 hover:text-ink-900'
                     }`}
                   >
-                    {g.label}
+                    {t(g.label)}
                     <span className="ml-1.5 opacity-60">{count}</span>
                   </button>
                 )
@@ -273,7 +275,7 @@ const Media = () => {
                     imgClassName="transition-transform duration-[900ms] ease-out group-hover:scale-105"
                   />
                   <p className="mt-3 text-sm font-medium leading-snug text-ink-800">
-                    {item.caption}
+                    {t(item.caption)}
                   </p>
                   {item.telugu && (
                     <p lang="te" className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-500">
@@ -295,9 +297,9 @@ const Media = () => {
         <div className="on-dark container-custom">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="eyebrow">Video</p>
+              <p className="eyebrow">{t("Video")}</p>
               <h2 className="mt-5 font-display text-display text-white">
-                Video coverage
+                {t("Video coverage")}
               </h2>
             </div>
             <a
@@ -307,7 +309,7 @@ const Media = () => {
               className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
             >
               {channel.handle}
-              <span className="sr-only"> on YouTube (opens in a new tab)</span>
+              <span className="sr-only"> {t("on YouTube (opens in a new tab)")}</span>
               <FaArrowRight
                 className="transition-transform duration-300 group-hover:translate-x-1.5"
                 aria-hidden="true"
@@ -363,9 +365,9 @@ const Media = () => {
                     aria-hidden="true"
                     className="mt-4 font-sans text-sm font-medium leading-snug text-white transition-colors group-hover:text-brand-300"
                   >
-                    {v.title}
+                    {t(v.title)}
                   </p>
-                  <span className="sr-only">Watch on YouTube (opens in a new tab)</span>
+                  <span className="sr-only">{t("Watch on YouTube (opens in a new tab)")}</span>
                   {v.telugu && (
                     <p lang="te" className="mt-1.5 line-clamp-2 text-xs text-white/55">
                       {v.telugu}
@@ -385,12 +387,10 @@ const Media = () => {
       <section className="section bg-ink-50">
         <div className="container-custom">
           <Reveal className="max-w-3xl">
-            <p className="eyebrow">Press Releases</p>
-            <h2 className="mt-5 font-display text-display">From the office</h2>
+            <p className="eyebrow">{t("Press Releases")}</p>
+            <h2 className="mt-5 font-display text-display">{t("From the office")}</h2>
             <p className="mt-6 text-lead text-ink-600">
-              Dated statements and announcements are published here. Until then, the
-              office posts on X — the most recent are below, and the photo gallery
-              above records recent activity.
+              {t("Dated statements and announcements are published here. Until then, the office posts on X — the most recent are below, and the photo gallery above records recent activity.")}
             </p>
           </Reveal>
 
@@ -431,8 +431,8 @@ const Media = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Follow Along</p>
-            <h2 className="mt-5 font-display text-display">Real-time updates on social</h2>
+            <p className="eyebrow">{t("Follow Along")}</p>
+            <h2 className="mt-5 font-display text-display">{t("Real-time updates on social")}</h2>
           </Reveal>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-3">
@@ -452,7 +452,7 @@ const Media = () => {
                     <span className="min-w-0">
                       <span className="block font-display text-base font-semibold text-ink-900">
                         {s.name}
-                        <span className="sr-only"> (opens in a new tab)</span>
+                        <span className="sr-only"> {t("(opens in a new tab)")}</span>
                       </span>
                       <span className="block truncate text-sm text-ink-500">{s.handle}</span>
                       {/* rel="me" asserts ownership, so it is only correct on

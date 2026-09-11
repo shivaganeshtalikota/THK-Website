@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from '../components/LocaleLink'
 import { FaArrowRight } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import { nav } from '../data/site'

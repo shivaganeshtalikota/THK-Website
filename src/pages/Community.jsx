@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from '../components/LocaleLink'
 import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
@@ -6,8 +6,10 @@ import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
 import { site, temple } from '../data/site'
 import { photos, gallery } from '../data/photos'
+import { useT } from '../i18n/useT'
 
 const Community = () => {
+  const t = useT()
   /**
    * The Devasthanam gets its own @id here rather than being buried in the page
    * description. It is a well-known entity in its own right, and naming it as a
@@ -84,12 +86,12 @@ const Community = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-7">
-              <p className="eyebrow">Indrakeeladri, Vijayawada</p>
+              <p className="eyebrow">{t("Indrakeeladri, Vijayawada")}</p>
               <h2 className="mt-5 font-display text-display">{temple.popularName}</h2>
               <div className="mt-8 space-y-5 text-lead text-ink-600">
-                <p>{temple.intro}</p>
-                <p>{temple.significance}</p>
-                <p>{temple.history}</p>
+                <p>{t(temple.intro)}</p>
+                <p>{t(temple.significance)}</p>
+                <p>{t(temple.history)}</p>
               </div>
               <p lang="te" className="mt-7 border-l-2 border-brand-500 pl-5 text-ink-700">
                 శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం, ఇంద్రకీలాద్రి, విజయవాడ
@@ -122,13 +124,13 @@ const Community = () => {
         <div className="on-dark container-custom">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-5">
-              <p className="eyebrow">How the Devasthanam is run</p>
+              <p className="eyebrow">{t("How the Devasthanam is run")}</p>
               <h2 className="mt-5 font-display text-title text-white">
-                Trust board governance
+                {t("Trust board governance")}
               </h2>
             </Reveal>
             <Reveal delay={0.1} className="lg:col-span-7">
-              <p className="text-lead text-white/70">{temple.governance}</p>
+              <p className="text-lead text-white/70">{t(temple.governance)}</p>
             </Reveal>
           </div>
         </div>
@@ -138,8 +140,8 @@ const Community = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">The Role</p>
-            <h2 className="mt-5 font-display text-display">What board service covers</h2>
+            <p className="eyebrow">{t("The Role")}</p>
+            <h2 className="mt-5 font-display text-display">{t("What board service covers")}</h2>
           </Reveal>
 
           <ul className="mt-14 border-t hairline">
@@ -149,7 +151,7 @@ const Community = () => {
                   <span className="index-num" aria-hidden="true">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="font-display text-headline text-ink-900">{duty.title}</h3>
+                  <h3 className="font-display text-headline text-ink-900">{t(duty.title)}</h3>
                   <ul className="space-y-2.5 lg:pt-1">
                     {duty.points.map((point) => (
                       <li key={point} className="flex items-start gap-3 text-ink-600">
@@ -157,7 +159,7 @@ const Community = () => {
                           className="mt-[0.6rem] h-px w-3 shrink-0 bg-brand-600"
                           aria-hidden="true"
                         />
-                        <span className="text-[0.95rem] leading-relaxed">{point}</span>
+                        <span className="text-[0.95rem] leading-relaxed">{t(point)}</span>
                       </li>
                     ))}
                   </ul>
@@ -173,20 +175,18 @@ const Community = () => {
         <div className="container-custom">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-5">
-              <p className="eyebrow">For Devotees</p>
-              <h2 className="mt-5 font-display text-title">Services the board oversees</h2>
+              <p className="eyebrow">{t("For Devotees")}</p>
+              <h2 className="mt-5 font-display text-title">{t("Services the board oversees")}</h2>
               <p className="mt-6 text-ink-600">
-                The Devasthanam receives millions of devotees a year, and the practical
-                experience of those visits — the queue, the meal, the bed for the night — is
-                what board oversight ultimately answers for.
+                {t("The Devasthanam receives millions of devotees a year, and the practical experience of those visits — the queue, the meal, the bed for the night — is what board oversight ultimately answers for.")}
               </p>
             </Reveal>
             <Reveal delay={0.1} className="lg:col-span-7">
               <dl className="divide-y hairline border-y hairline">
                 {temple.services.map((s) => (
                   <div key={s.name} className="grid gap-2 py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                    <dt className="font-sans text-sm font-semibold text-ink-900">{s.name}</dt>
-                    <dd className="text-[0.95rem] leading-relaxed text-ink-600">{s.note}</dd>
+                    <dt className="font-sans text-sm font-semibold text-ink-900">{t(s.name)}</dt>
+                    <dd className="text-[0.95rem] leading-relaxed text-ink-600">{t(s.note)}</dd>
                   </div>
                 ))}
               </dl>
@@ -199,15 +199,15 @@ const Community = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Temple Calendar</p>
-            <h2 className="mt-5 font-display text-display">Major observances</h2>
+            <p className="eyebrow">{t("Temple Calendar")}</p>
+            <h2 className="mt-5 font-display text-display">{t("Major observances")}</h2>
           </Reveal>
 
           <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
             {temple.festivals.map((f, i) => (
               <Reveal key={f.name} delay={i * 0.06} className="border-t hairline pt-6">
-                <h3 className="font-display text-headline text-ink-900">{f.name}</h3>
-                <p className="mt-3 leading-relaxed text-ink-600">{f.note}</p>
+                <h3 className="font-display text-headline text-ink-900">{t(f.name)}</h3>
+                <p className="mt-3 leading-relaxed text-ink-600">{t(f.note)}</p>
               </Reveal>
             ))}
           </div>
@@ -220,9 +220,9 @@ const Community = () => {
           <div className="on-dark container-custom">
             <Reveal className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <p className="eyebrow">In Pictures</p>
+                <p className="eyebrow">{t("In Pictures")}</p>
                 <h2 className="mt-5 font-display text-display text-white">
-                  Temple &amp; tradition
+                  {t("Temple & tradition")}
                 </h2>
               </div>
               <Link
@@ -251,7 +251,7 @@ const Community = () => {
                       />
                     </div>
                     <p className="mt-4 text-sm leading-snug text-white/65 transition-colors group-hover:text-white">
-                      {item.caption}
+                      {t(item.caption)}
                     </p>
                   </Link>
                 </Reveal>

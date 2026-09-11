@@ -1,12 +1,14 @@
-import { Link } from 'react-router-dom'
+import Link from '../components/LocaleLink'
 import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
 import { site, party, focusAreas, temple, roles } from '../data/site'
 import { photos, gallery } from '../data/photos'
+import { useT } from '../i18n/useT'
 
 const Home = () => {
+  const t = useT()
 
   const schema = {
     '@context': 'https://schema.org',
@@ -32,7 +34,7 @@ const Home = () => {
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="on-dark lg:col-span-6 xl:col-span-5">
               <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
-                {party.telanganaUnit}
+                {t(party.telanganaUnit)}
               </Reveal>
 
               {/* Both names at the same size and weight — the surname is not a
@@ -47,7 +49,7 @@ const Home = () => {
                     on-page element was malformed. Browsers rendered it correctly,
                     so it never showed up in visual QA. */}
                 <span className="block font-display text-hero text-white">
-                  Talikota <span className="lg:block">Hari Krishna</span>
+                  {t('Talikota')} <span className="lg:block">{t('Hari Krishna')}</span>
                 </span>
                 <span
                   className="mt-4 block h-[5px] w-28 bg-brand-500 sm:w-36"
@@ -60,19 +62,19 @@ const Home = () => {
                 {roles.map((r) => (
                   <div key={r.title} className="border-l-2 border-brand-500 pl-5">
                     <p className="font-sans text-base font-semibold text-white sm:text-lg">
-                      {r.title}
+                      {t(r.title)}
                     </p>
-                    <p className="mt-0.5 text-sm text-white/70">{r.org}</p>
+                    <p className="mt-0.5 text-sm text-white/70">{t(r.org)}</p>
                   </div>
                 ))}
               </Reveal>
 
               <Reveal delay={0.32} className="mt-10 flex flex-wrap gap-3">
                 <Link to="/community" className="btn-brand">
-                  Temple Service <FaArrowRight aria-hidden="true" />
+                  {t('Temple Service')} <FaArrowRight aria-hidden="true" />
                 </Link>
                 <Link to="/political" className="btn-ghost-light">
-                  Political Leadership
+                  {t('Political Leadership')}
                 </Link>
               </Reveal>
             </div>
@@ -108,7 +110,7 @@ const Home = () => {
       <section className="section bg-white">
         <div className="container-text">
           <Reveal>
-            <p className="eyebrow">Mission</p>
+            <p className="eyebrow">{t('Mission')}</p>
             {/* Sized as a quotation, not a headline. `text-display` is tuned
                 for three or four words; a sixty-word mission statement at that
                 size fills an entire screen and stops being readable. */}
@@ -120,7 +122,7 @@ const Home = () => {
                 “
               </span>
               <p className="relative font-display text-[clamp(1.35rem,1.05rem+1.5vw,2.3rem)] font-semibold leading-[1.35] tracking-[-0.015em] text-ink-900">
-                {site.mission}
+                {t(site.mission)}
               </p>
             </blockquote>
           </Reveal>
@@ -144,23 +146,20 @@ const Home = () => {
           <div className="on-dark flex items-center px-6 py-16 sm:px-10 lg:px-16 lg:py-24">
             <Reveal className="max-w-xl">
               <p className="label-rule !text-brand-400 before:!bg-brand-500">
-                Devasthanam Board
+                {t('Devasthanam Board')}
               </p>
               <h2 className="mt-7 font-display text-title text-white">
-                Board Member, Sri Durga Malleswara Swamy Varla Devasthanam
+                {t('Board Member, Sri Durga Malleswara Swamy Varla Devasthanam')}
               </h2>
-              <p className="mt-6 text-lead text-white/70">{temple.intro}</p>
+              <p className="mt-6 text-lead text-white/70">{t(temple.intro)}</p>
               <p className="mt-5 text-white/60">
-                The Devasthanam at Indrakeeladri in Vijayawada is one of South India’s most
-                visited Shakti Peethas, drawing millions of devotees each year. Board service
-                covers temple administration, financial stewardship, devotee facilities and the
-                continuity of tradition.
+                {t('The Devasthanam at Indrakeeladri in Vijayawada is one of South India’s most visited Shakti Peethas, drawing millions of devotees each year. Board service covers temple administration, financial stewardship, devotee facilities and the continuity of tradition.')}
               </p>
               <Link
                 to="/community"
                 className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
-                The board’s work
+                {t('The board’s work')}
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
                   aria-hidden="true"
@@ -176,20 +175,18 @@ const Home = () => {
         <div className="grid lg:grid-cols-2">
           <div className="on-brand order-2 flex items-center bg-brand-500 px-6 py-16 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
             <Reveal className="max-w-xl">
-              <p className="label-rule !text-ink-800 before:!bg-ink-900/40">Party Office</p>
+              <p className="label-rule !text-ink-800 before:!bg-ink-900/40">{t('Party Office')}</p>
               <h2 className="mt-7 font-display text-title text-ink-900">
-                iTDP Telangana State President
+                {t('iTDP Telangana State President')}
               </h2>
               <p className="mt-6 text-lead text-ink-800">
-                Leading the Telugu Desam Party’s organisation across Telangana — building
-                membership, representing citizens’ interests, and carrying forward the founding
-                principles set by N.T. Rama Rao.
+                {t('Leading the Telugu Desam Party’s organisation across Telangana — building membership, representing citizens’ interests, and carrying forward the founding principles set by N.T. Rama Rao.')}
               </p>
               <Link
                 to="/political"
                 className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900 transition-opacity hover:opacity-70"
               >
-                Political vision
+                {t('Political vision')}
                 <FaArrowRight
                   className="transition-transform duration-300 group-hover:translate-x-1.5"
                   aria-hidden="true"
@@ -216,9 +213,9 @@ const Home = () => {
       <section className="section bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Focus Areas</p>
+            <p className="eyebrow">{t('Focus Areas')}</p>
             <h2 className="mt-5 font-display text-display">
-              Where the work is directed
+              {t('Where the work is directed')}
             </h2>
           </Reveal>
 
@@ -238,10 +235,10 @@ const Home = () => {
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <h3 className="font-display text-headline text-ink-900 transition-transform duration-500 ease-out group-hover:translate-x-1">
-                    {area.title}
+                    {t(area.title)}
                   </h3>
                   <p className="text-ink-600 sm:col-span-2 lg:col-span-1 lg:pt-1">
-                    {area.summary}
+                    {t(area.summary)}
                   </p>
                 </Link>
               </Reveal>
@@ -255,14 +252,14 @@ const Home = () => {
         <div className="on-dark container-custom">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="eyebrow">In Pictures</p>
-              <h2 className="mt-5 font-display text-display text-white">Recent activity</h2>
+              <p className="eyebrow">{t('In Pictures')}</p>
+              <h2 className="mt-5 font-display text-display text-white">{t('Recent activity')}</h2>
             </div>
             <Link
               to="/media"
               className="group inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
             >
-              Full gallery
+              {t('Full gallery')}
               <FaArrowRight
                 className="transition-transform duration-300 group-hover:translate-x-1.5"
                 aria-hidden="true"
@@ -284,7 +281,7 @@ const Home = () => {
                     />
                   </div>
                   <p className="mt-4 text-sm leading-snug text-white/65 transition-colors group-hover:text-white">
-                    {item.caption}
+                    {t(item.caption)}
                   </p>
                 </Link>
               </Reveal>
@@ -297,17 +294,16 @@ const Home = () => {
       <section className="section bg-white">
         <div className="container-text text-center">
           <Reveal>
-            <h2 className="font-display text-display">Join the movement</h2>
+            <h2 className="font-display text-display">{t('Join the movement')}</h2>
             <p className="mx-auto mt-6 max-w-xl text-lead text-ink-600">
-              Be part of the change. Together we can build a prosperous, inclusive Telangana
-              that honours its heritage while embracing progress.
+              {t('Be part of the change. Together we can build a prosperous, inclusive Telangana that honours its heritage while embracing progress.')}
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <Link to="/contact" className="btn-primary">
-                Contact the office <FaArrowRight aria-hidden="true" />
+                {t('Contact the office')} <FaArrowRight aria-hidden="true" />
               </Link>
               <Link to="/about" className="btn-outline">
-                About Hari Krishna
+                {t('About Hari Krishna')}
               </Link>
             </div>
           </Reveal>

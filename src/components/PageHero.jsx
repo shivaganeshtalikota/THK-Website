@@ -1,5 +1,6 @@
 import Reveal from './Reveal'
 import Picture from './Picture'
+import { useT } from '../i18n/useT'
 
 /**
  * Shared page header.
@@ -36,11 +37,12 @@ const PageHero = ({
   titleBelow = false,
   children,
 }) => {
+  const t = useT()
   const Copy = (
     <div className="max-w-none">
       {eyebrow && (
         <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
-          {eyebrow}
+          {t(eyebrow)}
         </Reveal>
       )}
       <Reveal
@@ -48,11 +50,11 @@ const PageHero = ({
         delay={0.13}
         className="display-wrap mt-6 max-w-none font-display text-[clamp(1.75rem,1.1rem+2.5vw,3.5rem)] font-bold tracking-[-0.02em] text-white"
       >
-        {title}
+        {t(title)}
       </Reveal>
       {lead && (
         <Reveal as="p" delay={0.21} className="mt-6 max-w-3xl text-lead text-white/80">
-          {lead}
+          {t(lead)}
         </Reveal>
       )}
       {children}

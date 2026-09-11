@@ -95,6 +95,40 @@ function imagesFor(file) {
   return found
 }
 
+/**
+ * Each route twice — English and Telugu — carrying its hreflang pair.
+ *
+ * Google accepts hreflang either in the HTML head or in the sitemap. Both are
+ * emitted: the tags cover a crawler that arrives at a page directly, and the
+ * sitemap covers the case where it reads the manifest first. They have to
+ * agree, which they do because both are generated from this same list.
+ *
+ * Every entry names every alternate INCLUDING itself. A set that omits the
+ * self-reference is discarded by Google in full, which is the usual way an
+ * hreflang implementation silently does nothing.
+ */
+const localised = routes.flatMap((r) => {
+  const enPath = r.path
+  const tePath = r.path === '/' ? '/te' : `/te${r.path}`
+  const alternates = [
+    { hreflang: 'en-IN', href: ORIGIN + enPath },
+    { hreflang: 'te-IN', href: ORIGIN + tePath },
+    { hreflang: 'x-default', href: ORIGIN + enPath },
+  ]
+  return [
+    { ...r, path: enPath, file: r.file, alternates },
+    {
+      ...r,
+      path: tePath,
+      file: r.file === 'index.html' ? 'te/index.html' : `te/${r.file}`,
+      alternates,
+      // A translation is not a fresh publication; the Telugu pages do not
+      // deserve to outrank their English twins on freshness alone.
+      priority: String(Math.max(0.1, Number(r.priority) - 0.1)),
+    },
+  ]
+})
+
 const lastmod = new Date().toISOString().split('T')[0]
 
 // & < > " ' are the five XML predefined entities. A stray & in a filename
@@ -105,7 +139,7 @@ const xmlEscape = (s) =>
 
 let imageCount = 0
 
-const body = routes
+const body = localised
   .map((r) => {
     const images = FROM_DIST ? imagesFor(r.file) : []
     imageCount += images.length
@@ -117,18 +151,26 @@ const body = routes
     </image:image>`
       )
       .join('')
+    const altXml = (r.alternates ?? [])
+      .map(
+        (a) =>
+          `
+    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${xmlEscape(a.href)}" />`
+      )
+      .join('')
     return `  <url>
     <loc>${ORIGIN}${r.path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
-    <priority>${r.priority}</priority>${imageXml}
+    <priority>${r.priority}</priority>${altXml}${imageXml}
   </url>`
   })
   .join('\n')
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${body}
 </urlset>
 `
@@ -136,7 +178,7 @@ ${body}
 const out = FROM_DIST ? join(ROOT, 'dist', 'sitemap.xml') : join(ROOT, 'public', 'sitemap.xml')
 writeFileSync(out, xml, 'utf8')
 console.log(
-  `  sitemap.xml -> ${FROM_DIST ? 'dist' : 'public'} — ${routes.length} URLs` +
+  `  sitemap.xml -> ${FROM_DIST ? 'dist' : 'public'} — ${localised.length} URLs` +
     (FROM_DIST ? `, ${imageCount} images` : '') +
     `, ${ORIGIN}, lastmod ${lastmod}`
 )
