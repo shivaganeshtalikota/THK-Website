@@ -82,7 +82,10 @@ const Picture = ({
           loading={priority ? 'eager' : 'lazy'}
           decoding={priority ? 'sync' : 'async'}
           // Lowercase: React 18 does not map the camelCase `fetchPriority`
-          // prop and warns, dropping the attribute entirely.
+          // prop and warns, dropping the attribute entirely. Verified in the
+          // prerendered output — the lowercase form is what actually reaches
+          // the HTML, so the lint rule is wrong about this one.
+          // eslint-disable-next-line react/no-unknown-property
           fetchpriority={priority ? 'high' : 'auto'}
           className={`h-full w-full object-cover ${imgClassName}`}
           style={{ objectPosition: position ?? photo.focus ?? '50% 50%' }}

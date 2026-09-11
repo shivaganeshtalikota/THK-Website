@@ -121,6 +121,36 @@ const Seo = ({
       })
     }
 
+    /*
+     * Breadcrumbs, on every page but the homepage.
+     *
+     * Two reasons, and the second is the one that matters here. Google renders
+     * a breadcrumb trail in place of the raw URL in the result, so the listing
+     * reads "Talikota Hari Krishna › Political Leadership" rather than a bare
+     * path — more legible, and it tells a searcher what section they are about
+     * to land in. Less visibly, it is another edge in the entity graph: each
+     * crumb points back at the site root, which reinforces that these eight
+     * pages are one property about one person rather than eight loose pages.
+     *
+     * Emitted here rather than per page so it cannot be forgotten when a route
+     * is added, and derived from the same `title` the <title> tag uses so the
+     * two can never disagree.
+     */
+    if (pathname !== '/' && title && !noindex) {
+      tags.push({
+        _tag: 'script',
+        type: 'application/ld+json',
+        _text: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: site.name, item: `${site.url}/` },
+            { '@type': 'ListItem', position: 2, name: title, item: canonical },
+          ],
+        }),
+      })
+    }
+
     return { title: fullTitle, tags }
   }, [pathname, title, description, image, type, noindex, schema, preloadPhoto])
 

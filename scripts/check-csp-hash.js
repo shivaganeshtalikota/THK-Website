@@ -51,7 +51,7 @@ const ALLOWED = {
   rewrites: new Set(['source', 'destination', 'has', 'missing']),
 }
 for (const [section, allowed] of Object.entries(ALLOWED)) {
-  ;(vercel[section] ?? []).forEach((rule, i) => {
+  (vercel[section] ?? []).forEach((rule, i) => {
     for (const key of Object.keys(rule)) {
       if (!allowed.has(key)) {
         console.error(

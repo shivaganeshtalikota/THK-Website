@@ -84,13 +84,61 @@
   .section { @apply py-20 sm:py-24 lg:py-32; }
 
   /* ---- Buttons ------------------------------------------------------- */
-  /* Square-ish, not pill. Pills at every size are a stock-kit signature. */
+  /* Square-ish at rest, not pill. Pills at every size are a stock-kit
+     signature, and the resting state is what sets the tone of the page. */
   .btn {
     @apply inline-flex items-center justify-center gap-2.5 rounded-sm px-7 py-4
            font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em]
            transition-all duration-300 ease-out
            active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
   }
+
+  /*
+   * Roundness as the affordance.
+   *
+   * The office asked for this specifically, and the reason is the audience:
+   * the people reading this site are as likely to be seventy as seventeen. A
+   * colour shift alone is a weak signal — it is easy to miss, and it is the
+   * first thing lost to a dim phone screen in daylight or to any of the common
+   * colour-vision deficiencies. A shape change is not: the button visibly
+   * becomes a different object under the finger or cursor.
+   *
+   * Three triggers, because one is never enough across devices:
+   *   :hover         — mouse and trackpad. Behind `(hover: hover)` so a phone,
+   *                    which reports hover it cannot really do, does not latch
+   *                    the rounded state on after a tap and keep it there.
+   *   :active        — the actual touch state, and the only one a finger gets.
+   *   :focus-visible — keyboard tabbing, so it is not a mouse-only cue.
+   *
+   * `transition-all` on .btn already animates border-radius, so this eases
+   * rather than snaps, and the reduced-motion block above flattens it to
+   * near-instant for anyone who asked for that.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover { @apply rounded-full; }
+  }
+
+  .btn:active,
+  .btn:focus-visible { @apply rounded-full; }
+
+  /*
+   * The same affordance for everything interactive that is not a .btn — icon
+   * buttons, the gallery filter chips, the nav's Get Involved pill. Carrying
+   * one class rather than repeating the three selectors keeps them in step;
+   * they looked like three different design systems before.
+   *
+   * It sets `transition-all` itself because most of these were on
+   * `transition-colors`, which does not animate border-radius — the corner
+   * would have snapped while the colour eased.
+   */
+  .tap-round { @apply transition-all duration-300 ease-out; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tap-round:hover { @apply rounded-full; }
+  }
+
+  .tap-round:active,
+  .tap-round:focus-visible { @apply rounded-full; }
 
   .btn-primary { @apply btn bg-ink-900 text-white hover:bg-ink-800; }
   .btn-brand   { @apply btn bg-brand-500 text-ink-900 hover:bg-brand-400; }

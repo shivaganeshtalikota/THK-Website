@@ -1,3 +1,7 @@
+/* eslint-disable react-refresh/only-export-components --
+   This file deliberately exports the provider and the hook that reads it,
+   which is the standard React context pattern. Splitting them into two
+   files to satisfy a dev-only Fast Refresh hint would be worse code. */
 import { createContext, useContext, useEffect } from 'react'
 
 /**

@@ -76,7 +76,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
           type="button"
           onClick={dismiss}
           autoFocus
-          className="grid h-11 w-11 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="tap-round grid h-11 w-11 place-items-center rounded-sm text-white/70 hover:bg-white/10 hover:text-white"
           aria-label="Close photo viewer"
         >
           <FaXmark size={20} aria-hidden="true" />
@@ -87,7 +87,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
         <button
           type="button"
           onClick={() => onStep(-1)}
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="tap-round grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 hover:bg-white/10 hover:text-white"
           aria-label="Previous photo"
         >
           <FaChevronLeft aria-hidden="true" />
@@ -118,7 +118,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
         <button
           type="button"
           onClick={() => onStep(1)}
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="tap-round grid h-12 w-12 shrink-0 place-items-center rounded-sm text-white/70 hover:bg-white/10 hover:text-white"
           aria-label="Next photo"
         >
           <FaChevronRight aria-hidden="true" />
@@ -236,7 +236,7 @@ const Media = () => {
                       setLightbox(null)
                     }}
                     aria-pressed={active}
-                    className={`rounded-sm px-4 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                    className={`tap-round rounded-sm px-4 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.08em] ${
                       active
                         ? 'bg-ink-900 text-white'
                         : 'border border-ink-200 text-ink-600 hover:border-ink-900 hover:text-ink-900'
@@ -325,9 +325,25 @@ const Media = () => {
                   className="group block"
                 >
                   <div className="relative overflow-hidden bg-ink-800">
+                    {/*
+                      Real alt text, not alt="". These nine stills were the only
+                      images on the site a crawler could not read, and Google
+                      Images ranks almost entirely on alt text — they were
+                      invisible to it.
+
+                      The visible title below is aria-hidden to pay for it. A
+                      screen reader would otherwise hear the title twice: once
+                      from this alt and once from the paragraph, since both sit
+                      inside the same link. This way the link announces exactly
+                      once, and the crawler still gets a described image.
+                    */}
                     <img
                       src={`/photos/video/${v.id}.webp`}
-                      alt=""
+                      alt={
+                        v.title.includes('Talikota')
+                          ? `Video still — ${v.title}`
+                          : `Video still — ${v.title}, Talikota Hari Krishna`
+                      }
                       width="640"
                       height="360"
                       loading="lazy"
@@ -343,10 +359,13 @@ const Media = () => {
                       </span>
                     </span>
                   </div>
-                  <p className="mt-4 font-sans text-sm font-medium leading-snug text-white transition-colors group-hover:text-brand-300">
+                  <p
+                    aria-hidden="true"
+                    className="mt-4 font-sans text-sm font-medium leading-snug text-white transition-colors group-hover:text-brand-300"
+                  >
                     {v.title}
-                    <span className="sr-only"> — watch on YouTube (opens in a new tab)</span>
                   </p>
+                  <span className="sr-only">Watch on YouTube (opens in a new tab)</span>
                   {v.telugu && (
                     <p lang="te" className="mt-1.5 line-clamp-2 text-xs text-white/55">
                       {v.telugu}

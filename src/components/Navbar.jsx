@@ -170,7 +170,7 @@ const Navbar = () => {
 
             <Link
               to="/contact"
-              className="hidden bg-ink-900 px-5 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white transition-colors hover:bg-ink-800 xl:inline-flex"
+              className="tap-round hidden rounded-sm bg-ink-900 px-5 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink-800 xl:inline-flex"
             >
               Get Involved
             </Link>
@@ -178,7 +178,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => setIsOpen((v) => !v)}
-              className="grid h-11 w-11 place-items-center rounded-sm text-ink-900 transition-colors hover:bg-ink-900/10 lg:hidden"
+              className="tap-round grid h-11 w-11 place-items-center rounded-sm text-ink-900 hover:bg-ink-900/10 lg:hidden"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"

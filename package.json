@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/generate-sitemap.js",
-    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js && node scripts/check-csp-hash.js",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js && node scripts/generate-sitemap.js --from-dist && node scripts/check-csp-hash.js",
     "preview": "vite preview",
     "photos": "python scripts/process-photos.py",
     "assets": "python scripts/generate-assets.py",
