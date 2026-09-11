@@ -216,6 +216,72 @@ EXCLUDED = {
 }
 
 
+# ---------------------------------------------------------------------------
+# ALBUMS
+#
+# A single event photographed many times over, rather than one representative
+# frame. The office documents rallies and programmes this way, so a set arrives
+# as a folder of numbered files and belongs together on the page: presenting ten
+# frames of one bike rally as ten separate gallery entries would bury the rest
+# of the gallery and tell the reader nothing about the event.
+#
+# Each album is a folder under photos-source/albums/<slug>/. Files are sorted
+# NUMERICALLY, not as strings, so 10.jpg follows 9.jpg instead of 1.jpg.
+# Output slugs are <album-slug>-01 ... -NN, zero-padded so they sort correctly
+# everywhere else too.
+#
+#   slug -> (folder name, caption prefix used to build each frame's alt text)
+ALBUMS = [
+    (
+        "ntr-vardhanti-bike-rally",
+        "ntr-vardhanti-bike-rally",
+        "Talikota Hari Krishna leading the bike rally from Nagaram to NTR Ghat "
+        "on the 30th Vardhanti of N.T. Rama Rao",
+    ),
+]
+
+
+def process_albums():
+    """Emit the same WebP ladder for every frame in each album folder."""
+    out = []
+    for slug, folder, alt_prefix in ALBUMS:
+        src_dir = ROOT / "photos-source" / "albums" / folder
+        if not src_dir.is_dir():
+            print(f"  !! MISSING album folder {folder}")
+            continue
+
+        files = sorted(
+            (f for f in src_dir.iterdir() if f.suffix.lower() in {".jpg", ".jpeg", ".png"}),
+            key=lambda f: (len(f.stem), f.stem),
+        )
+        frames = []
+        for i, src in enumerate(files, start=1):
+            im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
+            w, h = im.size
+            name = f"{slug}-{i:02d}"
+            targets = sorted({t for t in WIDTHS if t <= w} | {w})
+            for target in targets:
+                resized = im.resize((target, max(1, round(h * target / w))), Image.LANCZOS)
+                quality = 80 if target <= 768 else 82
+                resized.save(OUT / f"{name}-{target}.webp", "WEBP", quality=quality, method=6)
+            fw = min(FALLBACK_W, w)
+            im.resize((fw, max(1, round(h * fw / w))), Image.LANCZOS).save(
+                OUT / f"{name}.jpg", "JPEG", quality=84, optimize=True, progressive=True
+            )
+            frames.append(
+                {
+                    "slug": name,
+                    "width": w,
+                    "height": h,
+                    "widths": targets,
+                    "alt": f"{alt_prefix} ({i} of {len(files)})",
+                }
+            )
+        print(f"  album {slug:28} {len(frames)} frames")
+        out.append({"slug": slug, "frames": frames})
+    return out
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -280,8 +346,13 @@ def main():
         print(f"  {slug:34} {w}x{h}  ->  {len(sources)} webp ({total}KB) + jpg")
 
 
+    albums = process_albums()
+
     (OUT / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8"
+    )
+    (OUT / "albums.json").write_text(
+        json.dumps(albums, ensure_ascii=False, indent=1), encoding="utf-8"
     )
     print(f"\n  {len(manifest)} photos processed -> public/photos/")
     print(f"  {len(EXCLUDED)} excluded:")

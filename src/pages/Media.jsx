@@ -9,6 +9,8 @@ import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
 import { photos, gallery, galleryGroups } from '../data/photos'
 import { videos, channel } from '../data/videos'
+import { albums, albumFrames } from '../data/albums'
+import EventAlbum from '../components/EventAlbum'
 import uploads from '../data/uploads.json'
 import SourceLinks from '../components/SourceLinks'
 import { useT, useLang } from '../i18n/useT'
@@ -146,6 +148,15 @@ const Media = () => {
   const t = useT()
   const lang = useLang()
   const [group, setGroup] = useState('all')
+  /*
+   * The viewer holds its own set, not an index into the gallery.
+   *
+   * It used to be a bare index and always read from `shown`, which is fine
+   * while the gallery is the only thing that opens it. The event album below
+   * is a different set of photographs, so the viewer now carries whichever set
+   * was opened along with the position in it — otherwise opening the fourth
+   * rally frame would have shown the fourth gallery photograph.
+   */
   const [lightbox, setLightbox] = useState(null)
 
   // Published from the admin panel (api/publish.js commits them here). They
@@ -181,8 +192,11 @@ const Media = () => {
   )
 
   const step = useCallback(
-    (delta) => setLightbox((i) => (i === null ? i : (i + delta + shown.length) % shown.length)),
-    [shown.length]
+    (delta) =>
+      setLightbox((v) =>
+        v === null ? v : { ...v, index: (v.index + delta + v.items.length) % v.items.length }
+      ),
+    []
   )
 
   const schema = {
@@ -277,7 +291,7 @@ const Media = () => {
               <Reveal as="li" key={item.slug} delay={Math.min(i, 6) * 0.05} className="mb-4 break-inside-avoid">
                 <button
                   type="button"
-                  onClick={() => setLightbox(i)}
+                  onClick={() => setLightbox({ items: shown, index: i })}
                   className="group block w-full text-left"
                   aria-label={`Open photo: ${item.caption}`}
                 >
@@ -304,6 +318,18 @@ const Media = () => {
           </ul>
         </div>
       </section>
+
+      {/* ---- Event albums ---------------------------------------------------
+          A single event photographed many times over, kept as a set rather than
+          scattered through the gallery above. Each carries the source it was
+          published from. */}
+      {albums.map((album) => (
+        <EventAlbum
+          key={album.slug}
+          album={album}
+          onOpen={(index) => setLightbox({ items: albumFrames(album), index })}
+        />
+      ))}
 
       {/* ---- Videos --------------------------------------------------------- */}
       <section className="section bg-ink-950">
@@ -490,8 +516,8 @@ const Media = () => {
 
       {lightbox !== null && (
         <Lightbox
-          items={shown}
-          index={lightbox}
+          items={lightbox.items}
+          index={lightbox.index}
           onClose={() => setLightbox(null)}
           onStep={step}
         />

@@ -691,4 +691,20 @@ export const te = {
   // ---- Final sweep --------------------------------------------------------
   'Bicycle symbol': 'సైకిల్ గుర్తు',
   'Not run by the office': 'కార్యాలయం నిర్వహించేది కాదు',
+
+  // ---- Event albums -------------------------------------------------------
+  // The people below are named in the Telangana TDP post; the Telugu here is
+  // the spelling that post uses, not a transliteration back from English.
+  'Open photo': 'ఫోటో తెరవండి',
+  'Also present': 'పాల్గొన్నవారు',
+  'January 2026': '2026 జనవరి',
+  'Nagaram to NTR Ghat, Hyderabad': 'నాగారం నుంచి ఎన్టీఆర్ ఘాట్ వరకు, హైదరాబాద్',
+  'Telangana Telugu Desam Party': 'తెలంగాణ తెలుగుదేశం పార్టీ',
+  'Uma Shankar': 'ఉమ శంకర్',
+  Balasubrahmanyam: 'బాలసుబ్రహ్మణ్యం',
+  'Sai Nagarjuna': 'సాయి నాగార్జున',
+  'Mellam Srinivas': 'మెల్లం శ్రీనివాస్',
+  'Bazaar Hemanth Goud': 'బజార్ హేమంత్ గౌడ్',
+  'Brahmam Chowdary': 'బ్రహ్మం చౌదరి',
+  'Balakrishna Goud': 'బాలకృష్ణ గౌడ్',
 }
