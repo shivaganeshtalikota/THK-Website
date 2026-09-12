@@ -13,7 +13,12 @@
 export const site = {
   name: 'Talikota Hari Krishna',
   shortName: 'HK Talikota',
-  alternateNames: ['Talikota Harikrishna', 'Hari Krishna Talikota', 'Harikrishna Talikota', 'Hari TDP', 'Haranna'],
+  // Every form he is actually printed under, including the initialised
+  // press form (The Hans India writes "T Harikrishna") and both Telugu
+  // spellings -- ళ is standard, ల is what the official Telangana TDP page
+  // uses. alternateName is how a search engine ties a mention to an entity;
+  // a form that is missing here is a mention that cannot be connected.
+  alternateNames: ['Talikota Harikrishna', 'Hari Krishna Talikota', 'Harikrishna Talikota', 'Thalikota Harikrishna', 'T. Harikrishna', 'T Harikrishna', 'తాళికోట హరికృష్ణ', 'తాలికోట హరికృష్ణ', 'Hari TDP', 'Haranna'],
   role: 'Board Member, Sri Durga Malleswara Swamy Varla Devasthanam',
   // Names the temple, not just the category. "Devasthanam Board Member" was the
   // root of the problem the office raised: there are many Devasthanam board
