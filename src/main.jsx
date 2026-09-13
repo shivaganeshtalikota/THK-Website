@@ -3,6 +3,8 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import App from './App.jsx'
+import { PREFIX } from './i18n'
+import { setTelugu } from './i18n/te-store'
 import './styles/index.css'
 
 // AOS was initialised here and its stylesheet imported, but no element in the
@@ -34,8 +36,36 @@ const tree = (
 // already has markup and must be hydrated rather than re-created — hydrating
 // reuses the server DOM instead of throwing it away and repainting.
 // `npm run dev` serves an empty root, which still takes the createRoot path.
-if (container.hasChildNodes()) {
-  hydrateRoot(container, tree)
+const mount = () => {
+  if (container.hasChildNodes()) {
+    hydrateRoot(container, tree)
+  } else {
+    createRoot(container).render(tree)
+  }
+}
+
+/*
+ * The Telugu dictionary is fetched only on Telugu routes, and only before
+ * mounting.
+ *
+ * It is 443 strings — about 68 KB — and it used to sit in the main chunk, so
+ * every visitor to an English page downloaded all of it and could not use a
+ * byte. A dynamic import moves it to a chunk of its own.
+ *
+ * The await is the load-bearing part. Hydration re-runs the render against the
+ * prerendered Telugu markup; if the dictionary had not arrived, React would
+ * produce English, mismatch every node on the page and throw away the server
+ * HTML. Mounting is deferred until it is in hand.
+ *
+ * If the fetch fails the page still mounts, in English, over Telugu markup —
+ * ugly, but a working page rather than a blank one. That is the right failure.
+ */
+const path = window.location.pathname
+if (path === PREFIX || path.startsWith(`${PREFIX}/`)) {
+  import('./i18n/te.js')
+    .then((m) => setTelugu(m.te))
+    .catch((err) => console.error('Telugu dictionary failed to load:', err))
+    .finally(mount)
 } else {
-  createRoot(container).render(tree)
+  mount()
 }

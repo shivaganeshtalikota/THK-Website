@@ -25,6 +25,9 @@ export default defineConfig(({ isSsrBuild }) => ({
           : {
               manualChunks: {
                 'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+                // Kept out of the main chunk deliberately; it is reached only
+                // through a dynamic import on /te routes.
+                'i18n-te': ['./src/i18n/te.js'],
               },
             }),
       },

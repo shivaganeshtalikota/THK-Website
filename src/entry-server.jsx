@@ -6,6 +6,13 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router'
 import { HeadCollector } from './components/Head'
 import App from './App'
+import { te } from './i18n/te'
+import { setTelugu } from './i18n/te-store'
+
+// Build time only, so this static import costs nothing on the wire — and it has
+// to be synchronous, because renderToString cannot await. The browser gets the
+// same dictionary through a dynamic import in src/main.jsx.
+setTelugu(te)
 
 /**
  * Server entry, used only at build time by scripts/prerender.js.

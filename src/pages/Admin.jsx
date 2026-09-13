@@ -194,7 +194,11 @@ const Admin = () => {
   if (!auth.ok) {
     return (
       <>
-        <Seo title="Publish" noindex />
+        <Seo
+          title="Publish"
+          description="Operational publishing panel for the office. Not public content; excluded from the sitemap and marked noindex."
+          noindex
+        />
         <section className="section bg-ink-50">
           <div className="container-custom">
             <form onSubmit={signIn} className="mx-auto max-w-md">
@@ -243,7 +247,11 @@ const Admin = () => {
   // ------------------------------------------------------------------ panel
   return (
     <>
-      <Seo title="Publish" noindex />
+      <Seo
+        title="Publish"
+        description="Operational publishing panel for the office. Not public content; excluded from the sitemap and marked noindex."
+        noindex
+      />
       <section className="section bg-ink-50">
         <div className="container-custom">
           <div className="mx-auto max-w-2xl">

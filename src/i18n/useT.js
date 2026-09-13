@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { langFromPath } from './index'
-import { te } from './te'
+import { getTelugu } from './te-store'
 
 /**
  * Translation, keyed by the English string itself.
@@ -30,7 +30,12 @@ export const useLang = () => langFromPath(useLocation().pathname)
 export const useT = () => {
   const lang = useLang()
   if (lang !== 'te') return (s) => s
-  return (s) => (typeof s === 'string' ? (te[s] ?? s) : s)
+  // Read at call time, not at module scope: on a Telugu page the dictionary is
+  // awaited before hydration (see src/main.jsx), and reading it here means this
+  // hook does not close over a null captured at import time.
+  const dictionary = getTelugu()
+  if (!dictionary) return (s) => s
+  return (s) => (typeof s === 'string' ? (dictionary[s] ?? s) : s)
 }
 
 /**

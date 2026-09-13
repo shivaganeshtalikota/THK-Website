@@ -50,6 +50,20 @@ const LanguageToggle = ({ className = '', onNavigate }) => {
           <Link
             key={lang}
             to={localePath(pathname, lang)}
+            /*
+              A full document navigation, not a client-side hop.
+
+              The Telugu dictionary is code-split and fetched in src/main.jsx
+              before mount, keyed off the URL. A client-side navigation from /
+              to /te would swap the route without ever running that code, so
+              the Telugu page would render in English. Reloading also lets the
+              document's lang attribute change, which client-side routing
+              cannot do on its own.
+
+              Still a plain crawlable <a href> in the markup, so nothing is
+              lost for search.
+            */
+            reloadDocument
             hrefLang={LOCALE[lang]}
             lang={LOCALE[lang]}
             onClick={onNavigate}
