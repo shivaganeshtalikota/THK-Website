@@ -185,6 +185,62 @@ export function renderPoster({
   return canvas
 }
 
+/**
+ * The social card for a poster somebody has personalised.
+ *
+ * WHY A SEPARATE IMAGE FROM THE POSTER
+ * The poster is 2048x2560 and about a megabyte. Crawlers want roughly 1.91:1
+ * and a couple of hundred KB; handed the poster itself, WhatsApp renders no
+ * preview at all and everything else crops it wherever it likes. So the card is
+ * made deliberately rather than left to chance.
+ *
+ * WHY THE BOTTOM OF THE POSTER
+ * A 1.91:1 slice off the bottom is not a compromise — it is the half that
+ * carries everything personal. Measured against this artwork it contains the
+ * date band, the yellow slogan band, the whole of the photo slot (which starts
+ * at y 0.629, inside the slice's 0.580), and the name, designation and party
+ * mark. The headline is the only thing lost, and og:title carries that in
+ * words. Shrinking the entire poster into a letterbox instead would show the
+ * person about forty pixels tall, which defeats the point of the card.
+ *
+ * WHY IN THE BROWSER
+ * Two reasons, and the second is decisive. The cut-out person exists only here —
+ * it is never uploaded. And this text is Telugu: the browser shapes it
+ * correctly, whereas the Python that builds the static campaign cards runs on a
+ * Pillow without raqm and would reorder the conjuncts.
+ *
+ * @param {object}            opts
+ * @param {HTMLCanvasElement} opts.canvas  destination, resized in place
+ * @param {CanvasImageSource} opts.source  the finished poster canvas
+ * @param {number=}           opts.width
+ * @param {number=}           opts.height
+ */
+export function renderShareCard({ canvas, source, width = 1200, height = 630 }) {
+  canvas.width = width
+  canvas.height = height
+
+  const sw = source.width
+  const sh = source.height
+  // The tallest bottom-anchored slice of the poster that has the card's aspect.
+  let cropH = Math.round(sw * (height / width))
+  let cropW = sw
+  if (cropH > sh) {
+    // A poster wider than the card's aspect: centre-crop instead of running off
+    // the top. Not reachable with the current artwork, but a poster added later
+    // should not silently produce a broken card.
+    cropH = sh
+    cropW = Math.round(sh * (width / height))
+  }
+  const sx = Math.round((sw - cropW) / 2)
+  const sy = sh - cropH
+
+  const ctx = canvas.getContext('2d')
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(source, sx, sy, cropW, cropH, 0, 0, width, height)
+  return canvas
+}
+
 /** Canvas -> JPEG Blob. JPEG, not PNG: a 1600x2000 PNG of a photographic poster
  *  runs to several megabytes, which is painful to share on a phone. */
 export function canvasToJpeg(canvas, quality = 0.92) {
