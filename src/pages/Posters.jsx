@@ -4,7 +4,7 @@ import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import { site } from '../data/site'
-import { posters, posterImage } from '../data/posters'
+import { posters, posterImage, posterCard } from '../data/posters'
 import { useT } from '../i18n/useT'
 
 /**
@@ -16,6 +16,25 @@ import { useT } from '../i18n/useT'
  * somebody from "what is 22A?" to a finished JPG in their gallery in under a
  * minute, on a phone.
  */
+/*
+ * The card a link to this page previews as.
+ *
+ * Module scope, not an object literal in the JSX: Seo keys its head block on
+ * this prop's identity, and a fresh object each render would re-apply every
+ * meta tag on the page for nothing.
+ *
+ * The listing borrows the lead campaign's card rather than carrying one of its
+ * own. There is one poster; a separate generic card would be an extra file
+ * saying less. When a second campaign lands this should become a card of its
+ * own showing several.
+ */
+const LISTING_CARD = {
+  url: `${site.url}${posterCard(posters[0])}`,
+  width: 1200,
+  height: 630,
+  alt: posters[0].titleEn,
+}
+
 const Posters = () => {
   const t = useT()
 
@@ -38,6 +57,7 @@ const Posters = () => {
       <Seo
         title="Create Your Own Poster"
         description="Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, nothing is uploaded to a server."
+        image={LISTING_CARD}
         schema={schema}
       />
 

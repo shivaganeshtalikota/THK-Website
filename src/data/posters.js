@@ -149,3 +149,16 @@ export const posterBySlug = (slug) => posters.find((p) => p.slug === slug) ?? nu
 /** Artwork path for a poster. Served from /public, so same-origin — which is
  *  what keeps the export canvas untainted and toBlob() legal. */
 export const posterImage = (poster) => `/posters/${poster.slug}-v${poster.version}.jpg`
+
+/**
+ * The poster's social card — what a link to it previews as.
+ *
+ * A separate file from the artwork, because the artwork is the wrong shape and
+ * far too heavy for the job: 2048x2560 and 862KB against crawlers that want
+ * roughly 1.91:1 and a couple of hundred KB. Handing them the poster itself
+ * gets no preview on WhatsApp and an arbitrary crop everywhere else.
+ *
+ * Built by scripts/make-poster-cards.py, and versioned with the artwork it came
+ * from so a corrected poster cannot leave a stale card cached behind it.
+ */
+export const posterCard = (poster) => `/posters/${poster.slug}-card-v${poster.version}.jpg`

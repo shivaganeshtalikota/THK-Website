@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import {
   FaArrowLeft,
@@ -18,7 +18,7 @@ import Link from '../components/LocaleLink'
 import Seo from '../components/Seo'
 import NotFound from './NotFound'
 import { site } from '../data/site'
-import { posterBySlug, posterImage } from '../data/posters'
+import { posterBySlug, posterImage, posterCard } from '../data/posters'
 import { loadImage, ensureFonts, renderPoster, canvasToJpeg } from '../lib/renderPoster'
 import { buildShareUrl, readShareToken, shareMessage } from '../lib/posterLink'
 import { useT } from '../i18n/useT'
@@ -63,6 +63,26 @@ const PosterStudio = () => {
   const [generated, setGenerated] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
   const [copied, setCopied] = useState(false)
+
+  /*
+   * The social card for this campaign.
+   *
+   * Memoised because Seo keys its whole head block on the identity of this
+   * prop; a fresh object literal every render would rebuild and re-apply every
+   * meta tag on the page on every keystroke in the name field.
+   */
+  const ogImage = useMemo(
+    () =>
+      poster
+        ? {
+            url: `${site.url}${posterCard(poster)}`,
+            width: 1200,
+            height: 630,
+            alt: poster.titleEn,
+          }
+        : undefined,
+    [poster]
+  )
 
   /*
    * Somebody arriving from a shared link gets that person's name already in the
@@ -302,6 +322,7 @@ const PosterStudio = () => {
       <Seo
         title={`Create your poster — ${poster.issue}`}
         description={`Put your name, designation and photo on the ${poster.issue} campaign poster and share it. Free, works on a phone, and your photo never leaves your device.`}
+        image={ogImage}
         schema={schema}
       />
 
