@@ -28,6 +28,16 @@
       "permanent": true
     }
   ],
+  "rewrites": [
+    {
+      "source": "/s/:slug/:id",
+      "destination": "/api/share?slug=:slug&id=:id"
+    },
+    {
+      "source": "/c/:id([A-Za-z0-9_-]{22}).jpg",
+      "destination": "/api/card?id=:id"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

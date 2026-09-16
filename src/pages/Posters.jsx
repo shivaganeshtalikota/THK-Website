@@ -56,7 +56,7 @@ const Posters = () => {
     <>
       <Seo
         title="Create Your Own Poster"
-        description="Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, nothing is uploaded to a server."
+        description="Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, and the poster is made on your device."
         image={LISTING_CARD}
         schema={schema}
       />
@@ -65,7 +65,7 @@ const Posters = () => {
         eyebrow={t('Campaign Material')}
         title={t('Create your own poster')}
         lead={t(
-          'Pick a campaign, add your photo and your name, and download a poster ready to share. It takes under a minute, it works on a phone, and your photo never leaves your device.'
+          'Pick a campaign, add your photo and your name, and download a poster ready to share. It takes under a minute, it works on a phone, and your photograph never leaves your device.'
         )}
       />
 
@@ -138,7 +138,7 @@ const Posters = () => {
             </h2>
             <p className="mt-6 text-lead text-white/70">
               {t(
-                'The poster is built inside your own browser. Your photograph is never sent to this website or to anyone else, there is no account, and nothing is stored. Close the tab and it is gone.'
+                'The poster is built inside your own browser, and there is no account. Your photograph is never sent to this website or to anyone else. The only thing that is ever uploaded is a small copy of the finished poster, and only if you ask for it to appear in your link preview — that copy is deleted after 30 days.'
               )}
             </p>
           </Reveal>

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Link from './LocaleLink'
 import { FaCommentDots, FaXmark, FaChevronLeft, FaArrowRight } from 'react-icons/fa6'
-import { site, contact, social, party, temple } from '../data/site'
 import { useT } from '../i18n/useT'
 
 /**

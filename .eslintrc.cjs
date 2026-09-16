@@ -10,6 +10,7 @@
  * Three environments in one repository, so three overrides:
  *   src/      browser + React, JSX
  *   api/      Vercel serverless functions — Node globals, no JSX
+ *   server/   code those functions import — same environment
  *   scripts/  build-time Node tooling
  */
 module.exports = {
@@ -21,7 +22,19 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', 'dist-ssr', 'node_modules', '.eslintrc.cjs'],
+  /*
+   * public/vision is Google's MediaPipe bundle, vendored verbatim so the CSP
+   * can serve it from our own origin. Linting somebody else's minified build
+   * produced ~680 of the 694 errors this command reported, which buried the
+   * dozen real ones and made `npm run lint` useless as a check.
+   */
+  ignorePatterns: [
+    'dist',
+    'dist-ssr',
+    'node_modules',
+    '.eslintrc.cjs',
+    'public/vision/**',
+  ],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: 'detect' } },
   plugins: ['react-refresh'],
@@ -38,7 +51,14 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['api/**/*.js', 'scripts/**/*.js', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js'],
+      files: [
+        'api/**/*.js',
+        'server/**/*.js',
+        'scripts/**/*.js',
+        'vite.config.js',
+        'tailwind.config.js',
+        'postcss.config.js',
+      ],
       env: { node: true, browser: false },
       extends: ['eslint:recommended'],
       rules: { 'react-refresh/only-export-components': 'off' },

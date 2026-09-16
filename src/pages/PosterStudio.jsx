@@ -13,14 +13,15 @@ import {
   FaWandMagicSparkles,
   FaCopy,
   FaPenToSquare,
+  FaImage,
 } from 'react-icons/fa6'
 import Link from '../components/LocaleLink'
 import Seo from '../components/Seo'
 import NotFound from './NotFound'
 import { site } from '../data/site'
 import { posterBySlug, posterImage, posterCard } from '../data/posters'
-import { loadImage, ensureFonts, renderPoster, canvasToJpeg } from '../lib/renderPoster'
-import { buildShareUrl, readShareToken, shareMessage } from '../lib/posterLink'
+import { loadImage, ensureFonts, renderPoster, renderShareCard, canvasToJpeg } from '../lib/renderPoster'
+import { buildShareUrl, readShareToken, shareMessage, uploadShareCard } from '../lib/posterLink'
 import { useT } from '../i18n/useT'
 
 /**
@@ -33,20 +34,32 @@ import { useT } from '../i18n/useT'
  * moment where the thing is finished. A button gives that moment, and
  * "Generated" is what people wait for before they will share something.
  *
- * NOTHING IS UPLOADED. The photograph is read from the file input, segmented by
- * a model running in this tab, and drawn to a canvas. It never reaches a server.
- * That is the right default when you are asking people for a picture of their
- * own face, and it is also the only way this is affordable at campaign volume,
- * where every hosted background-removal API bills per image.
+ * THE PHOTOGRAPH IS NEVER UPLOADED. It is read from the file input, segmented
+ * by a model running in this tab, and drawn to a canvas. It never reaches a
+ * server. That is the right default when you are asking people for a picture of
+ * their own face, and it is also the only way this is affordable at campaign
+ * volume, where every hosted background-removal API bills per image.
+ *
+ * ONE THING CAN LEAVE, AND ONLY IF ASKED. Link-preview crawlers do not run
+ * JavaScript and will not read a data: URL, so for WhatsApp to show somebody
+ * their own poster that image has to exist at a URL when the crawler asks.
+ * Pressing "Show my poster in the link preview" uploads the 1200x630 card —
+ * never the photograph, never the full-size poster — which is stored under an
+ * unguessable id and deleted after thirty days. Nobody who does not press it
+ * uploads anything, which is what lets the copy on this page stay literally
+ * true rather than carefully worded.
  */
 
 const MAX_UPLOAD_BYTES = 12 * 1024 * 1024
 
 const PosterStudio = () => {
   const { slug } = useParams()
-  const { search } = useLocation()
+  const { search, pathname } = useLocation()
   const t = useT()
   const poster = posterBySlug(slug)
+  // The site prerenders an English and a Telugu tree; a link made on /te must
+  // send its recipients to /te, and tell the crawler so.
+  const lang = pathname.startsWith('/te') ? 'te' : 'en'
 
   const canvasRef = useRef(null)
   const artworkRef = useRef(null)
@@ -63,6 +76,25 @@ const PosterStudio = () => {
   const [generated, setGenerated] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
   const [copied, setCopied] = useState(false)
+  const [cardId, setCardId] = useState(null)
+  const [cardError, setCardError] = useState(null)
+  // Previews need server-side storage. Until that is configured the offer is
+  // withdrawn rather than left as a button that cannot work — nothing else on
+  // the page depends on it, so there is nothing to explain to a visitor.
+  const [previewOffered, setPreviewOffered] = useState(true)
+
+  /*
+   * Which generation of the poster is on screen.
+   *
+   * Uploading the preview card is asynchronous and invalidate() is not, so
+   * without this the sequence "opt in, edit the name, generate again" can land
+   * an id belonging to the PREVIOUS poster on the new link — a preview showing
+   * a name the poster no longer carries, which is the worst possible failure
+   * here because nobody would notice until it had been forwarded. Every
+   * invalidation bumps the counter and a reply from a superseded generation is
+   * dropped.
+   */
+  const generation = useRef(0)
 
   /*
    * The social card for this campaign.
@@ -147,9 +179,12 @@ const PosterStudio = () => {
 
   /** Any edit after generating invalidates the result. */
   const invalidate = useCallback(() => {
+    generation.current += 1
     setGenerated(false)
     setShareUrl('')
     setCopied(false)
+    setCardId(null)
+    setCardError(null)
   }, [])
 
   const handleFile = useCallback(
@@ -210,6 +245,7 @@ const PosterStudio = () => {
           slug: poster.slug,
           name: name.trim(),
           designation: designation.trim(),
+          lang,
         })
       )
       setGenerated(true)
@@ -223,7 +259,7 @@ const PosterStudio = () => {
     } finally {
       setBusy(null)
     }
-  }, [canGenerate, draw, name, designation, poster])
+  }, [canGenerate, draw, name, designation, poster, lang])
 
   const filename = `${poster?.slug ?? 'poster'}-${(name || 'poster')
     .toLowerCase()
@@ -248,6 +284,58 @@ const PosterStudio = () => {
       setError('The poster could not be saved. Please try again.')
     }
   }, [filename])
+
+  /**
+   * Opt in to showing this poster in the link preview.
+   *
+   * Deliberately a button rather than something that happens on Generate. It is
+   * the only moment in this whole tool when anything leaves the device, so it
+   * should be a thing somebody chose, with the consequence written next to it —
+   * not a default they would have to notice to avoid.
+   *
+   * A failure here is not a failure of the poster. The poster is finished,
+   * downloadable and shareable as a file regardless; only the preview image is
+   * affected, and the plain link keeps working. So this reports and stops
+   * rather than unwinding anything.
+   */
+  const enablePreview = useCallback(async () => {
+    if (!canvasRef.current || !poster || busy) return
+    const mine = generation.current
+    setBusy('preview')
+    setCardError(null)
+    try {
+      const card = document.createElement('canvas')
+      renderShareCard({ canvas: card, source: canvasRef.current })
+      // 0.86 rather than the poster's 0.92: this is a thumbnail in a chat app,
+      // and the byte ceiling matters more here than the last few percent of
+      // quality. It lands around 150KB.
+      const blob = await canvasToJpeg(card, 0.86)
+      const id = await uploadShareCard({ blob, slug: poster.slug })
+      // Dropped if the poster changed underneath us — see `generation`.
+      if (generation.current !== mine) return
+      setCardId(id)
+      setShareUrl(
+        buildShareUrl({
+          origin: typeof window !== 'undefined' ? window.location.origin : site.url,
+          slug: poster.slug,
+          name: name.trim(),
+          designation: designation.trim(),
+          cardId: id,
+          lang,
+        })
+      )
+    } catch (err) {
+      if (generation.current !== mine) return
+      if (err?.status === 501 || err?.status === 503) {
+        setPreviewOffered(false)
+        setCardError(null)
+        return
+      }
+      setCardError(err?.message || 'The link preview could not be saved just now.')
+    } finally {
+      setBusy((b) => (b === 'preview' ? null : b))
+    }
+  }, [poster, busy, name, designation, lang])
 
   const canShareFiles =
     typeof navigator !== 'undefined' && typeof navigator.canShare === 'function'
@@ -321,7 +409,7 @@ const PosterStudio = () => {
     <>
       <Seo
         title={`Create your poster — ${poster.issue}`}
-        description={`Put your name, designation and photo on the ${poster.issue} campaign poster and share it. Free, works on a phone, and your photo never leaves your device.`}
+        description={`Put your name, designation and photo on the ${poster.issue} campaign poster and share it. Free, works on a phone, and the poster is made on your own device.`}
         image={ogImage}
         schema={schema}
       />
@@ -566,6 +654,52 @@ const PosterStudio = () => {
                           )}
                         </p>
 
+                        {/*
+                          The one place in this tool where anything leaves the
+                          device, so it is a button with the consequence written
+                          beside it rather than a default somebody would have to
+                          notice in order to avoid.
+                        */}
+                        {previewOffered && !cardId ? (
+                          <div className="mt-4 rounded-sm border border-ink-200 bg-ink-50 p-4">
+                            <button
+                              type="button"
+                              onClick={enablePreview}
+                              disabled={busy === 'preview'}
+                              className="btn-outline"
+                            >
+                              <FaImage aria-hidden="true" />
+                              {busy === 'preview'
+                                ? t('Saving the preview…')
+                                : t('Show my poster in the link preview')}
+                            </button>
+                            <p className="mt-3 text-xs leading-relaxed text-ink-600">
+                              {t(
+                                'Without this, WhatsApp and Facebook show the campaign poster next to your link. Turn it on and they show yours instead — which means uploading a small copy of the finished poster. Not your photograph, and not the full-size image. It is deleted after 30 days.'
+                              )}
+                            </p>
+                          </div>
+                        ) : cardId ? (
+                          <p className="mt-4 flex items-start gap-2 rounded-sm border border-brand-500 bg-brand-50 p-4 text-xs leading-relaxed text-ink-700">
+                            <FaCircleCheck className="mt-0.5 shrink-0 text-brand-600" aria-hidden="true" />
+                            <span>
+                              {t(
+                                'Your poster will show in the link preview. The copy that makes that possible is deleted after 30 days.'
+                              )}
+                            </span>
+                          </p>
+                        ) : null}
+
+                        {cardError && (
+                          <p
+                            className="mt-3 rounded-sm bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900"
+                            role="alert"
+                          >
+                            {cardError}{' '}
+                            {t('Your poster is finished — only the link preview is affected.')}
+                          </p>
+                        )}
+
                         <div className="mt-3 flex items-stretch gap-2">
                           <input
                             readOnly
@@ -619,7 +753,7 @@ const PosterStudio = () => {
 
                 <p className="rounded-sm bg-ink-900 px-4 py-3.5 text-xs leading-relaxed text-white/75">
                   {t(
-                    'Your photograph is never uploaded. The poster is made inside your browser, on your own device, and nothing is stored anywhere. The link you share carries only your name and designation — not your photo.'
+                    'Your photograph is never uploaded. The background is removed and the poster is composed inside your browser, on your own device. The link you share carries your name and designation. If you ask for your poster to show in the link preview, a small copy of the finished poster is stored so chat apps can fetch it, and it is deleted after 30 days — your original photograph still never leaves this device, and there is no account.'
                   )}
                 </p>
               </div>
