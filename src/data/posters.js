@@ -70,11 +70,33 @@ export const posters = [
      * shoulders, between arm and body, above the head. No runtime trick fixes
      * that; the placeholder simply had to stop existing.
      *
-     * The slot keeps the placeholder's position so the composition still reads
-     * as designed, and stops at x 0.615 — comfortably right of where the name
-     * can reach (0.585), so the photograph never crowds the type.
+     * Every number here is READ OFF the original artwork's silhouette, which is
+     * the slot the designer drew. The earlier values were guessed, and the guess
+     * put the photograph on top of the yellow band's Telugu line in every poster
+     * generated before anyone measured.
+     *
+     * The subtlety is that the silhouette is a standing FIGURE — narrow at the
+     * head, wide at the shoulders — so its bounding box is not its outline. The
+     * box starts at x 0.6221, left of where the Telugu ends (0.6543), and
+     * reading only the box would suggest the artwork overlaps its own text. It
+     * does not: 0.6221 is the shoulders, and the shoulders are below the yellow
+     * band entirely. Walked row by row through the band, the figure never comes
+     * left of 0.6753, and at the tightest row it keeps 120px clear of the type.
+     *
+     *   figure, within the yellow band   x >= 0.6753   <- the binding constraint
+     *   figure, overall bounding box     x >= 0.6221
+     *   yellow-band Telugu ends at       x  = 0.6543
+     *   silhouette head top              y  = 0.6293
+     *
+     * A rectangle cannot taper, so the slot takes the band constraint and
+     * applies it over the whole height. That costs a little width at the
+     * shoulders against the original composition, and buys a guarantee that no
+     * photograph, whatever shape its subject turns out to be, can reach the text.
+     *
+     * The person is fitted to CONTAIN this box, so a narrower slot makes the
+     * portrait smaller — never stretched, never cropped into.
      */
-    photoSlot: { x: 0.615, y: 0.585, w: 0.385, h: 0.415, anchor: 'bottom' },
+    photoSlot: { x: 0.6753, y: 0.6293, w: 0.3247, h: 0.3707, anchor: 'bottom' },
 
     /*
      * Name above, designation below, the pair centred on the party mark.
@@ -87,10 +109,21 @@ export const posters = [
      * The artwork's own "Leader's Name, Designation" is not painted over at
      * runtime any more; it was removed from the artwork itself, which is one
      * fewer thing to go wrong on every frame.
+     *
+     * LINE SPACING. The baselines sit 0.0300 apart — 77px against a 67px name.
+     * They were 0.0196 apart, i.e. 50px of leading under a 67px font, which is
+     * tighter than the type is tall: the name's descenders ran into the
+     * designation's ascenders and the two lines read as one smudge. Telugu is
+     * the demanding case here, since its vowel marks reach well above and below
+     * the Latin baseline, and 77px clears them.
+     *
+     * The pair is then positioned so the BLOCK, not either baseline, centres on
+     * the mark: cap-height above the name plus the designation's baseline puts
+     * the visual middle at 0.9439, the mark's measured centre.
      */
     name: {
       x: 0.185,
-      y: 0.9406,
+      y: 0.9383,
       maxW: 0.40,
       size: 0.026,
       weight: 700,
@@ -100,7 +133,7 @@ export const posters = [
     },
     designation: {
       x: 0.185,
-      y: 0.9602,
+      y: 0.9683,
       maxW: 0.40,
       size: 0.018,
       weight: 500,
