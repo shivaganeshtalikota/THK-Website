@@ -101,7 +101,7 @@ export default async function handler(req, res) {
 
   // An unknown poster or a malformed id is not worth a special page.
   if (!poster || !ID.test(id)) {
-    res.setHeader('Cache-Control', 'public, max-age=300')
+    res.setHeader('Cache-Control', 'private, no-store, max-age=0')
     return res.redirect(307, lang === 'te' ? '/te/posters' : '/posters')
   }
 
@@ -119,11 +119,27 @@ export default async function handler(req, res) {
    */
   if (SEARCH_CRAWLERS.test(ua)) res.setHeader('X-Robots-Tag', 'noindex, follow')
 
+  /*
+   * NEVER CACHED AT THE EDGE, and this was a bug in production before it was a
+   * comment here.
+   *
+   * This response depends on the user agent: a crawler gets meta tags, a person
+   * gets a redirect. The crawler branch was returning s-maxage, so Vercel's CDN
+   * cached that HTML under the URL alone and then served it to everybody —
+   * people following a shared link got a near-blank page with two meta tags
+   * instead of the editor. A `Vary: User-Agent` would technically fix it and is
+   * sent below, but it also defeats edge caching entirely, since no two browsers
+   * send the same UA string. So the honest thing is to not cache: the function
+   * is cheap, these URLs are low-traffic by nature, and a takedown then takes
+   * effect at once rather than whenever an edge node feels like revalidating.
+   */
+  res.setHeader('Vary', 'User-Agent')
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0')
+
   if (!CARD_CRAWLERS.test(ua)) {
     // A person, or a bot with no preview to render. Send them to the real
     // editor with the sender's name already filled in — which is the whole
     // point of the link, and is what the crawler is being told about.
-    res.setHeader('Cache-Control', 'private, no-store')
     return res.redirect(307, editor)
   }
 
@@ -150,9 +166,6 @@ export default async function handler(req, res) {
     : `Put your name and photo on the ${poster.issue} campaign poster and share it.`
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  // Long enough that a re-scrape is cheap, short enough that a takedown takes
-  // effect within the day rather than whenever a crawler feels like it.
-  res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=3600')
 
   return res.status(200).send(`<!doctype html>
 <html lang="${lang === 'te' ? 'te-IN' : 'en-IN'}">
