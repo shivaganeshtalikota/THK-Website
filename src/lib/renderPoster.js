@@ -105,13 +105,16 @@ function drawFittedLine(ctx, text, box, W, H) {
 }
 
 /**
- * Fit an image to COVER a box, anchored at its bottom edge.
+ * Fit a cut-out inside a box, anchored at its bottom edge.
  *
- * Cover rather than contain: the silhouette in the artwork is a filled shape, so
- * letterboxing a portrait inside it would leave the artwork's white showing
- * around the person and look like a mistake. Bottom-anchored because a
- * head-and-shoulders photo belongs sitting on the base of the slot — centring it
- * vertically floats the subject and crops the head.
+ * CONTAIN, not cover. Cover was right when the artwork still had a filled white
+ * silhouette underneath — letterboxing would have left that white showing. The
+ * silhouette is gone now, so there is nothing behind the person to reveal, and
+ * cover only means cropping a shoulder off at the frame edge for no gain.
+ * Contain keeps the whole subject.
+ *
+ * Bottom-anchored because a head-and-shoulders photo belongs sitting on the base
+ * of the slot; centring it vertically leaves the subject floating.
  */
 function coverInto(ctx, img, slot, W, H) {
   const bx = slot.x * W
@@ -119,7 +122,7 @@ function coverInto(ctx, img, slot, W, H) {
   const bw = slot.w * W
   const bh = slot.h * H
 
-  const scale = Math.max(bw / img.width, bh / img.height)
+  const scale = Math.min(bw / img.width, bh / img.height)
   const dw = img.width * scale
   const dh = img.height * scale
   const dx = bx + (bw - dw) / 2
@@ -164,25 +167,15 @@ export function renderPoster({
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
 
-  // Artwork first, then the person over it, then type over both. The person
-  // goes above the artwork because the silhouette is a placeholder to be
-  // covered, not a mask to be filled.
-  ctx.drawImage(artwork, 0, 0, W, H)
-
   /*
-   * Cover the artwork's own placeholder type before writing ours.
+   * Artwork, person, type — in that order.
    *
-   * "Leader's Name, Designation" is baked into the artwork as pixels. Without
-   * this rectangle our name is drawn on top of it and the two overlap into an
-   * unreadable smear — visible immediately on screen, and unfixable once the
-   * poster is out in the world. The fill colour is sampled from the band in the
-   * artwork rather than assumed to be #000, because it is not.
+   * The artwork here is the CLEANED one: its white silhouette and its
+   * placeholder name have both been painted out in preprocessing, so there
+   * is nothing underneath the person to show through and nothing under the
+   * type to collide with.
    */
-  if (poster.clearBox) {
-    const c = poster.clearBox
-    ctx.fillStyle = c.color
-    ctx.fillRect(c.x * W, c.y * H, c.w * W, c.h * H)
-  }
+  ctx.drawImage(artwork, 0, 0, W, H)
 
   if (person) coverInto(ctx, person, poster.photoSlot, W, H)
 

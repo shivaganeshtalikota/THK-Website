@@ -389,6 +389,18 @@ const PosterStudio = () => {
               </p>
 
               <div className="mt-10 space-y-8">
+                {/*
+                  The form disappears once the poster exists.
+
+                  Leaving the fields on screen beside a finished poster invites
+                  somebody to change one and walk away with a download that no
+                  longer matches what they are looking at. After Generate the
+                  column holds the result and the ways to send it, and nothing
+                  else. "Edit and generate again" brings the form back with
+                  every value still in it.
+                */}
+                {!generated && (
+                  <>
                 {/* 1 — photo */}
                 <div>
                   <label
@@ -473,14 +485,17 @@ const PosterStudio = () => {
                   />
                 </div>
 
+                  </>
+                )}
+
                 {error && (
                   <p className="rounded-sm bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
                     {error}
                   </p>
                 )}
 
-                {/* 4 — generate */}
-                <div className="border-t hairline pt-8">
+                {/* 4 — generate, then the result */}
+                <div className={generated ? '' : 'border-t hairline pt-8'}>
                   {!generated ? (
                     <>
                       <button

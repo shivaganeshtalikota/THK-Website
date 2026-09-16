@@ -40,6 +40,16 @@ export const posters = [
       'Farmers holding valid patta land are finding their titles flagged under Section 22A and their registrations blocked. The poster carries the date of the protest and the party’s stand alongside it.',
     issue: '22A',
     date: '16 September 2026',
+    /*
+     * Bump when the artwork file changes.
+     *
+     * /posters/* is served immutable for a year, which is right for a file
+     * that never changes and wrong for one that does — a corrected artwork
+     * was cached indefinitely by every browser that had seen the old one,
+     * and no amount of rebuilding dislodged it. The version goes in the
+     * filename so a new artwork is a new URL.
+     */
+    version: 2,
 
     /*
      * Artwork size, and every box below, MEASURED from the file rather than
@@ -52,50 +62,47 @@ export const posters = [
     height: 2560,
 
     /*
-     * The white silhouette on the right. Measured at x 0.6235..0.9995,
-     * y 0.6289..1.0 — it runs clean off the bottom edge of the artwork, which is
-     * why the height takes the slot all the way to 1.0 rather than stopping
-     * short at the foot band.
+     * Where the cut-out person is drawn.
+     *
+     * The artwork SHIPPED with a white person-shaped placeholder here. It is
+     * gone — painted out in preprocessing — because drawing a cut-out on top of
+     * it left white showing everywhere the two outlines disagreed: around the
+     * shoulders, between arm and body, above the head. No runtime trick fixes
+     * that; the placeholder simply had to stop existing.
+     *
+     * The slot keeps the placeholder's position so the composition still reads
+     * as designed, and stops at x 0.615 — comfortably right of where the name
+     * can reach (0.585), so the photograph never crowds the type.
      */
-    photoSlot: { x: 0.6235, y: 0.6289, w: 0.3760, h: 0.3711, anchor: 'bottom' },
+    photoSlot: { x: 0.615, y: 0.585, w: 0.385, h: 0.415, anchor: 'bottom' },
 
     /*
-     * THE ARTWORK HAS PLACEHOLDER TYPE BAKED INTO IT.
+     * Name above, designation below, the pair centred on the party mark.
      *
-     * "Leader's Name, Designation" is not a layer we can turn off — it is
-     * pixels, sitting at x 0.1748..0.6123, y 0.9340..0.9633. Drawing our own
-     * name on top without covering it first leaves the two overlapping, which
-     * is exactly the kind of thing that ships and then cannot be recalled.
+     * The mark's tile was measured at y 0.9062..0.9816, centre 0.9439, right
+     * edge x 0.1519. The two lines straddle that centre so the block reads as
+     * one unit with the logo rather than sitting under it, and they start at
+     * x 0.185 — just clear of the tile.
      *
-     * So the renderer paints this rectangle in the band's own colour first. The
-     * colour is sampled from the artwork (rgb(21,21,19)), not assumed to be
-     * pure black — it is not.
-     */
-    clearBox: { x: 0.1628, y: 0.9280, w: 0.4615, h: 0.0413, color: '#151513' },
-
-    /*
-     * Name above, designation below.
-     *
-     * The artwork sets them on ONE line, comma-separated. The office asked for
-     * them stacked, so these are two boxes. maxW stops at 0.42 — ending at
-     * x 0.595, just clear of the silhouette's left edge at 0.6235, so a long
-     * name shrinks rather than running under the photograph.
+     * The artwork's own "Leader's Name, Designation" is not painted over at
+     * runtime any more; it was removed from the artwork itself, which is one
+     * fewer thing to go wrong on every frame.
      */
     name: {
-      x: 0.175,
-      y: 0.9520,
-      maxW: 0.42,
-      size: 0.0285,
+      x: 0.185,
+      y: 0.9406,
+      maxW: 0.40,
+      size: 0.026,
       weight: 700,
       color: '#FFFFFF',
       align: 'left',
       baseline: 'alphabetic',
     },
     designation: {
-      x: 0.175,
-      y: 0.9855,
-      maxW: 0.42,
-      size: 0.0195,
+      x: 0.185,
+      y: 0.9602,
+      maxW: 0.40,
+      size: 0.018,
       weight: 500,
       color: '#F2D024',
       align: 'left',
@@ -108,4 +115,4 @@ export const posterBySlug = (slug) => posters.find((p) => p.slug === slug) ?? nu
 
 /** Artwork path for a poster. Served from /public, so same-origin — which is
  *  what keeps the export canvas untainted and toBlob() legal. */
-export const posterImage = (poster) => `/posters/${poster.slug}.jpg`
+export const posterImage = (poster) => `/posters/${poster.slug}-v${poster.version}.jpg`
