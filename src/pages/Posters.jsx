@@ -5,7 +5,6 @@ import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import { site } from '../data/site'
 import { posters, posterImage } from '../data/posters'
-import { photos } from '../data/photos'
 import { useT } from '../i18n/useT'
 
 /**
@@ -40,7 +39,6 @@ const Posters = () => {
         title="Create Your Own Poster"
         description="Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, nothing is uploaded to a server."
         schema={schema}
-        preloadPhoto={{ ...photos.bannerPolitical, sizes: '100vw' }}
       />
 
       <PageHero
@@ -49,7 +47,6 @@ const Posters = () => {
         lead={t(
           'Pick a campaign, add your photo and your name, and download a poster ready to share. It takes under a minute, it works on a phone, and your photo never leaves your device.'
         )}
-        photo={photos.bannerPolitical}
       />
 
       <section className="section bg-white">
