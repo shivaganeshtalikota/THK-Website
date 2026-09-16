@@ -48,12 +48,31 @@ async function getSegmenter() {
     // Our own /public, not the jsDelivr path the docs suggest: the site's CSP
     // is default-src 'self', so a CDN fetch would simply be blocked.
     const fileset = await FilesetResolver.forVisionTasks(WASM_BASE)
-    return ImageSegmenter.createFromOptions(fileset, {
-      baseOptions: { modelAssetPath: MODEL, delegate: 'GPU' },
-      runningMode: 'IMAGE',
-      outputCategoryMask: true,
-      outputConfidenceMasks: false,
-    })
+
+    const build = (delegate) =>
+      ImageSegmenter.createFromOptions(fileset, {
+        baseOptions: { modelAssetPath: MODEL, delegate },
+        runningMode: 'IMAGE',
+        outputCategoryMask: true,
+        outputConfidenceMasks: false,
+      })
+
+    /*
+     * GPU first, CPU if that fails.
+     *
+     * The GPU delegate needs a working WebGL2 context, and plenty of real
+     * devices do not have one: hardware acceleration switched off, a blocklisted
+     * driver, a locked-down work phone, or simply too many live WebGL contexts
+     * on the page already. On those the poster was falling back to "we could not
+     * remove the background" when the CPU path would have worked perfectly well
+     * — slower, but the visitor is waiting a couple of seconds either way.
+     */
+    try {
+      return await build('GPU')
+    } catch (gpuErr) {
+      console.warn('GPU segmentation unavailable, falling back to CPU:', gpuErr)
+      return build('CPU')
+    }
   })().catch((err) => {
     // Let the next attempt retry rather than caching a rejected promise for the
     // life of the page — a failure here is usually a flaky download, not a

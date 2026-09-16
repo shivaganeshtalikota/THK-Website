@@ -52,6 +52,9 @@ const PosterStudio = () => {
   const [ready, setReady] = useState(false)
   const [busy, setBusy] = useState(null) // null | 'loading-model' | 'cutting'
   const [cutout, setCutout] = useState('none') // none | done | failed | raw
+  // Kept so a failure can say WHY rather than just that it happened — without
+  // it there is no way to tell a blocked WebGL context from a failed download.
+  const [cutoutError, setCutoutError] = useState(null)
   const [error, setError] = useState(null)
   const [downloaded, setDownloaded] = useState(false)
 
@@ -130,6 +133,7 @@ const PosterStudio = () => {
         console.error('Background removal failed:', err)
         // Deliberately not an error state: the poster still works, so this is
         // reported as a downgrade rather than a failure.
+        setCutoutError(err?.message ? String(err.message).slice(0, 180) : null)
         setCutout('failed')
       } finally {
         setBusy(null)
@@ -277,6 +281,11 @@ const PosterStudio = () => {
                     <span>
                       {t(
                         'The background could not be removed on this device, so your photo is being used as it is. The poster still works — or try a photo with a plainer background.'
+                      )}
+                      {cutoutError && (
+                        <span className="mt-1.5 block font-mono text-[0.7rem] text-ink-500">
+                          {cutoutError}
+                        </span>
                       )}
                     </span>
                   </p>
