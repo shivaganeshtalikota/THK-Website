@@ -15,11 +15,50 @@ import { useT } from '../i18n/useT'
  * `image` must be an absolute URL for WhatsApp/Facebook/X to fetch it —
  * relative paths silently produce a preview with no image.
  */
+
+/** The site-wide card. Every route used this and only this, which is why a
+ *  shared poster link previewed as a portrait of Hari Krishna. */
+const DEFAULT_OG = {
+  url: `${site.url}/og-image.jpg`,
+  width: 1200,
+  height: 630,
+  type: 'image/jpeg',
+}
+
+/**
+ * Normalise the `image` prop.
+ *
+ * It accepts a bare URL string for the common case, or an object carrying the
+ * real dimensions. The dimensions matter: og:image:width and og:image:height
+ * used to be HARDCODED to 1200x630 regardless of what was passed, which was
+ * accidentally true only because every page fell through to the one default
+ * card. Passing a portrait poster would have declared it landscape, and a
+ * crawler that trusts those tags — WhatsApp reserves the space before the image
+ * arrives — lays out the card wrongly and then crops to fit.
+ */
+function normaliseImage(image) {
+  if (!image) return DEFAULT_OG
+  if (typeof image === 'string') {
+    return {
+      ...DEFAULT_OG,
+      url: image,
+      type: image.endsWith('.png') ? 'image/png' : 'image/jpeg',
+    }
+  }
+  return {
+    url: image.url,
+    width: image.width ?? DEFAULT_OG.width,
+    height: image.height ?? DEFAULT_OG.height,
+    type: image.type ?? (String(image.url).endsWith('.png') ? 'image/png' : 'image/jpeg'),
+    alt: image.alt,
+  }
+}
+
 const Seo = ({
   title,
   preloadPhoto,
   description = site.description,
-  image = `${site.url}/og-image.jpg`,
+  image,
   type = 'website',
   noindex = false,
   schema,
@@ -93,7 +132,8 @@ const Seo = ({
       ? `${t(title)} | ${t(site.name)}`
       : `${t(site.name)} · ${t('Kanaka Durga Temple Board Member')}`
 
-    const alt = `${site.name} — ${site.role}`
+    const og = normaliseImage(image)
+    const alt = og.alt ? t(og.alt) : `${site.name} — ${site.role}`
 
     const tags = [
       ...preloadTags,
@@ -114,14 +154,14 @@ const Seo = ({
       { _tag: 'meta', property: 'og:url', content: canonical },
       { _tag: 'meta', property: 'og:title', content: fullTitle },
       { _tag: 'meta', property: 'og:description', content: t(description) },
-      { _tag: 'meta', property: 'og:image', content: image },
-      { _tag: 'meta', property: 'og:image:secure_url', content: image },
+      { _tag: 'meta', property: 'og:image', content: og.url },
+      { _tag: 'meta', property: 'og:image:secure_url', content: og.url },
       // WhatsApp and Facebook use this as a decoding hint. index.html
       // declared it, but prerender strips the template's og: block in
       // favour of these, so it was being dropped from every page.
-      { _tag: 'meta', property: 'og:image:type', content: image.endsWith('.png') ? 'image/png' : 'image/jpeg' },
-      { _tag: 'meta', property: 'og:image:width', content: '1200' },
-      { _tag: 'meta', property: 'og:image:height', content: '630' },
+      { _tag: 'meta', property: 'og:image:type', content: og.type },
+      { _tag: 'meta', property: 'og:image:width', content: String(og.width) },
+      { _tag: 'meta', property: 'og:image:height', content: String(og.height) },
       { _tag: 'meta', property: 'og:image:alt', content: alt },
 
       { _tag: 'meta', name: 'twitter:card', content: 'summary_large_image' },
@@ -129,7 +169,7 @@ const Seo = ({
       { _tag: 'meta', name: 'twitter:creator', content: '@THK_iTDP' },
       { _tag: 'meta', name: 'twitter:title', content: fullTitle },
       { _tag: 'meta', name: 'twitter:description', content: t(description) },
-      { _tag: 'meta', name: 'twitter:image', content: image },
+      { _tag: 'meta', name: 'twitter:image', content: og.url },
       { _tag: 'meta', name: 'twitter:image:alt', content: alt },
     ]
 
