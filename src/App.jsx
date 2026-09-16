@@ -28,6 +28,8 @@ import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
 import Admin from './pages/Admin'
+import Posters from './pages/Posters'
+import PosterStudio from './pages/PosterStudio'
 import AskPanel from './components/AskPanel'
 
 /**
@@ -44,6 +46,10 @@ const PAGES = [
   { path: '/community', element: <Community /> },
   { path: '/media', element: <Media /> },
   { path: '/contact', element: <Contact /> },
+  { path: '/posters', element: <Posters /> },
+  // One editor, addressed by slug, so a new campaign poster is a data entry
+  // in src/data/posters.js and not a new route.
+  { path: '/posters/:slug', element: <PosterStudio /> },
   { path: '/privacy', element: <Privacy /> },
   { path: '/terms', element: <Terms /> },
 ]

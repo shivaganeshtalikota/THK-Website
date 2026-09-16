@@ -53,6 +53,13 @@ function resolveOrigin() {
 
 const ORIGIN = resolveOrigin()
 
+// Campaign poster slugs, read from the data file so the sitemap cannot fall
+// out of step with what actually got prerendered.
+const posterSlugs = (() => {
+  const src = readFileSync(join(ROOT, 'src', 'data', 'posters.js'), 'utf8')
+  return [...src.matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+})()
+
 // changefreq/priority are hints. The newsroom changes most; legal pages least.
 const routes = [
   { path: '/', priority: '1.0', changefreq: 'weekly', file: 'index.html' },
@@ -61,6 +68,13 @@ const routes = [
   { path: '/community', priority: '0.8', changefreq: 'monthly', file: 'community/index.html' },
   { path: '/media', priority: '0.8', changefreq: 'weekly', file: 'media/index.html' },
   { path: '/contact', priority: '0.7', changefreq: 'monthly', file: 'contact/index.html' },
+  { path: '/posters', priority: '0.8', changefreq: 'weekly', file: 'posters/index.html' },
+  ...posterSlugs.map((slug) => ({
+    path: `/posters/${slug}`,
+    priority: '0.7',
+    changefreq: 'monthly',
+    file: `posters/${slug}/index.html`,
+  })),
   { path: '/privacy', priority: '0.2', changefreq: 'yearly', file: 'privacy/index.html' },
   { path: '/terms', priority: '0.2', changefreq: 'yearly', file: 'terms/index.html' },
 ]

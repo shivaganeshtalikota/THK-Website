@@ -24,7 +24,29 @@ const ROOT = join(HERE, '..')
 const DIST = join(ROOT, 'dist')
 
 // Keep in sync with the <Routes> in src/App.jsx and scripts/generate-sitemap.js.
-const EN_ROUTES = ['/', '/about', '/political', '/community', '/media', '/contact', '/privacy', '/terms']
+/*
+ * The poster slugs are read out of src/data/posters.js rather than repeated
+ * here, so adding a campaign poster does not mean remembering to prerender it.
+ * The file is plain data with no imports, so it can be parsed straight out of
+ * the source text without pulling app code into the build script.
+ */
+const posterSlugs = (() => {
+  const src = readFileSync(join(ROOT, 'src', 'data', 'posters.js'), 'utf8')
+  return [...src.matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+})()
+
+const EN_ROUTES = [
+  '/',
+  '/about',
+  '/political',
+  '/community',
+  '/media',
+  '/contact',
+  '/posters',
+  ...posterSlugs.map((slug) => `/posters/${slug}`),
+  '/privacy',
+  '/terms',
+]
 
 /**
  * The same eight pages again under /te.

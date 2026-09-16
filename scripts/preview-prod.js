@@ -49,6 +49,12 @@ const rules = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8')).header
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
+  // Without application/wasm the browser refuses to stream-compile and falls
+  // back to ArrayBuffer instantiation, which downloads the binary a SECOND
+  // time. Vercel gets this right; the preview server has to as well, or local
+  // testing is not representative of production.
+  '.wasm': 'application/wasm',
+  '.tflite': 'application/octet-stream',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.webmanifest': 'application/manifest+json; charset=utf-8',

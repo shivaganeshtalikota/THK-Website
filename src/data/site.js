@@ -569,5 +569,6 @@ export const nav = [
   { name: 'Political Leadership', path: '/political' },
   { name: 'Community Service', path: '/community' },
   { name: 'Media', path: '/media' },
+  { name: 'Posters', path: '/posters' },
   { name: 'Contact', path: '/contact' },
 ]
