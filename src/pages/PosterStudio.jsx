@@ -64,6 +64,7 @@ const PosterStudio = () => {
   const canvasRef = useRef(null)
   const artworkRef = useRef(null)
   const personRef = useRef(null)
+  const logoRef = useRef(null)
   const fileInputRef = useRef(null)
 
   const [name, setName] = useState('')
@@ -138,6 +139,7 @@ const PosterStudio = () => {
       person: personRef.current,
       name,
       designation,
+      logo: logoRef.current,
       scale: 1,
     })
   }, [poster, name, designation])
@@ -149,9 +151,20 @@ const PosterStudio = () => {
     let alive = true
     ;(async () => {
       try {
-        const [art] = await Promise.all([loadImage(posterImage(poster)), ensureFonts()])
+        /*
+         * The party mark is only fetched for a poster whose footer this code
+         * draws. The 22A artwork has its own baked in, so loading a second copy
+         * to paint over it would be a wasted request on the page most likely to
+         * be opened on a slow phone.
+         */
+        const [art, mark] = await Promise.all([
+          loadImage(posterImage(poster)),
+          poster.band ? loadImage('/tdp-logo.png') : Promise.resolve(null),
+          ensureFonts(),
+        ])
         if (!alive) return
         artworkRef.current = art
+        logoRef.current = mark
         setReady(true)
       } catch {
         if (alive) setError('The poster artwork could not be loaded. Please refresh and try again.')
@@ -173,6 +186,7 @@ const PosterStudio = () => {
       person: null,
       name: '',
       designation: '',
+      logo: logoRef.current,
       scale: 1,
     })
   }, [ready, generated, poster])

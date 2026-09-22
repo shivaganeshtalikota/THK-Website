@@ -53,11 +53,26 @@ function resolveOrigin() {
 
 const ORIGIN = resolveOrigin()
 
-// Campaign poster slugs, read from the data file so the sitemap cannot fall
-// out of step with what actually got prerendered.
+// Campaign poster slugs, read from the data so the sitemap cannot fall out of
+// step with what actually got prerendered. Both sources: the hand-written
+// entries in posters.js and the ones published from the admin panel, which land
+// in a JSON manifest. Reading only the first would quietly leave every
+// office-published campaign out of the sitemap.
 const posterSlugs = (() => {
   const src = readFileSync(join(ROOT, 'src', 'data', 'posters.js'), 'utf8')
-  return [...src.matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+  const builtIn = [...src.matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+
+  let published = []
+  try {
+    const manifest = JSON.parse(
+      readFileSync(join(ROOT, 'src', 'data', 'campaign-posters.json'), 'utf8'),
+    )
+    published = (manifest.posters ?? []).map((p) => p.slug).filter(Boolean)
+  } catch {
+    // No manifest yet. The built-in posters still make it into the sitemap.
+  }
+
+  return [...new Set([...published, ...builtIn])]
 })()
 
 // changefreq/priority are hints. The newsroom changes most; legal pages least.

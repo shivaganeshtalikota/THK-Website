@@ -31,7 +31,25 @@
  * @property {number} height      Artwork pixel height.
  */
 
-export const posters = [
+import campaigns from './campaign-posters.json'
+
+/**
+ * Posters published from the admin panel.
+ *
+ * Kept in JSON rather than appended to the array below, because this file is
+ * hand-written and heavily commented — every number in the 22A entry was
+ * measured off the artwork and the comments explain how. A publishing endpoint
+ * editing that by hand would eventually mangle it, and a merge conflict in a
+ * file that decides where faces land on party material is not a thing worth
+ * risking. The manifest is machine-owned; this file stays human-owned.
+ *
+ * They carry their own geometry rather than referring to a shared template, so
+ * a later template revision cannot silently move the type on a campaign that is
+ * already circulating.
+ */
+const published = (campaigns?.posters ?? []).map((p) => ({ ...p, published: true }))
+
+const builtIn = [
   {
     slug: '22a-patta-bhumi',
     title: 'పట్టా భూమికి తాళం! 22A పేరుతో గందరగోళం!',
@@ -143,6 +161,13 @@ export const posters = [
     },
   },
 ]
+
+/*
+ * Newest first, so the listing page leads with the current campaign. The
+ * built-in poster stays last: it is the one with bespoke artwork and it is not
+ * going anywhere, but a supporter arriving today wants this week's event.
+ */
+export const posters = [...published, ...builtIn]
 
 export const posterBySlug = (slug) => posters.find((p) => p.slug === slug) ?? null
 

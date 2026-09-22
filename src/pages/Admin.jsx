@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { FaPlus, FaXmark, FaPen, FaTrash, FaWandMagicSparkles } from 'react-icons/fa6'
 import Seo from '../components/Seo'
+import PosterPublisher from '../components/PosterPublisher'
 
 /**
  * Publishing panel.
@@ -271,6 +272,7 @@ const Admin = () => {
                   {[
                     ['photo', 'A photograph'],
                     ['update', 'A written update'],
+                    ['poster', 'A campaign poster'],
                   ].map(([value, text]) => (
                     <label
                       key={value}
@@ -294,6 +296,8 @@ const Admin = () => {
                 </div>
               </fieldset>
 
+              {form.kind === 'poster' ? null : (
+              <>
               {/* 1 — Title */}
               <div>
                 <label className={labelCls} htmlFor="title">1 · Title</label>
@@ -461,7 +465,11 @@ const Admin = () => {
                   {status.text}
                 </p>
               )}
+              </>
+              )}
             </form>
+
+            {form.kind === 'poster' && <PosterPublisher call={call} />}
 
             {/* -------------------------------------------------- published */}
             <div className="mt-16 border-t hairline pt-10">

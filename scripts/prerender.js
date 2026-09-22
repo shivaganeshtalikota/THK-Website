@@ -25,14 +25,34 @@ const DIST = join(ROOT, 'dist')
 
 // Keep in sync with the <Routes> in src/App.jsx and scripts/generate-sitemap.js.
 /*
- * The poster slugs are read out of src/data/posters.js rather than repeated
- * here, so adding a campaign poster does not mean remembering to prerender it.
- * The file is plain data with no imports, so it can be parsed straight out of
- * the source text without pulling app code into the build script.
+ * The poster slugs are read from the data rather than repeated here, so adding
+ * a campaign does not mean remembering to prerender it.
+ *
+ * Two sources, because there are two kinds. The hand-written entries live in
+ * posters.js, which is plain data with no app imports and can be parsed out of
+ * the source text. The ones published from the admin panel live in a JSON
+ * manifest that the publishing endpoint appends to.
+ *
+ * Both have to be read here or a poster his office publishes would exist in the
+ * app and have no prerendered page — which fails in the least visible way
+ * possible: the route works when clicked from inside the site, and 404s for
+ * every crawler, every WhatsApp preview and anybody who opens the link cold.
  */
 const posterSlugs = (() => {
   const src = readFileSync(join(ROOT, 'src', 'data', 'posters.js'), 'utf8')
-  return [...src.matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+  const builtIn = [...src.matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+
+  let published = []
+  try {
+    const manifest = JSON.parse(
+      readFileSync(join(ROOT, 'src', 'data', 'campaign-posters.json'), 'utf8'),
+    )
+    published = (manifest.posters ?? []).map((p) => p.slug).filter(Boolean)
+  } catch {
+    // No manifest yet, or an unreadable one. The built-in posters still build.
+  }
+
+  return [...new Set([...published, ...builtIn])]
 })()
 
 const EN_ROUTES = [

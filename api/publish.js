@@ -1,4 +1,5 @@
-import { createHash, timingSafeEqual } from 'node:crypto'
+import { createHash } from 'node:crypto'
+import { requireAdmin } from '../server/admin-auth.js'
 
 /**
  * Publishes a gallery photograph or a written update by committing it to the
@@ -63,12 +64,6 @@ const api = async (path, token, init = {}) => {
 }
 
 /** Constant-time password check. Digest first so lengths always match. */
-const passwordOk = (given, expected) => {
-  if (typeof given !== 'string' || !expected) return false
-  const a = createHash('sha256').update(given).digest()
-  const b = createHash('sha256').update(expected).digest()
-  return timingSafeEqual(a, b)
-}
 
 /**
  * ASCII slug, with a fallback for titles that have no Latin characters.
@@ -110,48 +105,10 @@ const cleanSources = (list) =>
 const detect = (buf) =>
   SIGNATURES.find((s) => s.magic.every((byte, i) => buf[i] === byte)) ?? null
 
-/**
- * Brute-force resistance for a password-protected endpoint on the open web.
- *
- * There is no shared store here — serverless instances do not see each other —
- * so this cannot be a true global rate limit. It does two things that matter
- * anyway:
- *
- *  1. Every REJECTED attempt costs a fixed second. Credential stuffing depends
- *     on volume; at one second per try a strong password is out of reach, and a
- *     legitimate user typing a wrong password never notices.
- *  2. A per-instance counter locks an IP out for fifteen minutes after ten
- *     failures, which stops one warm instance being hammered.
- *
- * Both are cheap. Neither replaces a long random ADMIN_PASSWORD, which is what
- * actually protects this.
- */
-const ATTEMPTS = new Map()
-const WINDOW_MS = 15 * 60 * 1000
-const MAX_FAILURES = 10
-
-const clientIp = (req) =>
-  (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
-  req.socket?.remoteAddress ||
-  'unknown'
-
-const lockedOut = (ip) => {
-  const rec = ATTEMPTS.get(ip)
-  if (!rec) return false
-  if (Date.now() - rec.first > WINDOW_MS) {
-    ATTEMPTS.delete(ip)
-    return false
-  }
-  return rec.count >= MAX_FAILURES
-}
-
-const noteFailure = (ip) => {
-  const rec = ATTEMPTS.get(ip)
-  if (!rec || Date.now() - rec.first > WINDOW_MS) ATTEMPTS.set(ip, { count: 1, first: Date.now() })
-  else rec.count += 1
-}
-
-const penalty = () => new Promise((r) => setTimeout(r, 1000))
+/* The credential check, the lockout counter and the fixed penalty on a
+ * rejected attempt now live in server/admin-auth.js, shared with the poster
+ * publishing endpoint. One implementation, because a second copy of an auth
+ * check is how one of them ends up weaker than the other. */
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -159,7 +116,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { ADMIN_PASSWORD, ADMIN_ID, GITHUB_TOKEN } = process.env
+  const { ADMIN_PASSWORD, GITHUB_TOKEN } = process.env
   if (!ADMIN_PASSWORD || !GITHUB_TOKEN) {
     return res.status(500).json({
       error: 'Server is not configured. ADMIN_PASSWORD and GITHUB_TOKEN must be set in Vercel.',
@@ -170,19 +127,8 @@ export default async function handler(req, res) {
   const { adminId, password, action = 'create', id: targetId } = body
   const { kind, title, description, image, category, sources } = body
 
-  // ADMIN_ID is optional: if it is set in the environment it must match, so the
-  // panel needs both halves. Both comparisons are constant-time.
-  const ip = clientIp(req)
-  if (lockedOut(ip)) {
-    await penalty()
-    return res.status(429).json({ error: 'Too many attempts. Try again in fifteen minutes.' })
-  }
-  if ((ADMIN_ID && !passwordOk(adminId, ADMIN_ID)) || !passwordOk(password, ADMIN_PASSWORD)) {
-    noteFailure(ip)
-    await penalty()
-    return res.status(401).json({ error: 'Wrong ID or password.' })
-  }
-  ATTEMPTS.delete(ip)
+  const denied = await requireAdmin(req, { adminId, password })
+  if (denied) return res.status(denied.status).json({ error: denied.error })
   if (!['create', 'update', 'delete', 'list'].includes(action)) {
     return res.status(400).json({ error: 'Unknown action.' })
   }

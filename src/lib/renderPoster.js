@@ -138,6 +138,45 @@ function coverInto(ctx, img, slot, W, H) {
 }
 
 /**
+ * The footer band, for posters whose artwork does not carry one.
+ *
+ * Solid rather than a gradient, and opaque rather than translucent, because it
+ * has to hold white text legibly over an artwork nobody has seen yet. A
+ * translucent band looks better over a dark photograph and becomes unreadable
+ * over a bright one, and the whole point here is that it must work on every
+ * image somebody uploads without anyone checking.
+ *
+ * The party mark is drawn at its own aspect ratio rather than squashed into a
+ * square — it is a real logo with proportions, and a stretched party emblem on
+ * campaign material is the kind of thing people notice.
+ */
+function drawBand(ctx, band, logo, W, H) {
+  const top = band.y * H
+
+  ctx.save()
+  ctx.fillStyle = band.color || '#0E0E0E'
+  ctx.fillRect(0, top, W, H - top)
+
+  if (band.accent) {
+    ctx.fillStyle = band.accent
+    ctx.fillRect(0, top, W, Math.max(2, (band.accentH || 0.005) * H))
+  }
+
+  if (logo && band.logo) {
+    const boxW = band.logo.w * W
+    const scale = boxW / logo.width
+    const drawW = boxW
+    const drawH = logo.height * scale
+    const x = band.logo.x * W
+    // Centred in the band rather than aligned to the type, so it reads as a
+    // mark on the strip and not as a bullet before the name.
+    const y = top + (H - top - drawH) / 2
+    ctx.drawImage(logo, x, y, drawW, drawH)
+  }
+  ctx.restore()
+}
+
+/**
  * Compose the whole poster.
  *
  * @param {object}            opts
@@ -156,6 +195,7 @@ export function renderPoster({
   person,
   name,
   designation,
+  logo,
   scale = 1,
 }) {
   const W = Math.round(poster.width * scale)
@@ -168,14 +208,23 @@ export function renderPoster({
   ctx.imageSmoothingQuality = 'high'
 
   /*
-   * Artwork, person, type — in that order.
+   * Artwork, band, person, type — in that order.
    *
-   * The artwork here is the CLEANED one: its white silhouette and its
-   * placeholder name have both been painted out in preprocessing, so there
-   * is nothing underneath the person to show through and nothing under the
-   * type to collide with.
+   * For the 22A poster the artwork is the CLEANED one: its white silhouette and
+   * its placeholder name were both painted out in preprocessing, so there is
+   * nothing underneath the person to show through and nothing under the type to
+   * collide with. That poster has no `band` — its footer is part of the artwork.
    */
   ctx.drawImage(artwork, 0, 0, W, H)
+
+  /*
+   * A poster published from the admin panel has no footer of its own, because
+   * what was uploaded is a plain event image. One is drawn here so the name has
+   * somewhere legible to sit whatever the artwork behind it looks like — light,
+   * dark or busy. Drawn BEFORE the person, so the person stands in front of it
+   * exactly as the 22A figure overlaps its bands.
+   */
+  if (poster.band) drawBand(ctx, poster.band, logo, W, H)
 
   if (person) coverInto(ctx, person, poster.photoSlot, W, H)
 
@@ -215,7 +264,7 @@ export function renderPoster({
  * @param {number=}           opts.width
  * @param {number=}           opts.height
  */
-export function renderShareCard({ canvas, source, width = 1200, height = 630 }) {
+export function renderShareCard({ canvas, source, width = 1200, height = 630, fromTop = false }) {
   canvas.width = width
   canvas.height = height
 
@@ -232,7 +281,17 @@ export function renderShareCard({ canvas, source, width = 1200, height = 630 }) 
     cropW = Math.round(sh * (width / height))
   }
   const sx = Math.round((sw - cropW) / 2)
-  const sy = sh - cropH
+  /*
+   * Bottom by default, top on request — and which one is right depends entirely
+   * on what the card is for.
+   *
+   * A card for somebody's OWN poster takes the bottom, because that is where
+   * their face and their name are and that is the whole point of it. A card for
+   * the CAMPAIGN takes the top, because that is where the event image says what
+   * the campaign is about; the bottom would show an empty name band and a photo
+   * slot nobody has filled in yet.
+   */
+  const sy = fromTop ? 0 : sh - cropH
 
   const ctx = canvas.getContext('2d')
   ctx.imageSmoothingEnabled = true
