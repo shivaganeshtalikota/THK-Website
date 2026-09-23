@@ -38,6 +38,15 @@ const Privacy = () => {
             </p>
           </Block>
 
+          <Block title="The poster maker">
+            <p>
+              {t("When you make a campaign poster, your photograph is processed inside your own browser: the background is removed and the poster is composed on your device. The photograph itself is never uploaded.")}
+            </p>
+            <p>
+              {t("When you generate a poster, the finished poster image and a small preview of it are stored so that the link you share can show it. They are kept at an address nobody can guess and are deleted automatically after 30 days. The name and designation you type appear only on the poster itself.")}
+            </p>
+          </Block>
+
           <Block title="How your information is used">
             <p>
               {t("Information you submit is used solely to respond to your enquiry and to provide constituent services. It is not sold, rented, or traded. It is not used for any purpose you did not contact us about.")}
@@ -46,13 +55,13 @@ const Privacy = () => {
 
           <Block title="Third-party services">
             <p>
-              {t("Contact form submissions are delivered by Web3Forms, which transmits your message to the office inbox. Web fonts are served by Google Fonts. These providers may process technical data such as your IP address in the course of delivering the service.")}
+              {t("Contact form submissions are delivered by Web3Forms, which transmits your message to the office inbox. The website is hosted by Vercel, and shared posters are stored with Cloudflare. Fonts are served from this website itself. These providers may process technical data such as your IP address in the course of delivering the service.")}
             </p>
           </Block>
 
           <Block title="Cookies and analytics">
             <p>
-              {t("This website does not set advertising or tracking cookies, and does not build a profile of your browsing. If analytics are introduced in future, this page will be updated before they go live.")}
+              {t("This website does not set advertising or tracking cookies, and does not build a profile of your browsing. It uses Vercel Web Analytics, which counts page visits without cookies and without identifying you.")}
             </p>
           </Block>
 

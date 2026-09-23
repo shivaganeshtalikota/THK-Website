@@ -875,10 +875,76 @@ export const te = {
   // campaign added later needs two more lines here, and until it has them its
   // title falls back to English — the documented behaviour, not a fault.
   'Create Your Own Poster': 'మీ సొంత పోస్టర్ తయారు చేసుకోండి',
-  'Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, nothing is uploaded to a server.':
-    'తెలుగుదేశం పార్టీ ప్రచార పోస్టర్‌పై మీ సొంత పేరు, హోదా, ఫోటో చేర్చి షేర్ చేయండి. ఉచితం, ఫోన్‌లోనే పని చేస్తుంది, సర్వర్‌కు ఏదీ అప్‌లోడ్ కాదు.',
+  'Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, and your photo never leaves your device.':
+    'తెలుగుదేశం పార్టీ ప్రచార పోస్టర్‌పై మీ సొంత పేరు, హోదా, ఫోటో చేర్చి షేర్ చేయండి. ఉచితం, ఫోన్‌లోనే పని చేస్తుంది, మీ ఫోటో మీ పరికరాన్ని వదిలి ఎక్కడికీ వెళ్లదు.',
   'Create your poster — 22A': 'మీ పోస్టర్ తయారు చేసుకోండి — 22A',
   'Put your name, designation and photo on the 22A campaign poster and share it. Free, works on a phone, and your photo never leaves your device.':
     '22A ప్రచార పోస్టర్‌పై మీ పేరు, హోదా, ఫోటో చేర్చి షేర్ చేయండి. ఉచితం, ఫోన్‌లోనే పని చేస్తుంది, మీ ఫోటో మీ పరికరాన్ని వదిలి ఎక్కడికీ వెళ్లదు.',
 
+  // ---- Posters: generating, saving and sharing (September 2026) ------------
+  // The finished poster is now saved when it is generated, so the link can
+  // open on it; the photograph itself is still never uploaded. Wording kept to
+  // the vocabulary above — "షేర్", "హోదా", "పరికరం".
+  'Pick a campaign, add your photo and your name, and download a poster ready to share. It takes under a minute, it works on a phone, and your photograph never leaves your device.':
+    'ఒక ప్రచారాన్ని ఎంచుకోండి, మీ ఫోటో, పేరు చేర్చండి, షేర్ చేయడానికి సిద్ధంగా ఉన్న పోస్టర్‌ను డౌన్‌లోడ్ చేసుకోండి. ఒక్క నిమిషం కూడా పట్టదు, ఫోన్‌లోనే పని చేస్తుంది, మీ ఫోటో మీ పరికరాన్ని వదిలి ఎక్కడికీ వెళ్లదు.',
+  'The poster is built inside your own browser, and there is no account. Your photograph is never sent to this website or to anyone else. When you generate a poster, the finished poster is saved so the link you share can show it, and it is deleted after 30 days.':
+    'పోస్టర్ మీ బ్రౌజర్‌లోనే తయారవుతుంది, ఖాతా అవసరం లేదు. మీ ఫోటో ఈ వెబ్‌సైట్‌కు గానీ మరెవరికీ గానీ పంపబడదు. మీరు పోస్టర్ తయారు చేసినప్పుడు, మీరు షేర్ చేసే లింక్‌లో అది కనిపించేలా పూర్తయిన పోస్టర్ భద్రపరచబడుతుంది; 30 రోజుల తర్వాత అది తొలగించబడుతుంది.',
+  'Your poster is ready. Download it or share it below.': 'మీ పోస్టర్ సిద్ధంగా ఉంది. కింద డౌన్‌లోడ్ చేసుకోండి లేదా షేర్ చేయండి.',
+  'A long designation goes onto two lines by itself.': 'పొడవైన హోదా తనంతట తానే రెండు వరుసల్లోకి సర్దుకుంటుంది.',
+  'Save it': 'సేవ్ చేయండి',
+  'Saving your poster for the link…': 'లింక్ కోసం మీ పోస్టర్‌ను భద్రపరుస్తున్నాం…',
+  'Anyone who opens your link sees this poster, full size, and can make their own.':
+    'మీ లింక్ తెరిచిన ఎవరైనా ఈ పోస్టర్‌ను పూర్తి పరిమాణంలో చూస్తారు, తమ సొంత పోస్టర్ కూడా తయారు చేసుకోగలరు.',
+  'The link below opens the campaign page instead.': 'కింది లింక్ బదులుగా ప్రచార పేజీని తెరుస్తుంది.',
+  'Try saving again': 'మళ్లీ భద్రపరచండి',
+  'Your photograph is never uploaded: the background is removed and the poster is made inside your browser. When you generate a poster, the finished image is saved so your link can show it, and it is deleted after 30 days. There is no account.':
+    'మీ ఫోటో ఎప్పుడూ అప్‌లోడ్ కాదు: నేపథ్యం తొలగింపు, పోస్టర్ తయారీ అంతా మీ బ్రౌజర్‌లోనే జరుగుతాయి. మీరు పోస్టర్ తయారు చేసినప్పుడు, మీ లింక్‌లో అది కనిపించేలా పూర్తయిన చిత్రం భద్రపరచబడుతుంది; 30 రోజుల తర్వాత అది తొలగించబడుతుంది. ఖాతా ఏదీ అవసరం లేదు.',
+  'Your poster could not be saved just now.': 'మీ పోస్టర్‌ను ఇప్పుడు భద్రపరచలేకపోయాం.',
+  'No connection — your poster could not be saved. You can still download it.':
+    'ఇంటర్నెట్ కనెక్షన్ లేదు — మీ పోస్టర్ భద్రపరచబడలేదు. మీరు దాన్ని ఇప్పటికీ డౌన్‌లోడ్ చేసుకోవచ్చు.',
+  'Saving took too long on this connection. You can still download it.':
+    'ఈ కనెక్షన్‌లో భద్రపరచడానికి చాలా సమయం పట్టింది. మీరు దాన్ని ఇప్పటికీ డౌన్‌లోడ్ చేసుకోవచ్చు.',
+  'Reading your photo…': 'మీ ఫోటోను తెరుస్తున్నాం…',
+  'Getting the background remover ready — the first time takes a little longer…':
+    'నేపథ్యం తొలగించే సాధనాన్ని సిద్ధం చేస్తున్నాం — మొదటిసారి కొంచెం ఎక్కువ సమయం పడుతుంది…',
+  'Finding you in the photo…': 'ఫోటోలో మిమ్మల్ని గుర్తిస్తున్నాం…',
+  'Sharpening the edges…': 'అంచులను స్పష్టంగా తీర్చిదిద్దుతున్నాం…',
+  'Finishing the cut-out…': 'కట్-అవుట్ పూర్తి చేస్తున్నాం…',
+  'Working…': 'పని జరుగుతోంది…',
+  'That photograph is very large. Please choose one under 25 MB.': 'ఆ ఫోటో చాలా పెద్దది. దయచేసి 25 MB లోపు ఫోటోను ఎంచుకోండి.',
+  'That photograph could not be opened. Please try another one.': 'ఆ ఫోటో తెరుచుకోలేదు. దయచేసి మరొక ఫోటో ప్రయత్నించండి.',
+
+  // ---- The page a shared poster link opens on -----------------------------
+  Poster: 'పోస్టర్',
+  'A poster for this campaign': 'ఈ ప్రచారం కోసం ఒక పోస్టర్',
+  'A poster made for this campaign': 'ఈ ప్రచారం కోసం తయారైన పోస్టర్',
+  'Loading the poster…': 'పోస్టర్ లోడ్ అవుతోంది…',
+  'This poster is no longer available. Shared posters are kept for 30 days.':
+    'ఈ పోస్టర్ ఇప్పుడు అందుబాటులో లేదు. షేర్ చేసిన పోస్టర్లు 30 రోజులు మాత్రమే ఉంచబడతాయి.',
+  'Make your own poster': 'మీ సొంత పోస్టర్ తయారు చేసుకోండి',
+  Download: 'డౌన్‌లోడ్',
+  'Copy link': 'లింక్ కాపీ చేయండి',
+  'Put your own name and photo on this poster. It takes a minute, works on a phone, and your photo stays on your device.':
+    'ఈ పోస్టర్‌పై మీ పేరు, ఫోటో పెట్టుకోండి. ఒక్క నిమిషం చాలు, ఫోన్‌లోనే పని చేస్తుంది, మీ ఫోటో మీ పరికరంలోనే ఉంటుంది.',
+  'Generate your own poster': 'మీ పోస్టర్ తయారు చేసుకోండి',
+  'The poster could not be downloaded. Please try again.': 'పోస్టర్ డౌన్‌లోడ్ కాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.',
+
+  // ---- Programmes and contact details set from the admin panel -------------
+  Programmes: 'కార్యక్రమాలు',
+  'Upcoming programmes': 'రాబోయే కార్యక్రమాలు',
+  Details: 'వివరాలు',
+  Phone: 'ఫోన్',
+  'Message the office on WhatsApp': 'కార్యాలయానికి వాట్సాప్‌లో సందేశం పంపండి',
+  'Office hours': 'కార్యాలయ వేళలు',
+
+  // ---- Privacy policy: the poster maker, hosting, analytics ----------------
+  'The poster maker': 'పోస్టర్ తయారీ సాధనం',
+  'When you make a campaign poster, your photograph is processed inside your own browser: the background is removed and the poster is composed on your device. The photograph itself is never uploaded.':
+    'మీరు ప్రచార పోస్టర్ తయారు చేసినప్పుడు, మీ ఫోటో మీ సొంత బ్రౌజర్‌లోనే ప్రాసెస్ అవుతుంది: నేపథ్యం తొలగింపు, పోస్టర్ కూర్పు మీ పరికరంలోనే జరుగుతాయి. ఫోటో ఎప్పుడూ అప్‌లోడ్ కాదు.',
+  'When you generate a poster, the finished poster image and a small preview of it are stored so that the link you share can show it. They are kept at an address nobody can guess and are deleted automatically after 30 days. The name and designation you type appear only on the poster itself.':
+    'మీరు పోస్టర్ తయారు చేసినప్పుడు, మీరు షేర్ చేసే లింక్ దాన్ని చూపించగలిగేలా పూర్తయిన పోస్టర్ చిత్రం, దాని చిన్న ప్రివ్యూ భద్రపరచబడతాయి. ఎవరూ ఊహించలేని చిరునామాలో ఉంచి, 30 రోజుల తర్వాత స్వయంచాలకంగా తొలగిస్తాం. మీరు టైప్ చేసిన పేరు, హోదా పోస్టర్‌పై మాత్రమే కనిపిస్తాయి.',
+  'Contact form submissions are delivered by Web3Forms, which transmits your message to the office inbox. The website is hosted by Vercel, and shared posters are stored with Cloudflare. Fonts are served from this website itself. These providers may process technical data such as your IP address in the course of delivering the service.':
+    'సంప్రదింపు ఫారం ద్వారా పంపిన సందేశాలను Web3Forms కార్యాలయ ఇన్‌బాక్స్‌కు చేరవేస్తుంది. వెబ్‌సైట్‌ను Vercel హోస్ట్ చేస్తుంది, షేర్ చేసిన పోస్టర్లు Cloudflareలో భద్రపరచబడతాయి. ఫాంట్‌లు ఈ వెబ్‌సైట్ నుంచే అందించబడతాయి. సేవను అందించే క్రమంలో ఈ సంస్థలు మీ IP చిరునామా వంటి సాంకేతిక సమాచారాన్ని ప్రాసెస్ చేయవచ్చు.',
+  'This website does not set advertising or tracking cookies, and does not build a profile of your browsing. It uses Vercel Web Analytics, which counts page visits without cookies and without identifying you.':
+    'ఈ వెబ్‌సైట్ ప్రకటనల లేదా ట్రాకింగ్ కుకీలను ఉంచదు, మీ బ్రౌజింగ్‌పై ప్రొఫైల్ తయారు చేయదు. ఇది Vercel Web Analyticsను ఉపయోగిస్తుంది — కుకీలు లేకుండా, మిమ్మల్ని గుర్తించకుండా పేజీ సందర్శనలను మాత్రమే లెక్కిస్తుంది.',
 }
