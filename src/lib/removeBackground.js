@@ -38,6 +38,10 @@ import {
   suppressDetachedHaze,
 } from './matting'
 
+/** The face detector's fixed input size (see src/lib/faces.js). */
+const FACE_W = 320
+const FACE_H = 240
+
 /** Long side of the returned cut-out. */
 const OUT_MAX = 2200
 
@@ -88,7 +92,7 @@ function toCanvas(result) {
 }
 
 /** Run one job through the worker, reporting stages. Rejects on any failure. */
-function viaWorker(w, small, full, onStage) {
+function viaWorker(w, small, full, faceInput, onStage) {
   return new Promise((resolve, reject) => {
     const id = ++seq
     let settled = false
@@ -112,26 +116,32 @@ function viaWorker(w, small, full, onStage) {
     w.addEventListener('message', onMsg)
     w.addEventListener('error', onErr)
     w.postMessage(
-      { id, small: { data: small.data, w: small.width, h: small.height }, full: { data: full.data, w: full.width, h: full.height } },
-      [small.data.buffer, full.data.buffer],
+      {
+        id,
+        small: { data: small.data, w: small.width, h: small.height },
+        full: { data: full.data, w: full.width, h: full.height },
+        faceInput: { data: faceInput.data },
+      },
+      [small.data.buffer, full.data.buffer, faceInput.data.buffer],
     )
   })
 }
 
 /** The same pipeline as the worker, on this thread. */
-async function modnetHere(small, full, onStage) {
+async function modnetHere(small, full, faceInput, onStage) {
   onStage?.('model')
-  const { runModnet } = await import('./modnet')
+  const [{ runModnet }, { detectFaces, mainFace }] = await Promise.all([import('./modnet'), import('./faces')])
   onStage?.('matting')
+  const face = mainFace(await detectFaces(faceInput.data))
   const low = await runModnet(small.data, small.width, small.height)
-  keepMainSubject(low, small.width, small.height)
-  detachThinNecks(low, small.width, small.height)
-  keepMainSubject(low, small.width, small.height)
+  keepMainSubject(low, small.width, small.height, face)
+  detachThinNecks(low, small.width, small.height, 3, face)
+  keepMainSubject(low, small.width, small.height, face)
   suppressDetachedHaze(low, small.width, small.height, 6, 22)
   onStage?.('refining')
   const alpha = guidedUpsample(low, small.data, small.width, small.height, full.data, full.width, full.height)
   onStage?.('finishing')
-  return finishCutout(full.data, alpha, full.width, full.height)
+  return finishCutout(full.data, alpha, full.width, full.height, face)
 }
 
 async function mediapipeHere(img, full, onStage) {
@@ -159,8 +169,8 @@ export async function removeBackground(img, { onStage } = {}) {
   const w = getWorker()
   if (w) {
     try {
-      const result = await viaWorker(w, pixels(img, md.w, md.h), pixels(img, fw, fh), onStage)
-      return { canvas: toCanvas(result), cut: result.cut, engine: 'modnet-worker' }
+      const result = await viaWorker(w, pixels(img, md.w, md.h), pixels(img, fw, fh), pixels(img, FACE_W, FACE_H), onStage)
+      return { canvas: toCanvas(result), cut: result.cut, face: result.face, engine: 'modnet-worker' }
     } catch (err) {
       errors.push(err)
       console.warn('Worker cut-out failed, trying on the main thread:', err)
@@ -168,8 +178,8 @@ export async function removeBackground(img, { onStage } = {}) {
   }
 
   try {
-    const result = await modnetHere(pixels(img, md.w, md.h), pixels(img, fw, fh), onStage)
-    return { canvas: toCanvas(result), cut: result.cut, engine: 'modnet' }
+    const result = await modnetHere(pixels(img, md.w, md.h), pixels(img, fw, fh), pixels(img, FACE_W, FACE_H), onStage)
+    return { canvas: toCanvas(result), cut: result.cut, face: result.face, engine: 'modnet' }
   } catch (err) {
     errors.push(err)
     console.warn('MODNet unavailable, falling back to MediaPipe:', err)

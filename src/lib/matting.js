@@ -269,16 +269,26 @@ export function planes(rgba, w, h) {
  * lower part of the frame (the subject is what the camera was aimed at;
  * bystanders tend to be heads along the top), and the best one is kept.
  * Labelled at a LOW threshold so hair stays attached to its head.
+ *
+ * With a detected face (0..1 box of the photo), the question is settled
+ * directly: the region with the most of its matte inside that face is the
+ * person the photo is of. The position scoring is the fallback for photos in
+ * which no face was found.
  */
-export function keepMainSubject(alpha, w, h) {
+export function keepMainSubject(alpha, w, h, face = null) {
   const PRESENT = 0.1
   const labels = new Int32Array(w * h).fill(-1)
   const stack = new Int32Array(w * h)
   const regions = []
+  const fx1 = face ? face.x1 * w : 0
+  const fx2 = face ? face.x2 * w : 0
+  const fy1 = face ? face.y1 * h : 0
+  const fy2 = face ? face.y2 * h : 0
   for (let seed = 0; seed < labels.length; seed += 1) {
     if (labels[seed] !== -1 || alpha[seed] < PRESENT) continue
     const id = regions.length
     let score = 0
+    let inFace = 0
     let top = 0
     stack[top++] = seed
     labels[seed] = id
@@ -289,16 +299,20 @@ export function keepMainSubject(alpha, w, h) {
       const cx = 1 - Math.abs(x / w - 0.5) * 2
       const cy = 0.4 + 0.6 * (y / h)
       score += alpha[i] * cx * cx * cy
+      if (face && x >= fx1 && x <= fx2 && y >= fy1 && y <= fy2) inFace += alpha[i]
       if (x > 0 && labels[i - 1] === -1 && alpha[i - 1] >= PRESENT) { labels[i - 1] = id; stack[top++] = i - 1 }
       if (x < w - 1 && labels[i + 1] === -1 && alpha[i + 1] >= PRESENT) { labels[i + 1] = id; stack[top++] = i + 1 }
       if (y > 0 && labels[i - w] === -1 && alpha[i - w] >= PRESENT) { labels[i - w] = id; stack[top++] = i - w }
       if (y < h - 1 && labels[i + w] === -1 && alpha[i + w] >= PRESENT) { labels[i + w] = id; stack[top++] = i + w }
     }
-    regions.push({ id, score })
+    regions.push({ id, score, inFace })
   }
   if (regions.length <= 1) return
   let best = regions[0]
-  for (const r of regions) if (r.score > best.score) best = r
+  const byFace = face && regions.some((r) => r.inFace > 0)
+  for (const r of regions) {
+    if (byFace ? r.inFace > best.inFace : r.score > best.score) best = r
+  }
   for (let i = 0; i < alpha.length; i += 1) if (labels[i] !== best.id) alpha[i] = 0
 }
 
@@ -346,7 +360,7 @@ function chamfer(w, h, isSource) {
  * erosion removes them entirely rather than separating them — they are never
  * candidates for removal, and they are left exactly as they were.
  */
-export function detachThinNecks(alpha, w, h, r = 3) {
+export function detachThinNecks(alpha, w, h, r = 3, face = null) {
   const solid = (i) => alpha[i] > 0.5
   const toEdge = chamfer(w, h, (i) => !solid(i))
   const core = new Uint8Array(w * h)
@@ -361,6 +375,7 @@ export function detachThinNecks(alpha, w, h, r = 3) {
     const id = pieces.length
     let score = 0
     let area = 0
+    let inFace = 0
     let top = 0
     stack[top++] = seed
     labels[seed] = id
@@ -371,6 +386,7 @@ export function detachThinNecks(alpha, w, h, r = 3) {
       const cx = 1 - Math.abs(x / w - 0.5) * 2
       score += cx * cx * (0.4 + 0.6 * (y / h))
       area += 1
+      if (face && x >= face.x1 * w && x <= face.x2 * w && y >= face.y1 * h && y <= face.y2 * h) inFace += 1
       for (const j of [i - 1, i + 1, i - w, i + w]) {
         if (j < 0 || j >= core.length) continue
         if ((j === i - 1 && x === 0) || (j === i + 1 && x === w - 1)) continue
@@ -380,11 +396,12 @@ export function detachThinNecks(alpha, w, h, r = 3) {
         }
       }
     }
-    pieces.push({ id, score, area })
+    pieces.push({ id, score, area, inFace })
   }
   if (pieces.length <= 1) return
   let main = pieces[0]
-  for (const p of pieces) if (p.score > main.score) main = p
+  const byFace = face && pieces.some((p) => p.inFace > 0)
+  for (const p of pieces) if (byFace ? p.inFace > main.inFace : p.score > main.score) main = p
   // Only pieces big enough to be a hand or a shoulder; specks are left to the
   // haze pass, which judges them by opacity.
   const minArea = Math.max(12, (w * h) / 4000)
@@ -659,7 +676,7 @@ export function subjectBox(alpha, w, h, cut) {
  * Alpha + photo -> the finished, trimmed RGBA cut-out.
  * Colour is decontaminated first; then alpha is written; then cropped.
  */
-export function finishCutout(rgba, alpha, w, h) {
+export function finishCutout(rgba, alpha, w, h, face = null) {
   // Snap the last whisper of the tails. Below 2% nobody sees it except as a
   // grey smudge on a light poster; above 98% it is simply solid.
   for (let i = 0; i < alpha.length; i += 1) {
@@ -681,5 +698,15 @@ export function finishCutout(rgba, alpha, w, h) {
       out[dj + 3] = Math.round(alpha[si] * 255)
     }
   }
-  return { data: out, w: box.w, h: box.h, cut, frac, box }
+  // Where the face is inside the finished cut-out, as fractions of it, for
+  // the poster to size and place the person by.
+  const faceBox = face
+    ? {
+        x: (face.x1 * w - box.x) / box.w,
+        y: (face.y1 * h - box.y) / box.h,
+        w: ((face.x2 - face.x1) * w) / box.w,
+        h: ((face.y2 - face.y1) * h) / box.h,
+      }
+    : null
+  return { data: out, w: box.w, h: box.h, cut, frac, box, face: faceBox }
 }

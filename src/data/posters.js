@@ -117,15 +117,32 @@ const builtIn = [
      * portrait smaller — never stretched, never cropped into.
      */
     /*
-     * September 2026: sized by HEIGHT, and taller. Contained in the box above,
-     * a wide head-and-shoulders photo came out small — the office's words were
-     * that it looked tiny. Now the photo is fitted to the box's height and
-     * rises to 0.555, over the passbook-and-padlock artwork (no text lives
-     * there). The box's left edge is unchanged, so the yellow band's Telugu is
-     * still never covered: a shoulder that would reach it is cut at x 0.6753
-     * and faded there instead.
+     * September 2026: the person stands BEHIND the yellow slogan band.
+     *
+     * Contained in the box described above, supporters came out small; sized
+     * up and clipped at the box's edge with a fade, the fade cut through
+     * shoulders and faces — the office rejected both. So the band now acts as
+     * the bar a person stands behind: the photo is sized by the FACE (so a
+     * selfie and a full-length shot come out the same size), stands with its
+     * foot on the band's top edge at y 0.7617 (measured), and the band is
+     * drawn again over it. Nothing of the person is faded or clipped.
+     *
+     * The other numbers keep them clear of the type, all measured off the
+     * artwork: maxW 0.40 plus the flush-right placement keeps them right of
+     * x 0.58, past the end of "16th సెప్టెంబర్ 2026" (x 0.575); minY 0.38 keeps
+     * the head below the REVENUE OFFICE signboard (y 0.27–0.33); and the
+     * slogan itself is under the redrawn band, so it cannot be covered.
      */
-    photoSlot: { x: 0.6753, y: 0.555, w: 0.3247, h: 0.445, anchor: 'bottom', fit: 'height' },
+    photoSlot: {
+      mode: 'bar',
+      barTop: 0.7617,
+      minY: 0.38,
+      h: 0.4,
+      maxW: 0.4,
+      side: 'right',
+      margin: 0.015,
+      faceRange: [0.115, 0.165],
+    },
 
     /*
      * Name above, designation below, the pair centred on the party mark.

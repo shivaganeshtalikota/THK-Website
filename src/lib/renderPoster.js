@@ -93,52 +93,89 @@ function fitWithEllipsis(ctx, text, maxW) {
  */
 function asPerson(person) {
   if (!person) return null
-  if (person.canvas) return { src: person.canvas, cut: person.cut || {} }
-  return { src: person, cut: { left: true, right: true, top: true, bottom: true } }
+  if (person.canvas) return { src: person.canvas, cut: person.cut || {}, face: person.face || null }
+  return { src: person, cut: { left: true, right: true, top: true, bottom: true }, face: null }
 }
 
 /**
- * Where the person goes on a template-3 poster.
+ * Stand a person on a bar: the placement for template 3, and for the 22A
+ * poster, whose yellow slogan band plays the part of the bar.
  *
- * Sized by HEIGHT against the poster — that is what makes them read as the
- * subject rather than a thumbnail — and then capped in width so a very wide
- * group photo cannot take over. Standing on the bar: the bottom edge meets
- * the bar's top (a photo cut at the chest tucks slightly behind it, so the
- * cut is hidden by the bar rather than floating above it).
+ * SIZED BY THE FACE when a face was found. Photos arrive at every framing —
+ * a selfie that is mostly face, a full-length shot where the face is a speck —
+ * and sizing the whole cut-out to a fixed height made the first enormous and
+ * the second tiny. So the cut-out is first sized by height, then corrected so
+ * the face lands within `faceRange` of the poster's height.
  *
- * Horizontally, a side the photograph cuts through is pushed flush to the
- * poster's edge, where the poster itself ends the arm or shoulder naturally.
+ * STANDING ON THE BAR. The bottom meets the bar's top edge; a photo cut at the
+ * chest tucks a little behind it. When the face-sized figure is taller than the
+ * room above the bar, it starts at `minY` and the rest goes BEHIND the bar
+ * (the caller draws the bar over it) rather than being shrunk back down — a
+ * full-length photo becomes a waist-up figure the size of everybody else's.
+ *
+ * Horizontally, a side the photograph cuts through goes flush to the poster's
+ * edge, where the poster itself ends the arm or shoulder naturally.
  */
-function placeOnBar(g, p, W, H) {
-  const barTop = g.bar.y * H
+function placeStanding(p, W, H, o) {
+  const barTop = o.barTop * H
+  const minY = o.minY * H
   const aspect = p.src.width / p.src.height
-  let h = g.person.h * H
+  let h = o.h * H
+  if (p.face && p.face.h > 0.02) {
+    const faceH = p.face.h * h
+    const lo = o.faceRange[0] * H
+    const hi = o.faceRange[1] * H
+    if (faceH > hi) h *= hi / faceH
+    else if (faceH < lo) h *= lo / faceH
+  }
   let w = h * aspect
-  const maxW = g.person.maxW * W
+  const maxW = o.maxW * W
   if (w > maxW) {
     w = maxW
     h = w / aspect
   }
   const tuck = p.cut.bottom ? 0.012 * H : 0
   let y = barTop + tuck - h
-  const minY = (g.person.top ?? 0.1) * H
   if (y < minY) {
-    // Too tall for the room above the bar: shrink rather than cover the
-    // headline.
-    const s = (barTop + tuck - minY) / h
-    h *= s
-    w *= s
     y = minY
+    // Never let the bar cover the face itself.
+    if (p.face) {
+      const faceBottom = y + (p.face.y + p.face.h) * h
+      const limit = barTop - 0.03 * H
+      if (faceBottom > limit) {
+        const s = (limit - y) / ((p.face.y + p.face.h) * h)
+        h *= s
+        w *= s
+      }
+    }
   }
 
-  const margin = 0.03 * W
+  const margin = (o.margin ?? 0.03) * W
   let x
-  if (g.person.side === 'left') x = p.cut.left ? 0 : margin
-  else if (g.person.side === 'center') x = (W - w) / 2
+  if (o.side === 'left') x = p.cut.left ? 0 : margin
+  else if (o.side === 'center') x = (W - w) / 2
   else x = p.cut.right ? W - w : W - w - margin
 
-  return { x, y, w, h }
+  return { x, y, w, h, below: y + h > barTop + 1 }
 }
+
+/** Draw the artwork again from `top` down, over whatever is there. */
+function occludeBelow(ctx, artwork, top, W, H) {
+  const sy = (top / H) * artwork.height
+  ctx.drawImage(artwork, 0, sy, artwork.width, artwork.height - sy, 0, top, W, H - top)
+}
+
+/** Template 3's own numbers for placeStanding. */
+const standingFor = (g) => ({
+  barTop: g.bar.y,
+  minY: g.person.top ?? 0.1,
+  h: g.person.h,
+  maxW: g.person.maxW,
+  side: g.person.side,
+  // A face between a tenth and a sixth of the poster's height: big enough to
+  // be the subject, not so big that a selfie swamps the artwork.
+  faceRange: [0.1, 0.17],
+})
 
 /** Legacy placement (templates 1–2 and the hand-measured 22A poster):
  *  contained in a box, anchored at its foot. */
@@ -147,22 +184,6 @@ function placeInSlot(slot, p, W, H) {
   const by = slot.y * H
   const bw = slot.w * W
   const bh = slot.h * H
-  if (slot.fit === 'height') {
-    /*
-     * Sized by HEIGHT, like template 3: the person is the point of the
-     * poster, and contain-fitting a wide head-and-shoulders photo into a
-     * narrow box made them small — the complaint that started this. A photo
-     * wider than the box runs off its far side, and that edge is faded (see
-     * drawPersonWithCuts), so the box still protects whatever sits beside it.
-     */
-    const s = bh / p.src.height
-    const w = p.src.width * s
-    const h = bh
-    let x
-    if (w <= bw) x = p.cut.right || !p.cut.left ? bx + bw - w : bx
-    else x = bx + bw - w // flush with the poster side; the overflow is clipped
-    return { x, y: by + bh - h, w, h, clip: { x: bx, y: by, w: bw, h: bh }, fadeClip: true }
-  }
   const s = Math.min(bw / p.src.width, bh / p.src.height)
   const w = p.src.width * s
   const h = p.src.height * s
@@ -216,19 +237,6 @@ function drawPersonWithCuts(ctx, p, box, W, H, { shadow, hiddenBottom }) {
   if (exposed.right) fade(w, 0, w - band, 0)
   if (exposed.top) fade(0, 0, 0, vband)
   if (exposed.bottom) fade(0, h, 0, h - vband)
-
-  /*
-   * A box that clips the person is a cut too — a straight line through a
-   * shoulder — so it is faded the same way, from the box's edge inward, and
-   * only on a side where the person actually overflows it.
-   */
-  if (box.fadeClip && box.clip) {
-    const cutL = box.clip.x - box.x
-    const cutR = box.x + box.w - (box.clip.x + box.clip.w)
-    const cband = Math.round(Math.min(w, box.clip.w) * 0.12)
-    if (cutL > 1) fade(cutL, 0, cutL + cband, 0)
-    if (cutR > 1) fade(w - cutR, 0, w - cutR - cband, 0)
-  }
 
   ctx.save()
   if (box.clip) {
@@ -344,15 +352,15 @@ function drawBarText(ctx, g, name, designation, lb, W, H) {
   ctx.restore()
 }
 
-function renderTemplate3(ctx, poster, person, name, designation, logo, W, H) {
+function renderTemplate3(ctx, poster, artwork, person, name, designation, logo, W, H) {
   const g = poster
   const barTop = g.bar.y * H
   const p = asPerson(person)
 
   // 1. The person, before the bar, so a chest-level cut tucks behind it.
   if (p) {
-    const box = placeOnBar(g, p, W, H)
-    drawPersonWithCuts(ctx, p, box, W, H, { shadow: g.person.shadow !== false, hiddenBottom: p.cut.bottom })
+    const box = placeStanding(p, W, H, standingFor(g))
+    drawPersonWithCuts(ctx, p, box, W, H, { shadow: g.person.shadow !== false, hiddenBottom: p.cut.bottom || box.below })
   }
 
   // 2. The bar, with a soft shadow above it and a thin rule along its top.
@@ -369,10 +377,10 @@ function renderTemplate3(ctx, poster, person, name, designation, logo, W, H) {
       ctx.fillRect(0, barTop, W, Math.max(3, 0.005 * H))
     }
   } else if (p) {
-    // The artwork's own bar: repaint just under the person's tuck so the cut
-    // line is hidden by "the bar" exactly as it would be by a drawn one.
-    ctx.fillStyle = g.bar.color
-    ctx.fillRect(0, barTop, W, 0.014 * H)
+    // The artwork's own bar: drawn again from the artwork, over the person, so
+    // whatever of them reaches below its top edge is behind it — exactly as
+    // with a bar we paint ourselves.
+    occludeBelow(ctx, artwork, barTop, W, H)
   }
 
   // 3. The party mark, as a tile standing on the bar and rising above it.
@@ -463,14 +471,26 @@ export function renderPoster({ canvas, poster, artwork, person, name, designatio
   const ds = String(designation || '').trim()
 
   if (poster.templateVersion >= 3) {
-    renderTemplate3(ctx, poster, person, nm, ds, logo, W, H)
+    renderTemplate3(ctx, poster, artwork, person, nm, ds, logo, W, H)
     return canvas
   }
 
   // Templates 1–2 and the hand-measured built-in poster.
   if (poster.band) drawLegacyBand(ctx, poster.band, logo, W, H)
   const p = asPerson(person)
-  if (p && poster.photoSlot) {
+  if (p && poster.photoSlot?.mode === 'bar') {
+    /*
+     * The 22A poster: the person stands behind the yellow slogan band. The
+     * band is drawn again from the artwork on top of them, so their lower
+     * body disappears behind its straight top edge — the way a person stands
+     * behind a banner — and nothing about the person is clipped or faded to
+     * keep them off the slogan.
+     */
+    const slot = poster.photoSlot
+    const box = placeStanding(p, W, H, slot)
+    drawPersonWithCuts(ctx, p, box, W, H, { shadow: true, hiddenBottom: true })
+    occludeBelow(ctx, artwork, slot.barTop * H, W, H)
+  } else if (p && poster.photoSlot) {
     const box = placeInSlot(poster.photoSlot, p, W, H)
     const slotFoot = (poster.photoSlot.y + poster.photoSlot.h) * H
     drawPersonWithCuts(ctx, p, box, W, H, { shadow: false, hiddenBottom: slotFoot >= H - 1 })

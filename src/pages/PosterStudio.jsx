@@ -229,8 +229,14 @@ const PosterStudio = () => {
     setError(null)
     try {
       // One frame so the button's state paints before a 2048x2560 composite
-      // takes the main thread.
-      await new Promise((r) => requestAnimationFrame(() => r()))
+      // takes the main thread — or 60ms, whichever is first: a tab in the
+      // background gets no animation frames at all, and somebody who switched
+      // to WhatsApp the moment they pressed Generate must not come back to a
+      // poster that never started.
+      await new Promise((r) => {
+        requestAnimationFrame(() => r())
+        setTimeout(r, 60)
+      })
       renderPoster({
         canvas: canvasRef.current,
         poster,

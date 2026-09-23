@@ -13,10 +13,11 @@
  *               { id, error }
  */
 import { runModnet, modnetSession } from './modnet'
+import { detectFaces, mainFace } from './faces'
 import { detachThinNecks, keepMainSubject, suppressDetachedHaze, guidedUpsample, finishCutout } from './matting'
 
 self.onmessage = async (e) => {
-  const { id, warm, small, full } = e.data || {}
+  const { id, warm, small, full, faceInput } = e.data || {}
   try {
     if (warm) {
       await modnetSession()
@@ -27,22 +28,24 @@ self.onmessage = async (e) => {
     await modnetSession()
 
     self.postMessage({ id, stage: 'matting' })
+    // Whose photo is this: the face decides which person the matte keeps.
+    const face = faceInput ? mainFace(await detectFaces(faceInput.data)) : null
     const low = await runModnet(small.data, small.w, small.h)
 
     // Isolation and haze work on the model's own grid: cheap, and the
     // decisions they make are about regions, not edges.
-    keepMainSubject(low, small.w, small.h)
+    keepMainSubject(low, small.w, small.h, face)
     // A bystander's hand on a shoulder is connected to the subject; part it
     // at the narrow join, then drop whatever that left floating.
-    detachThinNecks(low, small.w, small.h)
-    keepMainSubject(low, small.w, small.h)
+    detachThinNecks(low, small.w, small.h, 3, face)
+    keepMainSubject(low, small.w, small.h, face)
     suppressDetachedHaze(low, small.w, small.h, 6, 22)
 
     self.postMessage({ id, stage: 'refining' })
     const alpha = guidedUpsample(low, small.data, small.w, small.h, full.data, full.w, full.h)
 
     self.postMessage({ id, stage: 'finishing' })
-    const result = finishCutout(full.data, alpha, full.w, full.h)
+    const result = finishCutout(full.data, alpha, full.w, full.h, face)
     self.postMessage({ id, result }, [result.data.buffer])
   } catch (err) {
     self.postMessage({ id, error: String(err?.message || err) })

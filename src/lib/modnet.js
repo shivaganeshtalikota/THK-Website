@@ -34,6 +34,8 @@ export const MODNET_URL = '/vision/modnet-w8.onnx'
 ort.env.wasm.wasmPaths = { wasm: wasmUrl }
 ort.env.wasm.numThreads = 1
 ort.env.wasm.proxy = false
+// Warnings only clutter the console of every visitor; errors still surface.
+ort.env.logLevel = 'error'
 
 let sessionPromise = null
 
