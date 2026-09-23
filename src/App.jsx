@@ -27,10 +27,11 @@ import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
-import Admin from './pages/Admin'
 import Posters from './pages/Posters'
 import PosterStudio from './pages/PosterStudio'
+import SharedPoster from './pages/SharedPoster'
 import AskPanel from './components/AskPanel'
+import AnnouncementBar from './components/AnnouncementBar'
 
 /**
  * The public pages, in one list.
@@ -50,6 +51,9 @@ const PAGES = [
   // One editor, addressed by slug, so a new campaign poster is a data entry
   // in src/data/posters.js and not a new route.
   { path: '/posters/:slug', element: <PosterStudio /> },
+  // Where a shared poster link opens: the poster itself, with Download and
+  // "Make your own". Prerendered, noindex, and out of the sitemap.
+  { path: '/posters/:slug/view', element: <SharedPoster /> },
   { path: '/privacy', element: <Privacy /> },
   { path: '/terms', element: <Terms /> },
 ]
@@ -65,6 +69,7 @@ function App() {
 
       {/* pt matches the fixed header so content never hides beneath it. */}
       <main id="main" className="flex-grow pt-[var(--nav-h)]" tabIndex={-1}>
+        <AnnouncementBar />
         <Routes>
           {/*
             Every page is mounted twice: once at its English path and once
@@ -85,9 +90,8 @@ function App() {
               element={element}
             />
           ))}
-          {/* Operational, not content. Seo marks it noindex and it is left out
-              of the sitemap, the navigation and the Telugu routes. */}
-          <Route path="/admin" element={<Admin />} />
+          {/* The admin panel is a separate app on admin.talikotaharikrishna.com
+              (admin.html, src/admin/). It has no route in the public site. */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -10,6 +10,10 @@
  * Fields marked TODO need a real value from the office before launch.
  */
 
+// Edited from the admin panel. A JS module (not JSON) so the serverless
+// functions can import this file in plain Node — see server/data-module.js.
+import siteContent from './site-content.js'
+
 export const site = {
   name: 'Talikota Hari Krishna',
   shortName: 'HK Talikota',
@@ -75,16 +79,37 @@ export const roles = [
 ]
 
 /**
- * TODO(office): these are placeholders. The source document lists them as
- * "[to be provided]". `verified: false` keeps them out of the rendered UI and
- * out of the structured data — flip to true once real values are supplied.
+ * Contact details. The defaults below are placeholders from the source
+ * document ("[to be provided]"); `verified: false` keeps them out of the
+ * rendered UI and the structured data.
+ *
+ * The office sets the real values from the admin panel (Contact & social),
+ * which writes src/data/site-content.js. Anything set there overrides the
+ * placeholder and is marked verified, because a person typed it in on purpose.
  */
-export const contact = {
+const contactDefaults = {
   email: { value: 'contact@www.talikotaharikrishna.com', verified: false },
   press: { value: 'press@www.talikotaharikrishna.com', verified: false },
   phone: { value: '', display: '', verified: false },
-  office: { value: 'Hyderabad, Telangana, India', verified: true },
-  hours: { value: '', verified: false },
+  whatsapp: { value: '', verified: false },
+  office: { value: 'Hyderabad, Telangana, India', te: '', verified: true },
+  hours: { value: '', te: '', verified: false },
+}
+
+const edited = siteContent.contact || {}
+const digits = (s) => String(s || '').replace(/[^\d+]/g, '')
+
+export const contact = {
+  email: edited.email ? { value: edited.email, verified: true } : contactDefaults.email,
+  press: edited.pressEmail ? { value: edited.pressEmail, verified: true } : contactDefaults.press,
+  phone: edited.phone
+    ? { value: digits(edited.phone), display: edited.phone, verified: true }
+    : contactDefaults.phone,
+  whatsapp: edited.whatsapp ? { value: digits(edited.whatsapp), verified: true } : contactDefaults.whatsapp,
+  office: edited.office
+    ? { value: edited.office, te: edited.officeTe || '', verified: true }
+    : contactDefaults.office,
+  hours: edited.hours ? { value: edited.hours, te: edited.hoursTe || '', verified: true } : contactDefaults.hours,
 }
 
 /**
@@ -95,7 +120,7 @@ export const contact = {
  * that it speaks for him, which it does not. Anything marked official:false is
  * labelled as such wherever it appears.
  */
-export const social = [
+export const socialDefaults = [
   {
     name: 'Instagram',
     handle: '@hari_krishna_talikota',
@@ -122,6 +147,9 @@ export const social = [
     note: 'Supporter-run channel',
   },
 ]
+
+/** The office can replace the list from the admin panel (Contact & social). */
+export const social = Array.isArray(siteContent.social) && siteContent.social.length ? siteContent.social : socialDefaults
 
 /**
  * X accounts worth following alongside his own — his, and the party's.

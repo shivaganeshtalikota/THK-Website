@@ -1,14 +1,14 @@
 import Link from './LocaleLink'
-import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import PartyMark from './PartyMark'
 import { site, social, contact, party } from '../data/site'
-import { useT } from '../i18n/useT'
+import { useT, useLang } from '../i18n/useT'
+import { socialGlyph } from './socialGlyph'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 const Footer = () => {
   const t = useT()
+  const lang = useLang()
   const year = new Date().getFullYear()
 
   const columns = [
@@ -69,7 +69,7 @@ const Footer = () => {
 
             <ul className="flex gap-2.5">
               {social.map((s) => {
-                const Glyph = socialIcons[s.name]
+                const Glyph = socialGlyph(s.name)
                 return (
                   <li key={s.name}>
                     <a
@@ -117,7 +117,9 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <FaMapMarkerAlt className="mt-1 shrink-0 text-brand-400" aria-hidden="true" />
-                <span className="text-ink-400">{t(contact.office.value)}</span>
+                <span className="text-ink-400">
+                  {lang === 'te' && contact.office.te ? contact.office.te : t(contact.office.value)}
+                </span>
               </li>
               {contact.email.verified && (
                 <li className="flex items-start gap-3">

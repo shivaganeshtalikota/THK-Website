@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
-import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaExclamationTriangle } from 'react-icons/fa'
+import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaExclamationTriangle, FaPhone, FaClock, FaWhatsapp } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import { site, contact, social, subjectOptions } from '../data/site'
-import { useT } from '../i18n/useT'
+import { useT, useLang } from '../i18n/useT'
+import { socialGlyph } from '../components/socialGlyph'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 /**
  * Web3Forms access key. Set VITE_WEB3FORMS_KEY in .env (see .env.example).
@@ -27,6 +26,7 @@ const EMPTY = { name: '', email: '', phone: '', subject: '', location: '', messa
 
 const Contact = () => {
   const t = useT()
+  const lang = useLang()
   const [formData, setFormData] = useState(EMPTY)
   const [status, setStatus] = useState({ state: 'idle', message: '' })
 
@@ -113,9 +113,58 @@ const Contact = () => {
                 </span>
                 <div>
                   <h3 className="font-sans text-sm font-semibold text-ink-900">{t("Office")}</h3>
-                  <p className="mt-0.5 text-sm text-ink-600">{t(contact.office.value)}</p>
+                  <p className="mt-0.5 text-sm text-ink-600">
+                    {lang === 'te' && contact.office.te ? contact.office.te : t(contact.office.value)}
+                  </p>
                 </div>
               </li>
+
+              {contact.phone.verified && (
+                <li className="flex gap-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand-500 text-ink-900">
+                    <FaPhone aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="font-sans text-sm font-semibold text-ink-900">{t('Phone')}</h3>
+                    <a href={`tel:${contact.phone.value}`} className="mt-0.5 block text-sm text-brand-800 underline-offset-2 hover:underline">
+                      {contact.phone.display}
+                    </a>
+                  </div>
+                </li>
+              )}
+
+              {contact.whatsapp.verified && (
+                <li className="flex gap-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand-500 text-ink-900">
+                    <FaWhatsapp aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="font-sans text-sm font-semibold text-ink-900">{t('WhatsApp')}</h3>
+                    <a
+                      href={`https://wa.me/${contact.whatsapp.value.replace(/^\+/, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-0.5 block text-sm text-brand-800 underline-offset-2 hover:underline"
+                    >
+                      {t('Message the office on WhatsApp')}
+                    </a>
+                  </div>
+                </li>
+              )}
+
+              {contact.hours.verified && (
+                <li className="flex gap-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand-500 text-ink-900">
+                    <FaClock aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="font-sans text-sm font-semibold text-ink-900">{t('Office hours')}</h3>
+                    <p className="mt-0.5 text-sm text-ink-600">
+                      {lang === 'te' && contact.hours.te ? contact.hours.te : contact.hours.value}
+                    </p>
+                  </div>
+                </li>
+              )}
 
               {contact.email.verified ? (
                 <li className="flex gap-4">
@@ -148,7 +197,7 @@ const Contact = () => {
             </h3>
             <ul className="mt-4 flex gap-2.5">
               {social.map((s) => {
-                const Glyph = socialIcons[s.name]
+                const Glyph = socialGlyph(s.name)
                 return (
                   <li key={s.name}>
                     <a

@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
 import { FaArrowRight, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
 import PostsFeed from '../components/PostsFeed'
 import Seo from '../components/Seo'
@@ -14,8 +13,8 @@ import EventAlbum from '../components/EventAlbum'
 import uploads from '../data/uploads.json'
 import SourceLinks from '../components/SourceLinks'
 import { useT, useLang } from '../i18n/useT'
+import { socialGlyph } from '../components/socialGlyph'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 /*
  * Dates in the reader's language.
@@ -110,9 +109,9 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
 
         <figure className="lightbox-panel flex min-h-0 flex-1 flex-col items-center justify-center gap-4">
           <img
-            src={`/photos/${item.slug}-1200.webp`}
+            src={item.full || `/photos/${item.slug}-1200.webp`}
             onError={(e) => {
-              e.currentTarget.src = item.src
+              if (e.currentTarget.src !== new URL(item.src, window.location.href).href) e.currentTarget.src = item.src
             }}
             alt={item.alt}
             className="max-h-[62vh] w-auto max-w-full object-contain"
@@ -159,17 +158,18 @@ const Media = () => {
    */
   const [lightbox, setLightbox] = useState(null)
 
-  // Published from the admin panel (api/publish.js commits them here). They
-  // carry no responsive variants — they are served as uploaded — so they are
-  // shaped to what <Picture> needs and given their own group.
+  // Published from the admin panel (api/admin.js commits them here). `src` is
+  // a display copy sized for the grid; `original` — when the office uploaded
+  // one — is the untouched photograph, which the full-screen viewer shows.
   const uploadedPhotos = useMemo(
     () =>
       (uploads.photos ?? []).map((u) => ({
         slug: u.id,
         src: u.src,
+        full: u.original || null,
         widths: [],
-        width: 1600,
-        height: 1067,
+        width: u.width || 1600,
+        height: u.height || 1067,
         alt: u.description || u.title,
         caption: u.title,
         // The category chosen in the admin panel, so uploads land in the same
@@ -476,7 +476,7 @@ const Media = () => {
 
           <div className="mt-12 grid gap-5 sm:grid-cols-3">
             {social.map((s, i) => {
-              const Glyph = socialIcons[s.name]
+              const Glyph = socialGlyph(s.name)
               return (
                 <Reveal key={s.name} delay={i * 0.07}>
                   <a

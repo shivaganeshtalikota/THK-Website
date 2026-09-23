@@ -1,6 +1,17 @@
 import { useLocation } from 'react-router-dom'
 import { langFromPath } from './index'
 import { getTelugu } from './te-store'
+import siteContent from '../data/site-content.js'
+
+/**
+ * Page-text edits made in the admin panel, keyed by the same English source
+ * sentence the dictionary uses: { "<English>": { en?: "...", te?: "..." } }.
+ * An edit wins over the original English and over the Telugu translation; a
+ * language the office did not edit falls through to what was there before.
+ * They ship in the bundle and in the prerendered HTML alike, so an edit is
+ * real page text, not something swapped in after load.
+ */
+const overrides = siteContent?.text || {}
 
 /**
  * Translation, keyed by the English string itself.
@@ -29,13 +40,12 @@ export const useLang = () => langFromPath(useLocation().pathname)
 
 export const useT = () => {
   const lang = useLang()
-  if (lang !== 'te') return (s) => s
+  if (lang !== 'te') return (s) => (typeof s === 'string' ? (overrides[s]?.en ?? s) : s)
   // Read at call time, not at module scope: on a Telugu page the dictionary is
   // awaited before hydration (see src/main.jsx), and reading it here means this
   // hook does not close over a null captured at import time.
   const dictionary = getTelugu()
-  if (!dictionary) return (s) => s
-  return (s) => (typeof s === 'string' ? (dictionary[s] ?? s) : s)
+  return (s) => (typeof s === 'string' ? (overrides[s]?.te ?? dictionary?.[s] ?? s) : s)
 }
 
 /**

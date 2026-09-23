@@ -6,6 +6,7 @@ import Picture from '../components/Picture'
 import { site, party, focusAreas, temple, roles } from '../data/site'
 import { photos, gallery } from '../data/photos'
 import { useT } from '../i18n/useT'
+import UpcomingEvents from '../components/UpcomingEvents'
 
 const Home = () => {
   const t = useT()
@@ -104,6 +105,10 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Programmes the office has announced from the admin panel. Renders
+          nothing when there are none upcoming. */}
+      <UpcomingEvents />
 
       {/* ================= MISSION PULL-QUOTE =================
           Set as an actual quotation at display size, not another centred card. */}

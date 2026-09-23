@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import Link, { LocaleNavLink as NavLink } from './LocaleLink'
-// fa6 renames the FA5 icons: FaTimes -> FaXmark, FaTwitter -> FaXTwitter.
-import { FaBars, FaXmark, FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
+// fa6 renames the FA5 icons: FaTimes -> FaXmark.
+import { FaBars, FaXmark } from 'react-icons/fa6'
 import { nav, social, site } from '../data/site'
 import { useT } from '../i18n/useT'
 import LanguageToggle from './LanguageToggle'
+import { socialGlyph } from './socialGlyph'
 
-const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
 /**
  * Mobile panel.
@@ -56,7 +56,7 @@ const MobilePanel = ({ isOpen, onNavigate }) => {
 
       <div className="flex items-center justify-center gap-2 border-t border-ink-900/15 py-4">
         {social.map((s) => {
-          const Glyph = socialIcons[s.name]
+          const Glyph = socialGlyph(s.name)
           return (
             <a
               key={s.name}
@@ -164,7 +164,7 @@ const Navbar = () => {
           <div className="flex items-center gap-1.5">
             <ul className="hidden items-center gap-0.5 md:flex">
               {social.map((s) => {
-                const Glyph = socialIcons[s.name]
+                const Glyph = socialGlyph(s.name)
                 return (
                   <li key={s.name}>
                     <a
