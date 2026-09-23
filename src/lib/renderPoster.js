@@ -147,6 +147,22 @@ function placeInSlot(slot, p, W, H) {
   const by = slot.y * H
   const bw = slot.w * W
   const bh = slot.h * H
+  if (slot.fit === 'height') {
+    /*
+     * Sized by HEIGHT, like template 3: the person is the point of the
+     * poster, and contain-fitting a wide head-and-shoulders photo into a
+     * narrow box made them small — the complaint that started this. A photo
+     * wider than the box runs off its far side, and that edge is faded (see
+     * drawPersonWithCuts), so the box still protects whatever sits beside it.
+     */
+    const s = bh / p.src.height
+    const w = p.src.width * s
+    const h = bh
+    let x
+    if (w <= bw) x = p.cut.right || !p.cut.left ? bx + bw - w : bx
+    else x = bx + bw - w // flush with the poster side; the overflow is clipped
+    return { x, y: by + bh - h, w, h, clip: { x: bx, y: by, w: bw, h: bh }, fadeClip: true }
+  }
   const s = Math.min(bw / p.src.width, bh / p.src.height)
   const w = p.src.width * s
   const h = p.src.height * s
@@ -200,6 +216,19 @@ function drawPersonWithCuts(ctx, p, box, W, H, { shadow, hiddenBottom }) {
   if (exposed.right) fade(w, 0, w - band, 0)
   if (exposed.top) fade(0, 0, 0, vband)
   if (exposed.bottom) fade(0, h, 0, h - vband)
+
+  /*
+   * A box that clips the person is a cut too — a straight line through a
+   * shoulder — so it is faded the same way, from the box's edge inward, and
+   * only on a side where the person actually overflows it.
+   */
+  if (box.fadeClip && box.clip) {
+    const cutL = box.clip.x - box.x
+    const cutR = box.x + box.w - (box.clip.x + box.clip.w)
+    const cband = Math.round(Math.min(w, box.clip.w) * 0.12)
+    if (cutL > 1) fade(cutL, 0, cutL + cband, 0)
+    if (cutR > 1) fade(w - cutR, 0, w - cutR - cband, 0)
+  }
 
   ctx.save()
   if (box.clip) {

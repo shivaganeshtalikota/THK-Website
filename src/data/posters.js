@@ -116,7 +116,16 @@ const builtIn = [
      * The person is fitted to CONTAIN this box, so a narrower slot makes the
      * portrait smaller — never stretched, never cropped into.
      */
-    photoSlot: { x: 0.6753, y: 0.6293, w: 0.3247, h: 0.3707, anchor: 'bottom' },
+    /*
+     * September 2026: sized by HEIGHT, and taller. Contained in the box above,
+     * a wide head-and-shoulders photo came out small — the office's words were
+     * that it looked tiny. Now the photo is fitted to the box's height and
+     * rises to 0.555, over the passbook-and-padlock artwork (no text lives
+     * there). The box's left edge is unchanged, so the yellow band's Telugu is
+     * still never covered: a shoulder that would reach it is cut at x 0.6753
+     * and faded there instead.
+     */
+    photoSlot: { x: 0.6753, y: 0.555, w: 0.3247, h: 0.445, anchor: 'bottom', fit: 'height' },
 
     /*
      * Name above, designation below, the pair centred on the party mark.
@@ -141,12 +150,14 @@ const builtIn = [
      * the mark: cap-height above the name plus the designation's baseline puts
      * the visual middle at 0.9439, the mark's measured centre.
      */
+    // Heavier and a little larger than first set: the office wanted the name
+    // and the role bold. Still shrinks to fit maxW for a long name.
     name: {
       x: 0.185,
       y: 0.9383,
       maxW: 0.40,
-      size: 0.026,
-      weight: 700,
+      size: 0.03,
+      weight: 800,
       color: '#FFFFFF',
       align: 'left',
       baseline: 'alphabetic',
@@ -155,8 +166,8 @@ const builtIn = [
       x: 0.185,
       y: 0.9683,
       maxW: 0.40,
-      size: 0.018,
-      weight: 500,
+      size: 0.0195,
+      weight: 700,
       color: '#F2D024',
       align: 'left',
       baseline: 'alphabetic',
