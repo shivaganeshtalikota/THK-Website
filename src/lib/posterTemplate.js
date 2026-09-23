@@ -99,7 +99,153 @@ export function templateGeometry() {
 
 /** Bumped when the template changes shape. Stored on each published poster so
  *  an old one keeps rendering the way it was published. */
-export const TEMPLATE_VERSION = 1
+export const TEMPLATE_VERSION = 2
+
+/** Where the drawn band starts. Artwork below this is covered by it, so only
+ *  what sits above it can be obscured by the person. */
+const BAND_Y = 0.8
+
+/**
+ * How much is going on in each part of the image.
+ *
+ * Gradient magnitude on a downscaled copy. Headlines, faces and detailed
+ * artwork have busy neighbourhoods; sky, flat colour and gradients do not. It
+ * is a crude proxy for "something is here that matters" and it does not need to
+ * be better than that — the job is only to rank a handful of candidate
+ * rectangles against each other, not to understand the picture.
+ *
+ * Downscaled first because that is also a low-pass: photographic noise stops
+ * registering as detail, while a line of Telugu text still does.
+ */
+function energyMap(img, gw = 96, gh = 120) {
+  const c = document.createElement('canvas')
+  c.width = gw
+  c.height = gh
+  const ctx = c.getContext('2d', { willReadFrequently: true })
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(img, 0, 0, gw, gh)
+  const px = ctx.getImageData(0, 0, gw, gh).data
+
+  const lum = new Float32Array(gw * gh)
+  for (let i = 0, j = 0; i < lum.length; i += 1, j += 4) {
+    lum[i] = (px[j] * 0.299 + px[j + 1] * 0.587 + px[j + 2] * 0.114) / 255
+  }
+
+  const e = new Float32Array(gw * gh)
+  for (let y = 1; y < gh - 1; y += 1) {
+    for (let x = 1; x < gw - 1; x += 1) {
+      const i = y * gw + x
+      const dx = lum[i + 1] - lum[i - 1]
+      const dy = lum[i + gw] - lum[i - gw]
+      e[i] = Math.hypot(dx, dy)
+    }
+  }
+  return { e, gw, gh }
+}
+
+/** Summed-area table, so a rectangle's mean is four lookups however big it is. */
+function integralOf(e, gw, gh) {
+  const s = new Float64Array((gw + 1) * (gh + 1))
+  for (let y = 0; y < gh; y += 1) {
+    let row = 0
+    for (let x = 0; x < gw; x += 1) {
+      row += e[y * gw + x]
+      s[(y + 1) * (gw + 1) + (x + 1)] = s[y * (gw + 1) + (x + 1)] + row
+    }
+  }
+  return s
+}
+
+/**
+ * Work out where the person and the type should go on THIS artwork.
+ *
+ * The template used to put the person bottom-right on every poster, which is
+ * right until somebody uploads an image with its headline on the right — and
+ * then a face lands on the words, on material going out under his name.
+ *
+ * So the image is asked. Candidate slots are scored on how much detail they
+ * would cover, and the quietest wins. The type and the party mark then go to
+ * the OPPOSITE side, which is what actually guarantees they never collide: they
+ * are placed relative to the person rather than both being pinned to fixed
+ * coordinates and hoped over.
+ *
+ * Only the part of a slot ABOVE the band is scored. Below it the drawn band
+ * covers the artwork completely, so whatever is down there is hidden anyway and
+ * counting it would bias every choice by the same irrelevant amount.
+ *
+ * Ties go to the larger slot. A bigger figure is a better poster, so size wins
+ * whenever it costs nothing.
+ */
+export function chooseLayout(img) {
+  const { e, gw, gh } = energyMap(img)
+  const sum = integralOf(e, gw, gh)
+
+  const meanEnergy = (fx, fy, fw, fh) => {
+    const x0 = Math.max(0, Math.round(fx * gw))
+    const y0 = Math.max(0, Math.round(fy * gh))
+    const x1 = Math.min(gw, Math.round((fx + fw) * gw))
+    const y1 = Math.min(gh, Math.round((fy + fh) * gh))
+    const n = (x1 - x0) * (y1 - y0)
+    if (n <= 0) return 0
+    const W = gw + 1
+    const total =
+      sum[y1 * W + x1] - sum[y0 * W + x1] - sum[y1 * W + x0] + sum[y0 * W + x0]
+    return total / n
+  }
+
+  const SHAPES = [
+    { w: 0.4, y: 0.34 },
+    { w: 0.36, y: 0.42 },
+    { w: 0.32, y: 0.5 },
+  ]
+
+  let best = null
+  for (const side of ['right', 'left']) {
+    for (const shape of SHAPES) {
+      const x = side === 'right' ? 1 - shape.w : 0
+      const busy = meanEnergy(x, shape.y, shape.w, BAND_Y - shape.y)
+      // A gentle bonus for area, small enough that it only breaks near-ties.
+      const score = busy - shape.w * 0.02
+      if (!best || score < best.score) best = { side, x, ...shape, score, busy }
+    }
+  }
+
+  const LOGO_W = 0.105
+  const GAP = 0.03
+  const EDGE = 0.045
+
+  // Type and mark on the far side from the person, with the text box bounded by
+  // whatever room is actually left rather than by a constant.
+  let logoX
+  let textX
+  let textMaxW
+  if (best.side === 'right') {
+    logoX = EDGE
+    textX = EDGE + LOGO_W + 0.025
+    textMaxW = best.x - textX - GAP
+  } else {
+    logoX = 1 - EDGE - LOGO_W
+    textX = best.w + GAP
+    textMaxW = logoX - textX - 0.025
+  }
+
+  const geometry = templateGeometry()
+  return {
+    ...geometry,
+    band: { ...geometry.band, logo: { x: logoX, w: LOGO_W } },
+    photoSlot: { x: best.x, y: best.y, w: best.w, h: 1 - best.y, anchor: 'bottom' },
+    name: { ...geometry.name, x: textX, maxW: Math.max(0.2, textMaxW) },
+    designation: { ...geometry.designation, x: textX, maxW: Math.max(0.2, textMaxW) },
+    // Kept so a published poster records why it looks the way it does, and so a
+    // human can sanity-check the choice without re-running the analysis.
+    layout: {
+      side: best.side,
+      busyness: Number(best.busy.toFixed(4)),
+      chosenFrom: SHAPES.length * 2,
+    },
+  }
+}
 
 /**
  * URL-safe slug from a headline.

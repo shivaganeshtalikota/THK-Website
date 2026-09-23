@@ -484,6 +484,76 @@ function fastGuidedFilter(R, G, B, prior, w, h, r, eps, sub = 4) {
 }
 
 /**
+ * Fade the matte out where the SUBJECT runs off the edge of the photograph.
+ *
+ * This is the defect people actually notice, and it is not a segmentation
+ * problem at all. A head-and-shoulders photo almost always has the shoulders
+ * leaving the frame at the sides. The model correctly calls those pixels
+ * "person" right up to the last column, so the cut-out ends in a straight,
+ * fully-opaque line — and composited onto artwork that line reads as a
+ * rectangle someone pasted in. Measured on a real portrait, 49% of the cut-out's
+ * perimeter was solid before this existed.
+ *
+ * It is a frame artefact, so it is fixed at the frame: alpha ramps down over a
+ * band at each edge, and a subject that reaches the edge dissolves into the
+ * artwork instead of being sliced by it. A subject that never reaches the edge
+ * is untouched, because its alpha is already zero there.
+ *
+ * THE BOTTOM IS DELIBERATELY EXCLUDED. A portrait is anchored to the foot of
+ * the poster, so its lower edge sits on the poster's own boundary where no cut
+ * is visible. Fading it would dissolve the figure at the chest and look far
+ * worse than the problem being solved.
+ */
+function featherFrameEdges(alpha, w, h) {
+  // Proportional, so the fade looks the same on a small photo and a large one.
+  const band = Math.max(8, Math.round(Math.min(w, h) * 0.055))
+  // Smoothstep rather than linear: a linear ramp leaves a visible crease where
+  // it meets full opacity, which is the same complaint one step further in.
+  const ease = (t) => t * t * (3 - 2 * t)
+
+  for (let y = 0; y < h; y += 1) {
+    const dTop = y
+    for (let x = 0; x < w; x += 1) {
+      const d = Math.min(dTop, x, w - 1 - x)
+      if (d >= band) continue
+      alpha[y * w + x] *= ease(d / band)
+    }
+  }
+}
+
+/**
+ * Take the cliff off the matte itself.
+ *
+ * The guided filter plus the output curve produce a boundary about a pixel
+ * wide — on a real portrait only 3% of pixels had any partial alpha at all, so
+ * the edge was effectively binary. Crisp is right for a cut-out, but a literal
+ * one-pixel step against photographic artwork looks cut out with scissors.
+ *
+ * One separable 3-tap pass, which widens the transition to a few pixels and
+ * costs nothing. Deliberately mild: the earlier work to stop this edge being
+ * blurry was the whole point of the guided filter, and this must not undo it.
+ */
+function softenMatte(alpha, w, h) {
+  const tmp = new Float32Array(w * h)
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const l = alpha[y * w + Math.max(0, x - 1)]
+      const c = alpha[y * w + x]
+      const r = alpha[y * w + Math.min(w - 1, x + 1)]
+      tmp[y * w + x] = (l + 2 * c + r) / 4
+    }
+  }
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const u = tmp[Math.max(0, y - 1) * w + x]
+      const c = tmp[y * w + x]
+      const d = tmp[Math.min(h - 1, y + 1) * w + x]
+      alpha[y * w + x] = (u + 2 * c + d) / 4
+    }
+  }
+}
+
+/**
  * Guided-filter radius, in pixels at the refinement resolution.
  *
  * This number was swept, not chosen, because intuition got it badly wrong: the
@@ -670,6 +740,9 @@ export async function removeBackground(img) {
     const c = (alpha[i] - 0.14) / 0.72
     alpha[i] = c <= 0 ? 0 : c >= 1 ? 1 : c
   }
+
+  featherFrameEdges(alpha, rw, rh)
+  softenMatte(alpha, rw, rh)
 
   // --- 3. apply it to the FULL-resolution original ------------------------
   const os = Math.min(1, OUT_MAX / Math.max(img.width, img.height))

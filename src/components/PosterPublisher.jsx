@@ -5,7 +5,7 @@ import {
   POSTER_W,
   POSTER_H,
   TEMPLATE_VERSION,
-  templateGeometry,
+  chooseLayout,
   slugify,
 } from '../lib/posterTemplate'
 
@@ -46,11 +46,35 @@ const field =
   'mt-2 w-full border border-ink-300 bg-white px-4 py-3 text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-ink-900'
 const labelCls = 'block font-sans text-micro uppercase tracking-[0.14em] text-ink-600'
 
-/** Draw an image cover-fit into a box, centred — no stretching, ever. */
-function coverDraw(ctx, img, W, H) {
-  const scale = Math.max(W / img.width, H / img.height)
-  const w = img.width * scale
-  const h = img.height * scale
+/**
+ * Fit an event image into the poster without losing any of it.
+ *
+ * CONTAIN, NOT COVER — and this was a bug before it was a decision. Cover-fitting
+ * a 16:9 event image into a 4:5 poster crops a quarter off each side, and the
+ * headline is usually near the left edge, so the first thing the crop takes is
+ * the words. The live preview showed "రైతు మహాధర్నా" arriving as "ధర్నా".
+ *
+ * So the whole image is contained, and the space around it is filled with a
+ * blurred, darkened copy of itself scaled to cover. Nothing is cropped, nothing
+ * is stretched, and the filler reads as a deliberate backdrop rather than as
+ * letterboxing — it carries the image's own colours, so a poster made from a
+ * saffron banner looks saffron and one from a night rally looks dark.
+ */
+function fitArtwork(ctx, img, W, H) {
+  const cover = Math.max(W / img.width, H / img.height)
+  const cw = img.width * cover
+  const ch = img.height * cover
+
+  ctx.save()
+  // The backdrop: the same picture filling the frame, blurred past recognition
+  // so it never competes with the real one sitting on top of it.
+  ctx.filter = 'blur(60px) brightness(0.55) saturate(1.1)'
+  ctx.drawImage(img, (W - cw) / 2, (H - ch) / 2, cw, ch)
+  ctx.restore()
+
+  const contain = Math.min(W / img.width, H / img.height)
+  const w = img.width * contain
+  const h = img.height * contain
   ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h)
 }
 
@@ -65,6 +89,7 @@ const PosterPublisher = ({ call, onPublished }) => {
   })
   const [slugTouched, setSlugTouched] = useState(false)
   const [artwork, setArtwork] = useState(null) // normalised HTMLImageElement
+  const [geometry, setGeometry] = useState(null) // chosen for THIS artwork
   const [logo, setLogo] = useState(null)
   const [ready, setReady] = useState(false)
   const [busy, setBusy] = useState(null)
@@ -74,7 +99,6 @@ const PosterPublisher = ({ call, onPublished }) => {
   const previewRef = useRef(null)
   const fileRef = useRef(null)
 
-  const geometry = templateGeometry()
   const slug = slugTouched ? form.slug : slugify(form.titleEn)
 
   useEffect(() => {
@@ -121,11 +145,15 @@ const PosterPublisher = ({ call, onPublished }) => {
       // rounding never leaves a transparent sliver at an edge.
       ctx.fillStyle = '#0E0E0E'
       ctx.fillRect(0, 0, POSTER_W, POSTER_H)
-      coverDraw(ctx, raw, POSTER_W, POSTER_H)
+      fitArtwork(ctx, raw, POSTER_W, POSTER_H)
 
       const normalised = new Image()
       normalised.src = canvas.toDataURL('image/jpeg', 0.92)
       await normalised.decode()
+
+      // Read the image and decide where the person and the type go, rather than
+      // dropping both in a fixed place and hoping the artwork has nothing there.
+      setGeometry(chooseLayout(normalised))
       setArtwork(normalised)
     } catch {
       setError('That image could not be read.')
@@ -137,7 +165,7 @@ const PosterPublisher = ({ call, onPublished }) => {
   /* The preview is the real renderer at a smaller scale, not a mock-up — what
    * is on screen is what a supporter will get, band, type and all. */
   useEffect(() => {
-    if (!artwork || !ready || !previewRef.current) return
+    if (!artwork || !geometry || !ready || !previewRef.current) return
     const poster = { width: POSTER_W, height: POSTER_H, ...geometry }
     renderPoster({
       canvas: previewRef.current,
@@ -166,13 +194,13 @@ const PosterPublisher = ({ call, onPublished }) => {
     ctx.font = '600 13px system-ui, sans-serif'
     ctx.fillText("supporter's photo", s.x * W + 10, s.y * H + 22)
     ctx.restore()
-  }, [artwork, ready, logo, geometry])
+  }, [artwork, geometry, ready, logo])
 
   const publish = async (e) => {
     e.preventDefault()
     setError(null)
     setResult(null)
-    if (!artwork) return setError('Choose the event image first.')
+    if (!artwork || !geometry) return setError('Choose the event image first.')
     if (form.titleEn.trim().length < 3) return setError('An English title is needed — it makes the web address.')
     if (!/^[a-z0-9][a-z0-9-]{1,47}$/.test(slug)) {
       return setError('The web address must be lowercase letters, numbers and hyphens.')
@@ -229,6 +257,7 @@ const PosterPublisher = ({ call, onPublished }) => {
       setForm({ titleEn: '', title: '', summary: '', issue: '', date: '', slug: '' })
       setSlugTouched(false)
       setArtwork(null)
+      setGeometry(null)
       if (fileRef.current) fileRef.current.value = ''
       onPublished?.()
     } catch (err) {
@@ -257,7 +286,8 @@ const PosterPublisher = ({ call, onPublished }) => {
           className="mt-3 block w-full text-sm text-ink-700 file:mr-4 file:border file:border-ink-300 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold hover:file:border-ink-900"
         />
         <p className="mt-2 text-xs text-ink-500">
-          Any size or shape — it is fitted to the poster automatically, never stretched.
+          Any size or shape. The whole image is kept — nothing is cropped or stretched — and the
+          space around it is filled from the image&apos;s own colours.
         </p>
       </div>
 
