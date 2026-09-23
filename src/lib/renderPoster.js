@@ -1,24 +1,19 @@
 /**
- * Draws a finished poster onto a canvas: artwork, cut-out person, name, designation.
+ * Draws a finished poster onto a canvas: artwork, cut-out person, name bar.
  *
  * Pure and synchronous once its inputs are loaded, so the same function renders
- * both the on-screen preview and the full-resolution download. Drawing the
- * preview through a different code path than the export is how a poster ends up
- * looking right on screen and wrong in the downloaded file.
+ * the on-screen preview, the full-resolution download and the image the share
+ * link shows. Drawing those through different code paths is how a poster ends
+ * up right on screen and wrong in the file.
  *
- * TAINTING. Everything drawn here is either same-origin (/posters/*.jpg) or a
- * blob: / data: URL made from the visitor's own upload. Both are untainted
- * origins, so canvas.toBlob() stays legal. Drawing a cross-origin image without
- * CORS would taint the canvas and make the export throw a SecurityError — which
- * is why the artwork is served from our own /public and never hot-linked.
+ * TAINTING. Everything drawn here is same-origin (/posters/*.jpg, /tdp-logo.png)
+ * or a blob:/canvas made from the visitor's own upload, so toBlob() stays legal.
  */
 
 /** Load an <img> and resolve only once it has actually decoded. */
 export function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    // Harmless for same-origin, and required if the artwork is ever moved to a
-    // CDN — without it that move would silently taint every export.
     img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
     img.onerror = () => reject(new Error(`Could not load image: ${src}`))
@@ -26,77 +21,365 @@ export function loadImage(src) {
   })
 }
 
+/** The face every poster's name and designation are set in. See
+ *  scripts/fetch-fonts.py for how it was chosen. */
+const POSTER_FACE = '"Anek Telugu", "Noto Sans Telugu", Inter, system-ui, sans-serif'
+
 /**
- * Make sure the faces the poster uses are actually loaded before any text is
- * drawn.
+ * Make sure the poster face is loaded before any text is drawn.
  *
- * Canvas does not wait for webfonts. fillText with a font that has not loaded
- * silently falls back to a system face, and the download is then set in the
- * wrong typeface — usually one with no Telugu coverage at all, which renders as
- * tofu boxes. Nothing about the drawing code reveals this; it just comes out
- * wrong. So the fonts are demanded up front.
+ * Canvas does not wait for webfonts: fillText with a face still downloading
+ * silently uses a fallback, and the download is then set in the wrong type —
+ * often one with no Telugu at all. Both subsets are asked for by giving
+ * load() a sample containing both scripts.
  */
-export async function ensureFonts(sizes = [64, 40]) {
+export async function ensureFonts() {
   if (typeof document === 'undefined' || !document.fonts) return
-  const families = ['Inter', 'Noto Sans Telugu']
+  const sample = 'తెలుగు Aa'
   await Promise.all(
-    families.flatMap((family) =>
-      sizes.flatMap((size) =>
-        [400, 500, 700].map((weight) =>
-          document.fonts.load(`${weight} ${size}px "${family}"`).catch(() => {})
-        )
-      )
-    )
+    [700, 800].map((w) => document.fonts.load(`${w} 64px "Anek Telugu"`, sample).catch(() => {})),
   )
   await document.fonts.ready
 }
 
-/** True if the string contains any Telugu codepoint. */
-const hasTelugu = (s) => /[ఀ-౿]/.test(s)
+const font = (weight, px) => `${weight} ${Math.round(px)}px ${POSTER_FACE}`
+
+/* ------------------------------------------------------------- text */
+
+/** Height a line of text actually occupies, from its real glyph extents —
+ *  Telugu vowel signs reach well above and below the Latin baseline. */
+function extents(ctx, text) {
+  const m = ctx.measureText(text)
+  return {
+    w: m.width,
+    up: m.actualBoundingBoxAscent || 0,
+    down: m.actualBoundingBoxDescent || 0,
+  }
+}
 
 /**
- * The font stack for a given string.
+ * Break a designation into at most two lines, as evenly as possible.
  *
- * Telugu is not a styling preference here — Inter carries no Telugu glyphs, so a
- * Telugu name set in Inter renders as empty boxes. The script decides the face.
+ * Balanced rather than greedy: "iTDP Telangana State / President" looks like
+ * a mistake, "iTDP Telangana / State President" looks set.
  */
-const fontFor = (text, weight, px) =>
-  hasTelugu(text)
-    ? `${weight} ${px}px "Noto Sans Telugu", "Noto Sans", sans-serif`
-    : `${weight} ${px}px Inter, system-ui, sans-serif`
+function balancedLines(ctx, text, maxW) {
+  const words = text.split(/\s+/).filter(Boolean)
+  if (ctx.measureText(text).width <= maxW || words.length < 2) return [text]
+  let best = null
+  for (let i = 1; i < words.length; i += 1) {
+    const a = words.slice(0, i).join(' ')
+    const b = words.slice(i).join(' ')
+    const worst = Math.max(ctx.measureText(a).width, ctx.measureText(b).width)
+    if (!best || worst < best.worst) best = { lines: [a, b], worst }
+  }
+  return best.lines
+}
+
+/** Truncate with an ellipsis to fit — only when shrinking has run out. */
+function fitWithEllipsis(ctx, text, maxW) {
+  if (ctx.measureText(text).width <= maxW) return text
+  let out = text
+  while (out.length > 1 && ctx.measureText(`${out}…`).width > maxW) out = out.slice(0, -1)
+  return `${out}…`
+}
+
+/* ------------------------------------------------------------ person */
 
 /**
- * Draw one line of text, shrinking it until it fits its box.
- *
- * Names vary wildly in length — "Ravi" and
- * "డా. చెరుకువాడ శ్రీరంగనాథ రాజు" go in the same slot. Wrapping would push into
- * the party mark below, so the type scales down instead, to a floor of 55% where
- * it stops being legible and is truncated rather than shrunk into nothing.
+ * Normalise what the studio hands in. A cut-out arrives as {canvas, cut};
+ * a photograph whose background could not be removed arrives as a plain
+ * image, which is a rectangle cut on every side.
  */
-function drawFittedLine(ctx, text, box, W, H) {
+function asPerson(person) {
+  if (!person) return null
+  if (person.canvas) return { src: person.canvas, cut: person.cut || {} }
+  return { src: person, cut: { left: true, right: true, top: true, bottom: true } }
+}
+
+/**
+ * Where the person goes on a template-3 poster.
+ *
+ * Sized by HEIGHT against the poster — that is what makes them read as the
+ * subject rather than a thumbnail — and then capped in width so a very wide
+ * group photo cannot take over. Standing on the bar: the bottom edge meets
+ * the bar's top (a photo cut at the chest tucks slightly behind it, so the
+ * cut is hidden by the bar rather than floating above it).
+ *
+ * Horizontally, a side the photograph cuts through is pushed flush to the
+ * poster's edge, where the poster itself ends the arm or shoulder naturally.
+ */
+function placeOnBar(g, p, W, H) {
+  const barTop = g.bar.y * H
+  const aspect = p.src.width / p.src.height
+  let h = g.person.h * H
+  let w = h * aspect
+  const maxW = g.person.maxW * W
+  if (w > maxW) {
+    w = maxW
+    h = w / aspect
+  }
+  const tuck = p.cut.bottom ? 0.012 * H : 0
+  let y = barTop + tuck - h
+  const minY = (g.person.top ?? 0.1) * H
+  if (y < minY) {
+    // Too tall for the room above the bar: shrink rather than cover the
+    // headline.
+    const s = (barTop + tuck - minY) / h
+    h *= s
+    w *= s
+    y = minY
+  }
+
+  const margin = 0.03 * W
+  let x
+  if (g.person.side === 'left') x = p.cut.left ? 0 : margin
+  else if (g.person.side === 'center') x = (W - w) / 2
+  else x = p.cut.right ? W - w : W - w - margin
+
+  return { x, y, w, h }
+}
+
+/** Legacy placement (templates 1–2 and the hand-measured 22A poster):
+ *  contained in a box, anchored at its foot. */
+function placeInSlot(slot, p, W, H) {
+  const bx = slot.x * W
+  const by = slot.y * H
+  const bw = slot.w * W
+  const bh = slot.h * H
+  const s = Math.min(bw / p.src.width, bh / p.src.height)
+  const w = p.src.width * s
+  const h = p.src.height * s
+  // A side the photo cuts through goes flush to that side of the slot.
+  let x = bx + (bw - w) / 2
+  if (p.cut.right && !p.cut.left) x = bx + bw - w
+  if (p.cut.left && !p.cut.right) x = bx
+  const y = slot.anchor === 'bottom' ? by + bh - h : by + (bh - h) / 2
+  return { x, y, w, h, clip: { x: bx, y: by, w: bw, h: bh } }
+}
+
+const EASE = [0, 0.028, 0.104, 0.216, 0.352, 0.5, 0.648, 0.784, 0.896, 0.972, 1]
+
+/**
+ * Fade ONLY where the photograph itself was cut and that cut is now visible.
+ *
+ * The subject's own outline is never softened: where the matte found hair or
+ * a shoulder, that edge is the edge. What gets faded is the straight line
+ * where the camera's frame sliced through an arm or a shoulder — and only if
+ * that line lands inside the poster. A cut that sits on the poster's own edge,
+ * or behind the bar, is already natural and is left alone.
+ */
+function drawPersonWithCuts(ctx, p, box, W, H, { shadow, hiddenBottom }) {
+  const w = Math.max(1, Math.round(box.w))
+  const h = Math.max(1, Math.round(box.h))
+  const off = document.createElement('canvas')
+  off.width = w
+  off.height = h
+  const o = off.getContext('2d')
+  o.imageSmoothingEnabled = true
+  o.imageSmoothingQuality = 'high'
+  o.drawImage(p.src, 0, 0, w, h)
+
+  const exposed = {
+    left: p.cut.left && box.x > 1,
+    right: p.cut.right && box.x + box.w < W - 1,
+    top: p.cut.top && box.y > 1,
+    bottom: p.cut.bottom && !hiddenBottom && box.y + box.h < H - 1,
+  }
+  const fade = (x0, y0, x1, y1) => {
+    const g = o.createLinearGradient(x0, y0, x1, y1)
+    EASE.forEach((a, i) => g.addColorStop(i / (EASE.length - 1), `rgba(0,0,0,${a})`))
+    o.globalCompositeOperation = 'destination-in'
+    o.fillStyle = g
+    o.fillRect(0, 0, w, h)
+    o.globalCompositeOperation = 'source-over'
+  }
+  const band = Math.round(w * 0.14)
+  const vband = Math.round(h * 0.1)
+  if (exposed.left) fade(0, 0, band, 0)
+  if (exposed.right) fade(w, 0, w - band, 0)
+  if (exposed.top) fade(0, 0, 0, vband)
+  if (exposed.bottom) fade(0, h, 0, h - vband)
+
+  ctx.save()
+  if (box.clip) {
+    ctx.beginPath()
+    ctx.rect(box.clip.x, box.clip.y, box.clip.w, box.clip.h)
+    ctx.clip()
+  }
+  if (shadow) {
+    // Lifts the figure off busy artwork without the sticker-outline look.
+    ctx.shadowColor = 'rgba(0,0,0,0.32)'
+    ctx.shadowBlur = Math.round(W * 0.014)
+    ctx.shadowOffsetY = Math.round(W * 0.003)
+  }
+  ctx.drawImage(off, Math.round(box.x), Math.round(box.y))
+  ctx.restore()
+}
+
+/* -------------------------------------------------------- template 3 */
+
+function logoBox(g, logo, W, H) {
+  if (!logo) return null
+  const w = g.logo.w * W
+  const h = w * (logo.height / logo.width)
+  const margin = 0.035 * W
+  const x = g.logo.side === 'right' ? W - margin - w : margin
+  // Bottom-aligned inside the bar; tall enough that the top rises above it.
+  const y = H - 0.022 * H - h
+  return { x, y, w, h }
+}
+
+function drawBarText(ctx, g, name, designation, lb, W, H) {
+  const barTop = g.bar.y * H
+  const barH = H - barTop
+  const margin = 0.035 * W
+  const gap = 0.03 * W
+  let x0 = margin
+  let x1 = W - margin
+  if (lb && g.logo.side === 'left') x0 = lb.x + lb.w + gap
+  if (lb && g.logo.side === 'right') x1 = lb.x - gap
+  const regionW = x1 - x0
+  const cx = (x0 + x1) / 2
+
+  let nameSize = g.name.size * H
+  let desSize = g.designation.size * H
+
+  // Name: shrink to fit, down to 60%; only then truncate.
+  ctx.font = font(g.name.weight, nameSize)
+  while (name && ctx.measureText(name).width > regionW && nameSize > g.name.size * H * 0.6) {
+    nameSize -= 2
+    ctx.font = font(g.name.weight, nameSize)
+  }
+  const nameText = name ? fitWithEllipsis(ctx, name, regionW) : ''
+
+  // Designation: two balanced lines before any shrinking.
+  ctx.font = font(g.designation.weight, desSize)
+  let lines = designation ? balancedLines(ctx, designation, regionW) : []
+  while (lines.some((l) => ctx.measureText(l).width > regionW) && desSize > g.designation.size * H * 0.6) {
+    desSize -= 2
+    ctx.font = font(g.designation.weight, desSize)
+    lines = balancedLines(ctx, designation, regionW)
+  }
+  lines = lines.map((l) => fitWithEllipsis(ctx, l, regionW))
+
+  // Stack by real glyph extents and centre the block in the bar.
+  const measure = () => {
+    const items = []
+    if (nameText) {
+      ctx.font = font(g.name.weight, nameSize)
+      items.push({ text: nameText, f: font(g.name.weight, nameSize), color: g.name.color, ...extents(ctx, nameText), gapAfter: desSize * 0.34 })
+    }
+    ctx.font = font(g.designation.weight, desSize)
+    lines.forEach((l) => items.push({ text: l, f: font(g.designation.weight, desSize), color: g.designation.color, ...extents(ctx, l), gapAfter: desSize * 0.22 }))
+    // Use a consistent line box for Telugu and Latin alike so two posters with
+    // different scripts sit at the same height.
+    items.forEach((it) => {
+      const px = parseInt(it.f.match(/(\d+)px/)[1], 10)
+      it.up = Math.max(it.up, px * 0.72)
+      it.down = Math.max(it.down, px * 0.2)
+    })
+    const total = items.reduce((s, it, i) => s + it.up + it.down + (i < items.length - 1 ? it.gapAfter : 0), 0)
+    return { items, total }
+  }
+  let { items, total } = measure()
+  /*
+   * Too tall for the bar: the DESIGNATION gives way first, down to 72% of its
+   * size, and only then does everything shrink together. The name is what the
+   * poster is for — on the reference posters it is the biggest thing on the
+   * bar — so a long, two-line designation must not be the reason it ends up
+   * small.
+   */
+  const room = barH * 0.86
+  while (total > room && desSize > g.designation.size * H * 0.72) {
+    desSize -= 2
+    ;({ items, total } = measure())
+  }
+  if (total > room) {
+    const s = room / total
+    nameSize *= s
+    desSize *= s
+    ;({ items, total } = measure())
+  }
+
+  let y = barTop + (barH - total) / 2
+  ctx.save()
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'alphabetic'
+  items.forEach((it) => {
+    ctx.font = it.f
+    ctx.fillStyle = it.color
+    ctx.fillText(it.text, cx, y + it.up)
+    y += it.up + it.down + it.gapAfter
+  })
+  ctx.restore()
+}
+
+function renderTemplate3(ctx, poster, person, name, designation, logo, W, H) {
+  const g = poster
+  const barTop = g.bar.y * H
+  const p = asPerson(person)
+
+  // 1. The person, before the bar, so a chest-level cut tucks behind it.
+  if (p) {
+    const box = placeOnBar(g, p, W, H)
+    drawPersonWithCuts(ctx, p, box, W, H, { shadow: g.person.shadow !== false, hiddenBottom: p.cut.bottom })
+  }
+
+  // 2. The bar, with a soft shadow above it and a thin rule along its top.
+  if (g.bar.paint !== false) {
+    const lift = ctx.createLinearGradient(0, barTop - 0.014 * H, 0, barTop)
+    lift.addColorStop(0, 'rgba(0,0,0,0)')
+    lift.addColorStop(1, 'rgba(0,0,0,0.22)')
+    ctx.fillStyle = lift
+    ctx.fillRect(0, barTop - 0.014 * H, W, 0.014 * H)
+    ctx.fillStyle = g.bar.color
+    ctx.fillRect(0, barTop, W, H - barTop)
+    if (g.bar.rule) {
+      ctx.fillStyle = g.bar.rule
+      ctx.fillRect(0, barTop, W, Math.max(3, 0.005 * H))
+    }
+  } else if (p) {
+    // The artwork's own bar: repaint just under the person's tuck so the cut
+    // line is hidden by "the bar" exactly as it would be by a drawn one.
+    ctx.fillStyle = g.bar.color
+    ctx.fillRect(0, barTop, W, 0.014 * H)
+  }
+
+  // 3. The party mark, as a tile standing on the bar and rising above it.
+  const lb = logoBox(g, logo, W, H)
+  if (lb) {
+    ctx.save()
+    ctx.shadowColor = 'rgba(0,0,0,0.3)'
+    ctx.shadowBlur = Math.round(W * 0.012)
+    ctx.shadowOffsetY = Math.round(W * 0.003)
+    ctx.drawImage(logo, lb.x, lb.y, lb.w, lb.h)
+    ctx.restore()
+  }
+
+  // 4. Name and designation, centred in the room the mark leaves.
+  drawBarText(ctx, g, name, designation, lb, W, H)
+}
+
+/* ------------------------------------------------- legacy templates */
+
+function drawLegacyLine(ctx, text, box, W, H) {
   if (!text) return
   const maxW = box.maxW * W
   let px = box.size * H
   const floor = px * 0.55
-
+  // Heavier than the template asked for: the office wanted the name and the
+  // role bold, and at 500 the designation read as a caption.
+  const weight = Math.max(700, box.weight || 700)
   ctx.textAlign = box.align || 'left'
   ctx.textBaseline = box.baseline || 'alphabetic'
   ctx.fillStyle = box.color
-
-  ctx.font = fontFor(text, box.weight, px)
+  ctx.font = font(weight, px)
   while (ctx.measureText(text).width > maxW && px > floor) {
     px -= 1
-    ctx.font = fontFor(text, box.weight, px)
+    ctx.font = font(weight, px)
   }
-
-  let out = text
-  if (ctx.measureText(out).width > maxW) {
-    while (out.length > 1 && ctx.measureText(`${out}…`).width > maxW) out = out.slice(0, -1)
-    out = `${out}…`
-  }
-
-  // A soft shadow so the type holds up over the black band even if the artwork
-  // behind it is ever changed to something lighter.
+  const out = fitWithEllipsis(ctx, text, maxW)
   ctx.save()
   ctx.shadowColor = 'rgba(0,0,0,0.45)'
   ctx.shadowBlur = Math.max(2, H * 0.002)
@@ -104,77 +387,24 @@ function drawFittedLine(ctx, text, box, W, H) {
   ctx.restore()
 }
 
-/**
- * Fit a cut-out inside a box, anchored at its bottom edge.
- *
- * CONTAIN, not cover. Cover was right when the artwork still had a filled white
- * silhouette underneath — letterboxing would have left that white showing. The
- * silhouette is gone now, so there is nothing behind the person to reveal, and
- * cover only means cropping a shoulder off at the frame edge for no gain.
- * Contain keeps the whole subject.
- *
- * Bottom-anchored because a head-and-shoulders photo belongs sitting on the base
- * of the slot; centring it vertically leaves the subject floating.
- */
-function coverInto(ctx, img, slot, W, H) {
-  const bx = slot.x * W
-  const by = slot.y * H
-  const bw = slot.w * W
-  const bh = slot.h * H
-
-  const scale = Math.min(bw / img.width, bh / img.height)
-  const dw = img.width * scale
-  const dh = img.height * scale
-  const dx = bx + (bw - dw) / 2
-  const dy = slot.anchor === 'bottom' ? by + bh - dh : by + (bh - dh) / 2
-
-  ctx.save()
-  // Clip so an over-tall portrait cannot spill up over the artwork's headline.
-  ctx.beginPath()
-  ctx.rect(bx, by, bw, bh)
-  ctx.clip()
-  ctx.drawImage(img, dx, dy, dw, dh)
-  ctx.restore()
-}
-
-/**
- * The footer band, for posters whose artwork does not carry one.
- *
- * Solid rather than a gradient, and opaque rather than translucent, because it
- * has to hold white text legibly over an artwork nobody has seen yet. A
- * translucent band looks better over a dark photograph and becomes unreadable
- * over a bright one, and the whole point here is that it must work on every
- * image somebody uploads without anyone checking.
- *
- * The party mark is drawn at its own aspect ratio rather than squashed into a
- * square — it is a real logo with proportions, and a stretched party emblem on
- * campaign material is the kind of thing people notice.
- */
-function drawBand(ctx, band, logo, W, H) {
+function drawLegacyBand(ctx, band, logo, W, H) {
   const top = band.y * H
-
   ctx.save()
   ctx.fillStyle = band.color || '#0E0E0E'
   ctx.fillRect(0, top, W, H - top)
-
   if (band.accent) {
     ctx.fillStyle = band.accent
     ctx.fillRect(0, top, W, Math.max(2, (band.accentH || 0.005) * H))
   }
-
   if (logo && band.logo) {
-    const boxW = band.logo.w * W
-    const scale = boxW / logo.width
-    const drawW = boxW
-    const drawH = logo.height * scale
-    const x = band.logo.x * W
-    // Centred in the band rather than aligned to the type, so it reads as a
-    // mark on the strip and not as a bullet before the name.
-    const y = top + (H - top - drawH) / 2
-    ctx.drawImage(logo, x, y, drawW, drawH)
+    const w = band.logo.w * W
+    const h = logo.height * (w / logo.width)
+    ctx.drawImage(logo, band.logo.x * W, top + (H - top - h) / 2, w, h)
   }
   ctx.restore()
 }
+
+/* ------------------------------------------------------------ public */
 
 /**
  * Compose the whole poster.
@@ -182,132 +412,115 @@ function drawBand(ctx, band, logo, W, H) {
  * @param {object}            opts
  * @param {HTMLCanvasElement} opts.canvas
  * @param {object}            opts.poster       entry from src/data/posters.js
- * @param {HTMLImageElement}  opts.artwork      the base artwork, already loaded
- * @param {HTMLImageElement=} opts.person       the cut-out, already loaded
+ * @param {CanvasImageSource} opts.artwork      the base artwork, loaded
+ * @param {object|CanvasImageSource=} opts.person  {canvas, cut} from
+ *        removeBackground, or a plain image if the cut-out failed
  * @param {string}            opts.name
  * @param {string}            opts.designation
+ * @param {CanvasImageSource=} opts.logo        the party mark
  * @param {number=}           opts.scale        1 = full artwork resolution
  */
-export function renderPoster({
-  canvas,
-  poster,
-  artwork,
-  person,
-  name,
-  designation,
-  logo,
-  scale = 1,
-}) {
+export function renderPoster({ canvas, poster, artwork, person, name, designation, logo, scale = 1 }) {
   const W = Math.round(poster.width * scale)
   const H = Math.round(poster.height * scale)
   canvas.width = W
   canvas.height = H
-
   const ctx = canvas.getContext('2d')
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
-
-  /*
-   * Artwork, band, person, type — in that order.
-   *
-   * For the 22A poster the artwork is the CLEANED one: its white silhouette and
-   * its placeholder name were both painted out in preprocessing, so there is
-   * nothing underneath the person to show through and nothing under the type to
-   * collide with. That poster has no `band` — its footer is part of the artwork.
-   */
   ctx.drawImage(artwork, 0, 0, W, H)
 
-  /*
-   * A poster published from the admin panel has no footer of its own, because
-   * what was uploaded is a plain event image. One is drawn here so the name has
-   * somewhere legible to sit whatever the artwork behind it looks like — light,
-   * dark or busy. Drawn BEFORE the person, so the person stands in front of it
-   * exactly as the 22A figure overlaps its bands.
-   */
-  if (poster.band) drawBand(ctx, poster.band, logo, W, H)
+  const nm = String(name || '').trim()
+  const ds = String(designation || '').trim()
 
-  if (person) coverInto(ctx, person, poster.photoSlot, W, H)
+  if (poster.templateVersion >= 3) {
+    renderTemplate3(ctx, poster, person, nm, ds, logo, W, H)
+    return canvas
+  }
 
-  drawFittedLine(ctx, name, poster.name, W, H)
-  drawFittedLine(ctx, designation, poster.designation, W, H)
-
+  // Templates 1–2 and the hand-measured built-in poster.
+  if (poster.band) drawLegacyBand(ctx, poster.band, logo, W, H)
+  const p = asPerson(person)
+  if (p && poster.photoSlot) {
+    const box = placeInSlot(poster.photoSlot, p, W, H)
+    const slotFoot = (poster.photoSlot.y + poster.photoSlot.h) * H
+    drawPersonWithCuts(ctx, p, box, W, H, { shadow: false, hiddenBottom: slotFoot >= H - 1 })
+  }
+  drawLegacyLine(ctx, nm, poster.name, W, H)
+  drawLegacyLine(ctx, ds, poster.designation, W, H)
   return canvas
 }
 
 /**
- * The social card for a poster somebody has personalised.
+ * The link-preview card for a poster somebody has made: 1200x630.
  *
- * WHY A SEPARATE IMAGE FROM THE POSTER
- * The poster is 2048x2560 and about a megabyte. Crawlers want roughly 1.91:1
- * and a couple of hundred KB; handed the poster itself, WhatsApp renders no
- * preview at all and everything else crops it wherever it likes. So the card is
- * made deliberately rather than left to chance.
+ * The WHOLE poster, standing in the middle of a blurred, darkened copy of
+ * itself. An earlier card sliced a strip off the bottom, which put the name
+ * and designation front and centre in every WhatsApp preview — the office
+ * wanted the poster itself to be what people see, so that is what it shows.
  *
- * WHY THE BOTTOM OF THE POSTER
- * A 1.91:1 slice off the bottom is not a compromise — it is the half that
- * carries everything personal. Measured against this artwork it contains the
- * date band, the yellow slogan band, the whole of the photo slot (which starts
- * at y 0.629, inside the slice's 0.580), and the name, designation and party
- * mark. The headline is the only thing lost, and og:title carries that in
- * words. Shrinking the entire poster into a letterbox instead would show the
- * person about forty pixels tall, which defeats the point of the card.
- *
- * WHY IN THE BROWSER
- * Two reasons, and the second is decisive. The cut-out person exists only here —
- * it is never uploaded. And this text is Telugu: the browser shapes it
- * correctly, whereas the Python that builds the static campaign cards runs on a
- * Pillow without raqm and would reorder the conjuncts.
- *
- * @param {object}            opts
- * @param {HTMLCanvasElement} opts.canvas  destination, resized in place
- * @param {CanvasImageSource} opts.source  the finished poster canvas
- * @param {number=}           opts.width
- * @param {number=}           opts.height
+ * `fromTop` keeps the older behaviour for a CAMPAIGN's own card, where the
+ * top of the artwork (the headline) is the right thing to show.
  */
 export function renderShareCard({ canvas, source, width = 1200, height = 630, fromTop = false }) {
   canvas.width = width
   canvas.height = height
-
-  const sw = source.width
-  const sh = source.height
-  // The tallest bottom-anchored slice of the poster that has the card's aspect.
-  let cropH = Math.round(sw * (height / width))
-  let cropW = sw
-  if (cropH > sh) {
-    // A poster wider than the card's aspect: centre-crop instead of running off
-    // the top. Not reachable with the current artwork, but a poster added later
-    // should not silently produce a broken card.
-    cropH = sh
-    cropW = Math.round(sh * (width / height))
-  }
-  const sx = Math.round((sw - cropW) / 2)
-  /*
-   * Bottom by default, top on request — and which one is right depends entirely
-   * on what the card is for.
-   *
-   * A card for somebody's OWN poster takes the bottom, because that is where
-   * their face and their name are and that is the whole point of it. A card for
-   * the CAMPAIGN takes the top, because that is where the event image says what
-   * the campaign is about; the bottom would show an empty name band and a photo
-   * slot nobody has filled in yet.
-   */
-  const sy = fromTop ? 0 : sh - cropH
-
   const ctx = canvas.getContext('2d')
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
-  ctx.drawImage(source, sx, sy, cropW, cropH, 0, 0, width, height)
+  const sw = source.width
+  const sh = source.height
+
+  if (fromTop) {
+    let cropH = Math.round(sw * (height / width))
+    let cropW = sw
+    if (cropH > sh) {
+      cropH = sh
+      cropW = Math.round(sh * (width / height))
+    }
+    ctx.drawImage(source, Math.round((sw - cropW) / 2), 0, cropW, cropH, 0, 0, width, height)
+    return canvas
+  }
+
+  const cover = Math.max(width / sw, height / sh)
+  ctx.save()
+  ctx.filter = 'blur(24px) brightness(0.5) saturate(1.15)'
+  ctx.drawImage(source, (width - sw * cover) / 2, (height - sh * cover) / 2, sw * cover, sh * cover)
+  ctx.restore()
+
+  const h = height * 0.94
+  const w = h * (sw / sh)
+  ctx.save()
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'
+  ctx.shadowBlur = 28
+  ctx.drawImage(source, (width - w) / 2, (height - h) / 2, w, h)
+  ctx.restore()
   return canvas
 }
 
-/** Canvas -> JPEG Blob. JPEG, not PNG: a 1600x2000 PNG of a photographic poster
- *  runs to several megabytes, which is painful to share on a phone. */
+/** Canvas -> JPEG Blob. */
 export function canvasToJpeg(canvas, quality = 0.92) {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error('Could not export the poster.'))),
       'image/jpeg',
-      quality
+      quality,
     )
   })
+}
+
+/**
+ * The best-quality JPEG that fits under a byte ceiling.
+ *
+ * Starts high and steps down only as far as it has to — a quiet poster ships
+ * at 0.93, a very busy one might need 0.85. Never below `floor`.
+ */
+export async function canvasToJpegUnder(canvas, maxBytes, { start = 0.93, floor = 0.72 } = {}) {
+  let q = start
+  let blob = await canvasToJpeg(canvas, q)
+  while (blob.size > maxBytes && q > floor) {
+    q = Math.max(floor, q - 0.05)
+    blob = await canvasToJpeg(canvas, q)
+  }
+  return blob
 }

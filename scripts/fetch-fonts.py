@@ -46,6 +46,15 @@ FAMILIES = [
     ("Playfair Display", "wght@600;700;800;900", {"latin", "latin-ext"}),
     ("Inter", "wght@400;500;600;700", {"latin", "latin-ext"}),
     ("Noto Sans Telugu", "wght@400;500;600", {"telugu", "latin"}),
+    # Poster type only — the name and designation drawn onto campaign posters.
+    # Chosen by rendering the same name in a dozen Telugu faces: at 800 it is
+    # the one that reads as designed poster lettering rather than UI text, and
+    # its Latin is drawn to match, so an English name on the same bar does not
+    # look pasted in from another font. Never loaded by ordinary pages — the
+    # poster renderer asks for it by name, and unicode-range keeps it lazy.
+    # Asked for as a RANGE: it is a variable font, so 700 and 800 are the same
+    # file, and listing the weights separately would ship that file twice.
+    ("Anek Telugu", "wght@700..800", {"telugu", "latin"}),
 ]
 
 
@@ -55,13 +64,31 @@ def fetch(url: str) -> bytes:
         return r.read()
 
 
+# The stylesheet the app actually imports (src/styles/index.css pulls it in).
+CSS_OUT = ROOT / "src" / "styles" / "fonts.css"
+
+
 def main() -> int:
+    """
+    python scripts/fetch-fonts.py                      every family, CSS rewritten
+    python scripts/fetch-fonts.py --only "Anek Telugu" one family, its blocks
+                                                       replaced in place
+
+    --only exists so adding a family does not re-download every other one.
+    Google revises font binaries from time to time, and a full refetch would
+    quietly swap the site's existing faces for newer cuts as a side effect.
+    """
+    only = None
+    if "--only" in sys.argv:
+        only = sys.argv[sys.argv.index("--only") + 1]
     OUT.mkdir(parents=True, exist_ok=True)
     blocks: list[str] = []
     seen: set[str] = set()
     total = 0
 
     for family, axis, subsets in FAMILIES:
+        if only and family != only:
+            continue
         css_url = (
             "https://fonts.googleapis.com/css2?family="
             + family.replace(" ", "+")
@@ -84,13 +111,15 @@ def main() -> int:
                 continue
 
             for face in re.findall(r"@font-face\s*\{[^}]*\}", chunk):
-                weight = re.search(r"font-weight:\s*(\d+)", face).group(1)
+                # "700" for a static face; "700 800" for a variable one asked
+                # for as a range, which is one file covering both weights.
+                weight = re.search(r"font-weight:\s*(\d+(?:\s+\d+)?)", face).group(1)
                 style = re.search(r"font-style:\s*(\w+)", face).group(1)
                 url = re.search(r"url\((https://[^)]+\.woff2)\)", face).group(1)
                 rng = re.search(r"unicode-range:\s*([^;]+);", face)
 
                 slug = family.lower().replace(" ", "-")
-                name = f"{slug}-{weight}-{subset}.woff2"
+                name = f"{slug}-{weight.replace(' ', '-')}-{subset}.woff2"
                 if name in seen:
                     continue
                 seen.add(name)
@@ -129,7 +158,16 @@ def main() -> int:
         " * `script-src 'self'` blocked, leaving every webfont un-applied.\n"
         " */\n\n"
     )
-    (OUT / "fonts.css").write_text(header + "\n\n".join(blocks) + "\n", encoding="utf-8")
+    if only:
+        # Keep every other family's blocks exactly as they are.
+        existing = CSS_OUT.read_text(encoding="utf-8")
+        kept = [
+            b
+            for b in re.findall(r"@font-face\s*\{[^}]*\}", existing)
+            if f"font-family: '{only}';" not in b
+        ]
+        blocks = kept + blocks
+    CSS_OUT.write_text(header + "\n\n".join(blocks) + "\n", encoding="utf-8")
 
     print(f"\n{len(blocks)} faces, {total / 1024:.0f} KB total -> public/fonts/")
     return 0
