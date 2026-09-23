@@ -484,6 +484,151 @@ function fastGuidedFilter(R, G, B, prior, w, h, r, eps, sub = 4) {
 }
 
 /**
+ * Keep the person whose poster this is, and drop everyone else in the frame.
+ *
+ * THIS IS THE ACCURACY FIX, and it took a while to see because it does not look
+ * like a segmentation error. The selfie segmenter is doing its job correctly: it
+ * segments PEOPLE, and a supporter's photograph usually has other people in it —
+ * someone's shoulder at the edge of a rally, a second figure at a function. All
+ * of them come back as "person", so a stranger's white shirt was being composited
+ * onto the poster, and because it was cut off by the edge of the photograph it
+ * arrived as a hard vertical line with no object behind it to explain the shape.
+ *
+ * Feathering that line only blurs somebody else's shoulder. The answer is not to
+ * soften it but to not include it: label the connected regions of the matte and
+ * keep one.
+ *
+ * WHICH ONE. Not simply the largest — a bystander standing closer to the camera
+ * can out-measure the subject. Each region is scored by its area weighted toward
+ * the middle of the frame, since the person a photograph is OF is the person it
+ * is pointed at. That is the same assumption the label-picking above rests on,
+ * and it is the one that has held up throughout this file.
+ *
+ * The labelling runs at a LOW threshold on purpose. Hair is semi-transparent, and
+ * at a high threshold a head's wisps are not connected to the head — they would
+ * be scored as their own tiny regions and thrown away, undoing the whole reason
+ * the guided filter is here.
+ */
+function keepMainSubject(alpha, w, h) {
+  const PRESENT = 0.08
+  const labels = new Int32Array(w * h).fill(-1)
+  const stack = new Int32Array(w * h)
+  const regions = []
+
+  for (let seed = 0; seed < labels.length; seed += 1) {
+    if (labels[seed] !== -1 || alpha[seed] < PRESENT) continue
+
+    const id = regions.length
+    let area = 0
+    let score = 0
+    let top = 0
+    stack[top++] = seed
+    labels[seed] = id
+
+    // Iterative, not recursive: a megapixel region would blow the call stack.
+    while (top > 0) {
+      const i = stack[--top]
+      const x = i % w
+      const y = (i / w) | 0
+      area += 1
+
+      /*
+       * Weight toward the middle, and toward the lower half.
+       *
+       * Horizontal because the subject is what the camera was aimed at.
+       * Vertical because a portrait's subject occupies the bottom of the frame
+       * while bystanders tend to appear as heads and shoulders along the top.
+       */
+      const cx = 1 - Math.abs(x / w - 0.5) * 2
+      const cy = 0.4 + 0.6 * (y / h)
+      score += cx * cx * cy
+
+      if (x > 0 && labels[i - 1] === -1 && alpha[i - 1] >= PRESENT) { labels[i - 1] = id; stack[top++] = i - 1 }
+      if (x < w - 1 && labels[i + 1] === -1 && alpha[i + 1] >= PRESENT) { labels[i + 1] = id; stack[top++] = i + 1 }
+      if (y > 0 && labels[i - w] === -1 && alpha[i - w] >= PRESENT) { labels[i - w] = id; stack[top++] = i - w }
+      if (y < h - 1 && labels[i + w] === -1 && alpha[i + w] >= PRESENT) { labels[i + w] = id; stack[top++] = i + w }
+    }
+    regions.push({ id, area, score })
+  }
+
+  if (regions.length <= 1) return
+
+  let best = regions[0]
+  for (const r of regions) if (r.score > best.score) best = r
+
+  for (let i = 0; i < alpha.length; i += 1) {
+    if (labels[i] !== best.id) alpha[i] = 0
+  }
+}
+
+/**
+ * Clear half-opaque haze that is nowhere near the subject.
+ *
+ * Isolating the largest region removes a bystander standing apart. It cannot
+ * remove one whose shoulder TOUCHES the subject's, because at the low threshold
+ * the labelling uses — low on purpose, so hair stays attached to the head — the
+ * two are one region. What was left behind was a translucent ghost of somebody
+ * else's arm, with a hard edge where the photograph ended.
+ *
+ * The distinction that works is not connectedness but distance combined with
+ * opacity. Hair is faint AND within a few tens of pixels of a solid head.
+ * Leftover background is faint and a long way from anything solid. So the
+ * distance to the nearest confidently-solid pixel is measured, and faint pixels
+ * are faded out as that distance grows. Solid pixels are never touched, so no
+ * part of the actual person is at risk.
+ *
+ * Distance comes from a two-pass chamfer transform — an approximation, accurate
+ * to a few percent, and linear in the number of pixels rather than the quadratic
+ * cost of measuring properly. Good enough by a wide margin for a falloff curve.
+ */
+function suppressDetachedHaze(alpha, w, h) {
+  const SOLID = 0.65
+  const NEAR = 12 // fully kept within this many px of something solid
+  const FAR = 44 // gone by here
+  const BIG = 1e9
+
+  const dist = new Float32Array(w * h)
+  for (let i = 0; i < dist.length; i += 1) dist[i] = alpha[i] >= SOLID ? 0 : BIG
+
+  // Forward pass: up and left neighbours.
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const i = y * w + x
+      let d = dist[i]
+      if (x > 0) d = Math.min(d, dist[i - 1] + 1)
+      if (y > 0) d = Math.min(d, dist[i - w] + 1)
+      if (x > 0 && y > 0) d = Math.min(d, dist[i - w - 1] + 1.414)
+      if (x < w - 1 && y > 0) d = Math.min(d, dist[i - w + 1] + 1.414)
+      dist[i] = d
+    }
+  }
+  // Backward pass: down and right.
+  for (let y = h - 1; y >= 0; y -= 1) {
+    for (let x = w - 1; x >= 0; x -= 1) {
+      const i = y * w + x
+      let d = dist[i]
+      if (x < w - 1) d = Math.min(d, dist[i + 1] + 1)
+      if (y < h - 1) d = Math.min(d, dist[i + w] + 1)
+      if (x < w - 1 && y < h - 1) d = Math.min(d, dist[i + w + 1] + 1.414)
+      if (x > 0 && y < h - 1) d = Math.min(d, dist[i + w - 1] + 1.414)
+      dist[i] = d
+    }
+  }
+
+  for (let i = 0; i < alpha.length; i += 1) {
+    if (alpha[i] >= SOLID) continue
+    const d = dist[i]
+    if (d <= NEAR) continue
+    if (d >= FAR) {
+      alpha[i] = 0
+      continue
+    }
+    const t = 1 - (d - NEAR) / (FAR - NEAR)
+    alpha[i] *= t * t * (3 - 2 * t)
+  }
+}
+
+/**
  * Fade the matte out where the SUBJECT runs off the edge of the photograph.
  *
  * This is the defect people actually notice, and it is not a segmentation
@@ -741,6 +886,8 @@ export async function removeBackground(img) {
     alpha[i] = c <= 0 ? 0 : c >= 1 ? 1 : c
   }
 
+  keepMainSubject(alpha, rw, rh)
+  suppressDetachedHaze(alpha, rw, rh)
   featherFrameEdges(alpha, rw, rh)
   softenMatte(alpha, rw, rh)
 
