@@ -15,6 +15,7 @@
  *
  * Runs automatically as part of `npm run build`.
  */
+import { parseManifest } from '../server/campaign-manifest.js'
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join } from 'node:path'
@@ -44,8 +45,8 @@ const posterSlugs = (() => {
 
   let published = []
   try {
-    const manifest = JSON.parse(
-      readFileSync(join(ROOT, 'src', 'data', 'campaign-posters.json'), 'utf8'),
+    const manifest = parseManifest(
+      readFileSync(join(ROOT, 'src', 'data', 'campaign-posters.js'), 'utf8'),
     )
     published = (manifest.posters ?? []).map((p) => p.slug).filter(Boolean)
   } catch {

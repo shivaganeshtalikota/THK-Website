@@ -31,7 +31,9 @@
  * @property {number} height      Artwork pixel height.
  */
 
-import campaigns from './campaign-posters.json'
+// A JS module, not JSON: the serverless functions import this file in plain
+// Node, which rejects a bare JSON import. See server/campaign-manifest.js.
+import campaigns from './campaign-posters.js'
 
 /**
  * Posters published from the admin panel.

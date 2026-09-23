@@ -1,5 +1,6 @@
 import { requireAdmin } from '../server/admin-auth.js'
 import { imageSize, isJpeg } from '../server/image.js'
+import { MANIFEST_PATH, parseManifest, serializeManifest } from '../server/campaign-manifest.js'
 
 /**
  * Publishes a new campaign poster from the admin panel.
@@ -34,7 +35,7 @@ import { imageSize, isJpeg } from '../server/image.js'
 
 const REPO = process.env.GITHUB_REPO || 'shivaganeshtalikota/THK-Website'
 const BRANCH = process.env.GITHUB_BRANCH || 'main'
-const MANIFEST = 'src/data/campaign-posters.json'
+const MANIFEST = MANIFEST_PATH
 const POSTER_DIR = 'public/posters'
 
 /** Vercel caps a function request body at ~4.5MB and both images travel base64,
@@ -105,7 +106,7 @@ export default async function handler(req, res) {
   let manifest = { posters: [] }
   if (manifestFile?.content) {
     try {
-      manifest = JSON.parse(Buffer.from(manifestFile.content, 'base64').toString('utf8'))
+      manifest = parseManifest(Buffer.from(manifestFile.content, 'base64').toString('utf8'))
     } catch {
       return res.status(500).json({ error: 'The poster manifest could not be read.' })
     }
@@ -201,7 +202,7 @@ export default async function handler(req, res) {
     path: MANIFEST,
     mode: '100644',
     type: 'blob',
-    content: `${JSON.stringify(manifest, null, 2)}\n`,
+    content: serializeManifest(manifest),
   })
 
   try {

@@ -19,6 +19,7 @@
  * emitted: Google deprecated and now ignores <image:caption>, <image:title>,
  * <image:license> and <image:geo_location>, so writing them would be noise.
  */
+import { parseManifest } from '../server/campaign-manifest.js'
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
@@ -64,8 +65,8 @@ const posterSlugs = (() => {
 
   let published = []
   try {
-    const manifest = JSON.parse(
-      readFileSync(join(ROOT, 'src', 'data', 'campaign-posters.json'), 'utf8'),
+    const manifest = parseManifest(
+      readFileSync(join(ROOT, 'src', 'data', 'campaign-posters.js'), 'utf8'),
     )
     published = (manifest.posters ?? []).map((p) => p.slug).filter(Boolean)
   } catch {
