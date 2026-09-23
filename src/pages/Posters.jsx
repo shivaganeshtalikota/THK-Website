@@ -91,7 +91,7 @@ const Posters = () => {
                   <div className="relative overflow-hidden bg-ink-100">
                     <img
                       src={posterImage(poster)}
-                      alt={`${poster.titleEn} — Telugu Desam Party campaign poster`}
+                      alt={t(`${poster.titleEn} — Telugu Desam Party campaign poster`)}
                       width={poster.width}
                       height={poster.height}
                       loading={i === 0 ? 'eager' : 'lazy'}

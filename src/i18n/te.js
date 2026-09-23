@@ -39,6 +39,7 @@ export const te = {
   'Political Leadership': 'రాజకీయ నాయకత్వం',
   'Community Service': 'సామాజిక సేవ',
   Media: 'మీడియా',
+  Posters: 'పోస్టర్లు',
   Contact: 'సంప్రదించండి',
   'Get Involved': 'భాగస్వాములు కండి',
   'Send a message →': 'సందేశం పంపండి →',
@@ -765,4 +766,119 @@ export const te = {
   '11 October 2025': '2025 అక్టోబరు 11',
   'September 2025': '2025 సెప్టెంబరు',
   '22 March 2026': '2026 మార్చి 22',
+  // ---- Posters: the listing page ------------------------------------------
+  // This is the page most likely to be forwarded on WhatsApp, and the people it
+  // was built for — party workers putting their own name on campaign artwork —
+  // read Telugu. It is worth more per word than almost anything else here.
+  //
+  // పోస్టర్, షేర్, డౌన్‌లోడ్, బ్యాక్‌గ్రౌండ్ and ఫోటో are kept as the loanwords a
+  // worker already uses on a phone. Coining Telugu for them would be more
+  // correct and less usable, and a poster nobody can operate spreads nothing.
+  'Campaign Material': 'ప్రచార సామగ్రి',
+  'Create your own poster': 'మీ సొంత పోస్టర్ తయారు చేసుకోండి',
+  'Pick a campaign, add your photo and your name, and download a poster ready to share. It takes under a minute, it works on a phone, and your photo never leaves your device.':
+    'ఒక ప్రచారాన్ని ఎంచుకోండి, మీ ఫోటో, మీ పేరు చేర్చండి — షేర్ చేయడానికి సిద్ధంగా ఉన్న పోస్టర్‌ను డౌన్‌లోడ్ చేసుకోండి. నిమిషం కంటే తక్కువ సమయం, ఫోన్‌లోనే పని చేస్తుంది, మీ ఫోటో మీ పరికరాన్ని వదిలి ఎక్కడికీ వెళ్లదు.',
+  'Current Campaigns': 'ప్రస్తుత ప్రచారాలు',
+  'Choose a poster': 'పోస్టర్‌ను ఎంచుకోండి',
+  'More will be added as campaigns run. Tap a poster to put your name on it.':
+    'ప్రచారాలు సాగే కొద్దీ మరిన్ని పోస్టర్లు చేరతాయి. మీ పేరు చేర్చాలంటే పోస్టర్‌పై నొక్కండి.',
+  'Create your poster': 'మీ పోస్టర్ తయారు చేసుకోండి',
+  'Your photo': 'మీ ఫోటో',
+  'Nothing is uploaded': 'ఏదీ అప్‌లోడ్ కాదు',
+  'The poster is built inside your own browser. Your photograph is never sent to this website or to anyone else, there is no account, and nothing is stored. Close the tab and it is gone.':
+    'పోస్టర్ మీ సొంత బ్రౌజర్‌లోనే తయారవుతుంది. మీ ఫోటో ఈ వెబ్‌సైట్‌కు గానీ, మరెవరికీ గానీ ఎప్పుడూ పంపబడదు; ఖాతా అవసరం లేదు, ఏదీ నిల్వ ఉండదు. ట్యాబ్ మూసేస్తే అది పోతుంది.',
+
+  // ---- Posters: the campaign itself ---------------------------------------
+  // The headline below is NOT a translation of the English above it. The
+  // English is a gloss, written for the listing and for share-card alt text;
+  // the Telugu is the line actually printed on the artwork, as it appears in
+  // src/data/posters.js. A reader shown a retranslation would be reading a
+  // different sentence from the one in the picture beside it.
+  'A lock on patta land — the confusion created in the name of 22A':
+    'పట్టా భూమికి తాళం! 22A పేరుతో గందరగోళం!',
+  'A lock on patta land — the confusion created in the name of 22A — Telugu Desam Party campaign poster':
+    'పట్టా భూమికి తాళం! 22A పేరుతో గందరగోళం! — తెలుగుదేశం పార్టీ ప్రచార పోస్టర్',
+  'Farmers holding valid patta land are finding their titles flagged under Section 22A and their registrations blocked. The poster carries the date of the protest and the party’s stand alongside it.':
+    'చెల్లుబాటు అయ్యే పట్టా భూమి ఉన్న రైతుల హక్కు పత్రాలపై 22A సెక్షన్ కింద గుర్తు పడుతోంది, రిజిస్ట్రేషన్లు ఆగిపోతున్నాయి. నిరసన తేదీని, దానితో పాటు పార్టీ వైఖరిని ఈ పోస్టర్ తెలియజేస్తుంది.',
+
+  // ---- Poster studio: the form --------------------------------------------
+  'All posters': 'అన్ని పోస్టర్లు',
+  'Your poster': 'మీ పోస్టర్',
+  '1. Your photograph': '1. మీ ఫోటో',
+  'A clear, front-facing photo from the chest up works best. The background is removed automatically, so it does not need to be plain — but good light helps.':
+    'ఛాతీ పై భాగం కనిపించేలా, ముఖం నేరుగా ఉన్న స్పష్టమైన ఫోటో బాగా పని చేస్తుంది. బ్యాక్‌గ్రౌండ్ దానంతట అదే తొలగిపోతుంది కాబట్టి అది సాదాగా ఉండాల్సిన అవసరం లేదు — కానీ మంచి వెలుతురు ఉంటే ఫలితం బాగుంటుంది.',
+  'Choose photo': 'ఫోటో ఎంచుకోండి',
+  'Change photo': 'ఫోటో మార్చండి',
+  'Photo added': 'ఫోటో చేర్చబడింది',
+  '2. Your name': '2. మీ పేరు',
+  'e.g. Talikota Hari Krishna': 'ఉదా. తాళికోట హరికృష్ణ',
+  'Telugu or English — both work.': 'తెలుగు లేదా ఇంగ్లిష్ — రెండూ పని చేస్తాయి.',
+  '3. Your designation': '3. మీ హోదా',
+  'e.g. iTDP Telangana State President': 'ఉదా. ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షుడు',
+  'Generate image': 'బొమ్మ తయారు చేయండి',
+  'Generating…': 'తయారవుతోంది…',
+  'Add a photo and your name to generate the poster.':
+    'పోస్టర్ తయారు చేయడానికి ఫోటో, మీ పేరు చేర్చండి.',
+  'Add your name to generate the poster.': 'పోస్టర్ తయారు చేయడానికి మీ పేరు చేర్చండి.',
+
+  // ---- Poster studio: what it is doing, and what went wrong ---------------
+  // Somebody waiting on a background removal, or stopped by a photograph that
+  // is too big, is exactly the person who gives up on the tool. These are the
+  // lines that keep them in it, so none of them is left to fall back to
+  // English. The one exception is the browser's own exception text printed
+  // under the cut-out warning: it is whatever the device said, and there is
+  // nothing to key it on.
+  'Getting the background remover ready…': 'బ్యాక్‌గ్రౌండ్ తొలగించే సాధనం సిద్ధమవుతోంది…',
+  'Removing the background…': 'బ్యాక్‌గ్రౌండ్ తొలగిస్తోంది…',
+  'Generating your poster…': 'మీ పోస్టర్ తయారవుతోంది…',
+  'Background removed. Add your name, then press Generate.':
+    'బ్యాక్‌గ్రౌండ్ తొలగించబడింది. మీ పేరు చేర్చి, “బొమ్మ తయారు చేయండి” నొక్కండి.',
+  'Image generated. Download or share it below.':
+    'బొమ్మ సిద్ధమైంది. కింద డౌన్‌లోడ్ చేసుకోండి లేదా షేర్ చేయండి.',
+  'The background could not be removed on this device, so your photo is being used as it is. The poster still works — or try a photo with a plainer background.':
+    'ఈ పరికరంలో బ్యాక్‌గ్రౌండ్ తొలగించడం కుదరలేదు, అందుకే మీ ఫోటోను ఉన్నది ఉన్నట్టుగానే వాడుతున్నాం. పోస్టర్ ఇప్పటికీ పని చేస్తుంది — లేదా సాదా బ్యాక్‌గ్రౌండ్ ఉన్న ఫోటోతో ప్రయత్నించండి.',
+  'The poster artwork could not be loaded. Please refresh and try again.':
+    'పోస్టర్ చిత్రాన్ని లోడ్ చేయలేకపోయాం. పేజీని రిఫ్రెష్ చేసి మళ్లీ ప్రయత్నించండి.',
+  'That file is not an image. Please choose a photograph.':
+    'ఆ ఫైల్ బొమ్మ కాదు. దయచేసి ఒక ఫోటోను ఎంచుకోండి.',
+  'That photograph is very large. Please choose one under 12 MB.':
+    'ఆ ఫోటో చాలా పెద్దది. 12 MB కంటే తక్కువ ఉన్న ఫోటోను ఎంచుకోండి.',
+  'The poster could not be generated. Please try again.':
+    'పోస్టర్ తయారు చేయడం కుదరలేదు. మళ్లీ ప్రయత్నించండి.',
+  'The poster could not be saved. Please try again.':
+    'పోస్టర్‌ను భద్రపరచడం కుదరలేదు. మళ్లీ ప్రయత్నించండి.',
+  'Could not copy the link. Select and copy it by hand.':
+    'లింక్‌ను కాపీ చేయడం కుదరలేదు. దాన్ని ఎంచుకుని మీరే కాపీ చేసుకోండి.',
+
+  // ---- Poster studio: saving and sharing ----------------------------------
+  'Save and share': 'భద్రపరచుకోండి, షేర్ చేయండి',
+  'Download JPG': 'JPG డౌన్‌లోడ్ చేయండి',
+  Share: 'షేర్ చేయండి',
+  'Share the link': 'లింక్‌ను షేర్ చేయండి',
+  'Anyone who opens your link sees the poster with your name on it, and can make their own in a minute.':
+    'మీ లింక్ తెరిచిన వారికి మీ పేరుతో ఉన్న పోస్టర్ కనిపిస్తుంది; వారు కూడా నిమిషంలో తమ సొంత పోస్టర్ తయారు చేసుకోవచ్చు.',
+  'Your poster link': 'మీ పోస్టర్ లింక్',
+  Copied: 'కాపీ అయ్యింది',
+  WhatsApp: 'వాట్సాప్',
+  'Post on X': 'X లో పోస్ట్ చేయండి',
+  Facebook: 'ఫేస్‌బుక్',
+  'WhatsApp, X and Facebook share the link. To send the poster image itself, use Share — your phone’s share sheet passes the picture straight to WhatsApp, Instagram or anywhere else.':
+    'వాట్సాప్, X, ఫేస్‌బుక్ లింక్‌ను మాత్రమే పంపుతాయి. పోస్టర్ బొమ్మనే పంపాలంటే “షేర్ చేయండి” వాడండి — మీ ఫోన్ షేర్ షీట్ ఆ బొమ్మను నేరుగా వాట్సాప్, ఇన్‌స్టాగ్రామ్ లేదా మరెక్కడికైనా పంపుతుంది.',
+  'Edit and generate again': 'మార్చి మళ్లీ తయారు చేయండి',
+  'Your photograph is never uploaded. The poster is made inside your browser, on your own device, and nothing is stored anywhere. The link you share carries only your name and designation — not your photo.':
+    'మీ ఫోటో ఎప్పుడూ అప్‌లోడ్ కాదు. పోస్టర్ మీ సొంత పరికరంలో, మీ బ్రౌజర్‌లోనే తయారవుతుంది; ఎక్కడా ఏదీ నిల్వ ఉండదు. మీరు షేర్ చేసే లింక్‌లో మీ పేరు, హోదా మాత్రమే ఉంటాయి — మీ ఫోటో ఉండదు.',
+
+  // ---- Posters: page titles and search descriptions -----------------------
+  // The studio's title and description are keyed with the campaign's issue tag
+  // ("22A") already substituted in, for the same reason the legal pages above
+  // are keyed that way: Telugu does not put the tag where English does. A
+  // campaign added later needs two more lines here, and until it has them its
+  // title falls back to English — the documented behaviour, not a fault.
+  'Create Your Own Poster': 'మీ సొంత పోస్టర్ తయారు చేసుకోండి',
+  'Put your own name, designation and photo on a Telugu Desam Party campaign poster, and share it. Free, works on a phone, nothing is uploaded to a server.':
+    'తెలుగుదేశం పార్టీ ప్రచార పోస్టర్‌పై మీ సొంత పేరు, హోదా, ఫోటో చేర్చి షేర్ చేయండి. ఉచితం, ఫోన్‌లోనే పని చేస్తుంది, సర్వర్‌కు ఏదీ అప్‌లోడ్ కాదు.',
+  'Create your poster — 22A': 'మీ పోస్టర్ తయారు చేసుకోండి — 22A',
+  'Put your name, designation and photo on the 22A campaign poster and share it. Free, works on a phone, and your photo never leaves your device.':
+    '22A ప్రచార పోస్టర్‌పై మీ పేరు, హోదా, ఫోటో చేర్చి షేర్ చేయండి. ఉచితం, ఫోన్‌లోనే పని చేస్తుంది, మీ ఫోటో మీ పరికరాన్ని వదిలి ఎక్కడికీ వెళ్లదు.',
+
 }

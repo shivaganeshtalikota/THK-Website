@@ -611,9 +611,17 @@ const PosterStudio = () => {
                   </>
                 )}
 
+                {/*
+                  Translated on the way to the screen, not at each setError.
+
+                  The dictionary is keyed by the English sentence itself, so
+                  every failure path can go on raising plain English — which is
+                  what keeps it readable where it is written — and the lookup
+                  happens once, here, where the text actually renders.
+                */}
                 {error && (
                   <p className="rounded-sm bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
-                    {error}
+                    {t(error)}
                   </p>
                 )}
 
