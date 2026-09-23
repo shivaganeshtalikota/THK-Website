@@ -13,52 +13,61 @@ import {
   FaWandMagicSparkles,
   FaCopy,
   FaPenToSquare,
-  FaImage,
+  FaRotateRight,
 } from 'react-icons/fa6'
 import Link from '../components/LocaleLink'
 import Seo from '../components/Seo'
 import NotFound from './NotFound'
 import { site } from '../data/site'
 import { posterBySlug, posterImage, posterCard } from '../data/posters'
-import { loadImage, ensureFonts, renderPoster, renderShareCard, canvasToJpeg } from '../lib/renderPoster'
-import { buildShareUrl, readShareToken, shareMessage, uploadShareCard } from '../lib/posterLink'
+import {
+  loadImage,
+  ensureFonts,
+  renderPoster,
+  renderShareCard,
+  canvasToJpeg,
+  canvasToJpegUnder,
+} from '../lib/renderPoster'
+import { buildShareUrl, shareMessage, uploadPoster } from '../lib/posterLink'
 import { useT } from '../i18n/useT'
 
 /**
  * Put your name and face on a campaign poster, then share it.
  *
- * THE FLOW IS DELIBERATE. Photo, name, designation, then a Generate button —
- * not a live preview that updates as you type. The office asked for it this
- * way and they were right: a poster that assembles itself while somebody is
- * still half-way through typing their designation looks broken, and there is no
- * moment where the thing is finished. A button gives that moment, and
- * "Generated" is what people wait for before they will share something.
+ * THE FLOW. Photo, name, designation, then Generate. The office asked for a
+ * button rather than a live preview: a poster that re-assembles itself while
+ * somebody is half-way through typing looks broken, and "Generated" is the
+ * moment people wait for before they share.
  *
- * THE PHOTOGRAPH IS NEVER UPLOADED. It is read from the file input, segmented
- * by a model running in this tab, and drawn to a canvas. It never reaches a
- * server. That is the right default when you are asking people for a picture of
- * their own face, and it is also the only way this is affordable at campaign
- * volume, where every hosted background-removal API bills per image.
+ * AFTER GENERATE, the poster is saved straight away so the link can show it —
+ * with a progress bar, because on a phone a 2MB upload takes long enough that
+ * silence looks like a hang. Download works immediately and never waits for
+ * the upload. If saving fails the poster is still finished; only the link is
+ * affected, and there is a retry.
  *
- * ONE THING CAN LEAVE, AND ONLY IF ASKED. Link-preview crawlers do not run
- * JavaScript and will not read a data: URL, so for WhatsApp to show somebody
- * their own poster that image has to exist at a URL when the crawler asks.
- * Pressing "Show my poster in the link preview" uploads the 1200x630 card —
- * never the photograph, never the full-size poster — which is stored under an
- * unguessable id and deleted after thirty days. Nobody who does not press it
- * uploads anything, which is what lets the copy on this page stay literally
- * true rather than carefully worded.
+ * THE PHOTOGRAPH ITSELF IS NEVER UPLOADED. It is read from the file input,
+ * matted by a model running in this tab, and drawn to a canvas. What is stored
+ * for the link is the finished poster and its preview card, for thirty days.
  */
 
-const MAX_UPLOAD_BYTES = 12 * 1024 * 1024
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+/** Under Vercel's request cap once the card rides along. */
+const MAX_POSTER_BYTES = 3.9 * 1024 * 1024
+
+const STAGE_LABEL = {
+  reading: 'Reading your photo…',
+  model: 'Getting the background remover ready — the first time takes a little longer…',
+  matting: 'Finding you in the photo…',
+  refining: 'Sharpening the edges…',
+  finishing: 'Finishing the cut-out…',
+  generating: 'Generating your poster…',
+}
 
 const PosterStudio = () => {
   const { slug } = useParams()
-  const { search, pathname } = useLocation()
+  const { pathname } = useLocation()
   const t = useT()
   const poster = posterBySlug(slug)
-  // The site prerenders an English and a Telugu tree; a link made on /te must
-  // send its recipients to /te, and tell the crawler so.
   const lang = pathname.startsWith('/te') ? 'te' : 'en'
 
   const canvasRef = useRef(null)
@@ -70,96 +79,40 @@ const PosterStudio = () => {
   const [name, setName] = useState('')
   const [designation, setDesignation] = useState('')
   const [ready, setReady] = useState(false)
-  const [busy, setBusy] = useState(null) // null | 'loading-model' | 'cutting' | 'generating'
-  const [photoState, setPhotoState] = useState('none') // none | raw | done | failed
-  const [cutoutError, setCutoutError] = useState(null)
+  const [busy, setBusy] = useState(null) // null | stage key
+  const [photoState, setPhotoState] = useState('none') // none | done | failed
   const [error, setError] = useState(null)
   const [generated, setGenerated] = useState(false)
-  const [shareUrl, setShareUrl] = useState('')
   const [copied, setCopied] = useState(false)
-  const [cardId, setCardId] = useState(null)
-  const [cardError, setCardError] = useState(null)
-  // Previews need server-side storage. Until that is configured the offer is
-  // withdrawn rather than left as a button that cannot work — nothing else on
-  // the page depends on it, so there is nothing to explain to a visitor.
-  const [previewOffered, setPreviewOffered] = useState(true)
+
+  // The saved copy the link points at.
+  const [save, setSave] = useState({ state: 'idle', progress: 0, id: null, error: null })
 
   /*
-   * Which generation of the poster is on screen.
-   *
-   * Uploading the preview card is asynchronous and invalidate() is not, so
-   * without this the sequence "opt in, edit the name, generate again" can land
-   * an id belonging to the PREVIOUS poster on the new link — a preview showing
-   * a name the poster no longer carries, which is the worst possible failure
-   * here because nobody would notice until it had been forwarded. Every
-   * invalidation bumps the counter and a reply from a superseded generation is
-   * dropped.
+   * Which generation of the poster is on screen. Saving is asynchronous and
+   * editing is not, so without this "generate, edit the name, generate again"
+   * could attach the FIRST poster's id to the SECOND poster's link — a link
+   * showing a name the poster no longer carries.
    */
   const generation = useRef(0)
 
-  /*
-   * The social card for this campaign.
-   *
-   * Memoised because Seo keys its whole head block on the identity of this
-   * prop; a fresh object literal every render would rebuild and re-apply every
-   * meta tag on the page on every keystroke in the name field.
-   */
   const ogImage = useMemo(
     () =>
-      poster
-        ? {
-            url: `${site.url}${posterCard(poster)}`,
-            width: 1200,
-            height: 630,
-            alt: poster.titleEn,
-          }
-        : undefined,
-    [poster]
+      poster ? { url: `${site.url}${posterCard(poster)}`, width: 1200, height: 630, alt: poster.titleEn } : undefined,
+    [poster],
   )
 
-  /*
-   * Somebody arriving from a shared link gets that person's name already in the
-   * fields. They are one photo away from their own poster, which is the whole
-   * point of the link existing.
-   */
-  useEffect(() => {
-    const from = readShareToken(search)
-    if (from) {
-      setName(from.name)
-      setDesignation(from.designation)
-    }
-  }, [search])
-
-  const draw = useCallback(() => {
-    if (!canvasRef.current || !artworkRef.current || !poster) return
-    renderPoster({
-      canvas: canvasRef.current,
-      poster,
-      artwork: artworkRef.current,
-      person: personRef.current,
-      name,
-      designation,
-      logo: logoRef.current,
-      scale: 1,
-    })
-  }, [poster, name, designation])
-
-  // Load artwork + fonts, then draw the blank poster so the page shows the real
-  // artwork straight away rather than a placeholder.
+  // Artwork, party mark and fonts; then the blank poster, so the page shows
+  // the real artwork at once rather than a placeholder.
   useEffect(() => {
     if (!poster) return
     let alive = true
     ;(async () => {
       try {
-        /*
-         * The party mark is only fetched for a poster whose footer this code
-         * draws. The 22A artwork has its own baked in, so loading a second copy
-         * to paint over it would be a wasted request on the page most likely to
-         * be opened on a slow phone.
-         */
+        const needsMark = poster.templateVersion >= 3 || Boolean(poster.band)
         const [art, mark] = await Promise.all([
           loadImage(posterImage(poster)),
-          poster.band ? loadImage('/tdp-logo.png') : Promise.resolve(null),
+          needsMark ? loadImage('/tdp-logo.png') : Promise.resolve(null),
           ensureFonts(),
         ])
         if (!alive) return
@@ -175,8 +128,6 @@ const PosterStudio = () => {
     }
   }, [poster])
 
-  // Before generating, the canvas shows the artwork alone — the name is not
-  // drawn until they ask for it, so the Generate button has something to do.
   useEffect(() => {
     if (!ready || generated) return
     renderPoster({
@@ -187,18 +138,21 @@ const PosterStudio = () => {
       name: '',
       designation: '',
       logo: logoRef.current,
-      scale: 1,
     })
   }, [ready, generated, poster])
 
-  /** Any edit after generating invalidates the result. */
+  /** Any edit after generating invalidates the result and its link. */
   const invalidate = useCallback(() => {
     generation.current += 1
     setGenerated(false)
-    setShareUrl('')
     setCopied(false)
-    setCardId(null)
-    setCardError(null)
+    setSave({ state: 'idle', progress: 0, id: null, error: null })
+  }, [])
+
+  /** Start the model download while the file picker is open. */
+  const openPicker = useCallback(() => {
+    fileInputRef.current?.click()
+    import('../lib/removeBackground').then((m) => m.prewarm()).catch(() => {})
   }, [])
 
   const handleFile = useCallback(
@@ -206,41 +160,66 @@ const PosterStudio = () => {
       if (!file) return
       setError(null)
       invalidate()
-
       if (!file.type.startsWith('image/')) {
         setError('That file is not an image. Please choose a photograph.')
         return
       }
       if (file.size > MAX_UPLOAD_BYTES) {
-        setError('That photograph is very large. Please choose one under 12 MB.')
+        setError('That photograph is very large. Please choose one under 25 MB.')
         return
       }
-
+      setBusy('reading')
       const url = URL.createObjectURL(file)
       try {
         const img = await loadImage(url)
         personRef.current = img
-        setPhotoState('raw')
-
-        setBusy('loading-model')
-        const { removeBackground } = await import('../lib/removeBackground')
-        setBusy('cutting')
-        const cut = await removeBackground(img)
-        personRef.current = cut
-        setPhotoState('done')
-        setCutoutError(null)
-      } catch (err) {
-        console.error('Background removal failed:', err)
-        // Not an error state: the poster still works with the photo as-is.
-        setCutoutError(err?.message ? String(err.message).slice(0, 180) : null)
-        setPhotoState('failed')
+        try {
+          const { removeBackground } = await import('../lib/removeBackground')
+          personRef.current = await removeBackground(img, { onStage: (s) => setBusy(s) })
+          setPhotoState('done')
+        } catch (err) {
+          console.error('Background removal failed:', err)
+          // Not fatal: the poster still works with the photograph as it is.
+          setPhotoState('failed')
+        }
+      } catch {
+        setError('That photograph could not be opened. Please try another one.')
+        setPhotoState('none')
       } finally {
         setBusy(null)
         URL.revokeObjectURL(url)
       }
     },
-    [invalidate]
+    [invalidate],
   )
+
+  /** Save the poster so the link shows it. Safe to call again to retry. */
+  const saveForLink = useCallback(async () => {
+    if (!canvasRef.current || !poster) return
+    const mine = generation.current
+    setSave({ state: 'saving', progress: 0, id: null, error: null })
+    try {
+      const card = document.createElement('canvas')
+      renderShareCard({ canvas: card, source: canvasRef.current })
+      const [cardBlob, posterBlob] = await Promise.all([
+        canvasToJpeg(card, 0.86),
+        canvasToJpegUnder(canvasRef.current, MAX_POSTER_BYTES),
+      ])
+      const id = await uploadPoster({
+        slug: poster.slug,
+        card: cardBlob,
+        poster: posterBlob,
+        onProgress: (f) => {
+          if (generation.current === mine) setSave((s) => ({ ...s, progress: f }))
+        },
+      })
+      if (generation.current !== mine) return
+      setSave({ state: 'saved', progress: 1, id, error: null })
+    } catch (err) {
+      if (generation.current !== mine) return
+      setSave({ state: 'failed', progress: 0, id: null, error: err?.message || 'Your poster could not be saved just now.' })
+    }
+  }, [poster])
 
   const canGenerate = ready && photoState !== 'none' && name.trim().length > 0 && !busy
 
@@ -249,31 +228,30 @@ const PosterStudio = () => {
     setBusy('generating')
     setError(null)
     try {
-      // A frame so the button's own state paints before the main thread is
-      // taken by a 2048x2560 composite.
+      // One frame so the button's state paints before a 2048x2560 composite
+      // takes the main thread.
       await new Promise((r) => requestAnimationFrame(() => r()))
-      draw()
-      setShareUrl(
-        buildShareUrl({
-          origin: typeof window !== 'undefined' ? window.location.origin : site.url,
-          slug: poster.slug,
-          name: name.trim(),
-          designation: designation.trim(),
-          lang,
-        })
-      )
-      setGenerated(true)
-      // Bring the finished poster into view on a phone, where the controls sit
-      // below it and the result would otherwise be off-screen.
-      requestAnimationFrame(() => {
-        document.getElementById('poster-result')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      renderPoster({
+        canvas: canvasRef.current,
+        poster,
+        artwork: artworkRef.current,
+        person: personRef.current,
+        name: name.trim(),
+        designation: designation.trim(),
+        logo: logoRef.current,
       })
+      generation.current += 1
+      setGenerated(true)
+      requestAnimationFrame(() => {
+        document.getElementById('poster-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+      saveForLink()
     } catch {
       setError('The poster could not be generated. Please try again.')
     } finally {
       setBusy(null)
     }
-  }, [canGenerate, draw, name, designation, poster, lang])
+  }, [canGenerate, poster, name, designation, saveForLink])
 
   const filename = `${poster?.slug ?? 'poster'}-${(name || 'poster')
     .toLowerCase()
@@ -283,7 +261,7 @@ const PosterStudio = () => {
   const download = useCallback(async () => {
     if (!canvasRef.current) return
     try {
-      const blob = await canvasToJpeg(canvasRef.current, 0.92)
+      const blob = await canvasToJpeg(canvasRef.current, 0.95)
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -291,83 +269,30 @@ const PosterStudio = () => {
       document.body.appendChild(a)
       a.click()
       a.remove()
-      // Revoked late: revoking synchronously can cancel the download in some
-      // browsers before they have read the blob.
       setTimeout(() => URL.revokeObjectURL(url), 10_000)
     } catch {
       setError('The poster could not be saved. Please try again.')
     }
   }, [filename])
 
-  /**
-   * Opt in to showing this poster in the link preview.
-   *
-   * Deliberately a button rather than something that happens on Generate. It is
-   * the only moment in this whole tool when anything leaves the device, so it
-   * should be a thing somebody chose, with the consequence written next to it —
-   * not a default they would have to notice to avoid.
-   *
-   * A failure here is not a failure of the poster. The poster is finished,
-   * downloadable and shareable as a file regardless; only the preview image is
-   * affected, and the plain link keeps working. So this reports and stops
-   * rather than unwinding anything.
-   */
-  const enablePreview = useCallback(async () => {
-    if (!canvasRef.current || !poster || busy) return
-    const mine = generation.current
-    setBusy('preview')
-    setCardError(null)
-    try {
-      const card = document.createElement('canvas')
-      renderShareCard({ canvas: card, source: canvasRef.current })
-      // 0.86 rather than the poster's 0.92: this is a thumbnail in a chat app,
-      // and the byte ceiling matters more here than the last few percent of
-      // quality. It lands around 150KB.
-      const blob = await canvasToJpeg(card, 0.86)
-      const id = await uploadShareCard({ blob, slug: poster.slug })
-      // Dropped if the poster changed underneath us — see `generation`.
-      if (generation.current !== mine) return
-      setCardId(id)
-      setShareUrl(
-        buildShareUrl({
-          origin: typeof window !== 'undefined' ? window.location.origin : site.url,
-          slug: poster.slug,
-          name: name.trim(),
-          designation: designation.trim(),
-          cardId: id,
-          lang,
-        })
-      )
-    } catch (err) {
-      if (generation.current !== mine) return
-      if (err?.status === 501 || err?.status === 503) {
-        setPreviewOffered(false)
-        setCardError(null)
-        return
-      }
-      setCardError(err?.message || 'The link preview could not be saved just now.')
-    } finally {
-      setBusy((b) => (b === 'preview' ? null : b))
-    }
-  }, [poster, busy, name, designation, lang])
+  const shareUrl = poster
+    ? buildShareUrl({
+        origin: typeof window !== 'undefined' ? window.location.origin : site.url,
+        slug: poster.slug,
+        id: save.id,
+        lang,
+      })
+    : ''
 
-  const canShareFiles =
-    typeof navigator !== 'undefined' && typeof navigator.canShare === 'function'
+  const canShareFiles = typeof navigator !== 'undefined' && typeof navigator.canShare === 'function'
 
-  /**
-   * The native share sheet, which sends the actual JPG.
-   *
-   * This is the only route that reaches Instagram from a web page — Instagram
-   * accepts no image from a URL, so a "share to Instagram" button is not a thing
-   * that can be built. The sheet hands the file to whichever app is chosen, and
-   * carries the link alongside it.
-   */
+  /** The phone's share sheet, with the actual JPG — the only route to Instagram. */
   const shareNative = useCallback(async () => {
     if (!canvasRef.current) return
     try {
       const blob = await canvasToJpeg(canvasRef.current, 0.92)
       const file = new File([blob], filename, { type: 'image/jpeg' })
-      const text = shareMessage({ poster, name, url: shareUrl })
+      const text = shareMessage({ poster, url: shareUrl })
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text })
         return
@@ -376,7 +301,7 @@ const PosterStudio = () => {
     } catch (err) {
       if (err?.name !== 'AbortError') await download()
     }
-  }, [download, filename, poster, name, shareUrl])
+  }, [download, filename, poster, shareUrl])
 
   const copyLink = useCallback(async () => {
     try {
@@ -403,27 +328,17 @@ const PosterStudio = () => {
     ],
   }
 
-  const msg = shareMessage({ poster, name, url: shareUrl })
+  const msg = shareMessage({ poster, url: shareUrl })
   const waHref = `https://wa.me/?text=${encodeURIComponent(msg)}`
-  const xHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    `${poster.title}\n\n`
-  )}&url=${encodeURIComponent(shareUrl)}`
+  const xHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${poster.title}\n\n`)}&url=${encodeURIComponent(shareUrl)}`
   const fbHref = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
-
-  const busyLabel =
-    busy === 'loading-model'
-      ? t('Getting the background remover ready…')
-      : busy === 'cutting'
-        ? t('Removing the background…')
-        : busy === 'generating'
-          ? t('Generating your poster…')
-          : null
+  const linkReady = save.state === 'saved' || save.state === 'failed'
 
   return (
     <>
       <Seo
         title={`Create your poster — ${poster.issue}`}
-        description={`Put your name, designation and photo on the ${poster.issue} campaign poster and share it. Free, works on a phone, and the poster is made on your own device.`}
+        description={`Put your name, designation and photo on the ${poster.issue} campaign poster and share it. Free, works on a phone, and your photo never leaves your device.`}
         image={ogImage}
         schema={schema}
       />
@@ -440,41 +355,32 @@ const PosterStudio = () => {
 
           <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-14">
             {/* ---- Preview ------------------------------------------------ */}
-            <div id="poster-result" className="lg:col-span-6 xl:col-span-7">
+            <div id="poster-result" className="scroll-mt-24 lg:col-span-6 xl:col-span-7">
               <div className="sticky top-[calc(var(--nav-h)+1.5rem)]">
                 <div
-                  className={`overflow-hidden rounded-sm border bg-white shadow-frame transition-colors ${
+                  className={`relative overflow-hidden rounded-sm border bg-white shadow-frame transition-colors ${
                     generated ? 'border-brand-500' : 'hairline'
                   }`}
                 >
-                  <canvas
-                    ref={canvasRef}
-                    className="block h-auto w-full"
-                    aria-label={t('Your poster')}
-                    role="img"
-                  />
+                  <canvas ref={canvasRef} className="block h-auto w-full" aria-label={t('Your poster')} role="img" />
+                  {busy && busy !== 'generating' && (
+                    <div className="absolute inset-0 grid place-items-center bg-ink-950/45 backdrop-blur-[2px]">
+                      <span className="h-10 w-10 animate-spin rounded-full border-[3px] border-white/30 border-t-white" aria-hidden="true" />
+                    </div>
+                  )}
                 </div>
 
-                {busyLabel && (
-                  <p
-                    className="mt-4 flex items-center gap-3 rounded-sm bg-ink-900 px-4 py-3 text-sm text-white"
-                    role="status"
-                  >
-                    <span
-                      className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
-                      aria-hidden="true"
-                    />
-                    {busyLabel}
+                {busy && (
+                  <p className="mt-4 flex items-center gap-3 rounded-sm bg-ink-900 px-4 py-3 text-sm text-white" role="status">
+                    <span className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true" />
+                    {t(STAGE_LABEL[busy] || 'Working…')}
                   </p>
                 )}
 
                 {generated && !busy && (
-                  <p
-                    className="mt-4 flex items-center gap-2.5 rounded-sm bg-brand-500 px-4 py-3 font-sans text-sm font-semibold text-ink-900"
-                    role="status"
-                  >
+                  <p className="mt-4 flex items-center gap-2.5 rounded-sm bg-brand-500 px-4 py-3 font-sans text-sm font-semibold text-ink-900" role="status">
                     <FaCircleCheck className="shrink-0" aria-hidden="true" />
-                    {t('Image generated. Download or share it below.')}
+                    {t('Your poster is ready. Download it or share it below.')}
                   </p>
                 )}
 
@@ -490,12 +396,7 @@ const PosterStudio = () => {
                     <FaTriangleExclamation className="mt-0.5 shrink-0 text-brand-800" aria-hidden="true" />
                     <span>
                       {t(
-                        'The background could not be removed on this device, so your photo is being used as it is. The poster still works — or try a photo with a plainer background.'
-                      )}
-                      {cutoutError && (
-                        <span className="mt-1.5 block font-mono text-[0.7rem] text-ink-500">
-                          {cutoutError}
-                        </span>
+                        'The background could not be removed on this device, so your photo is being used as it is. The poster still works — or try a photo with a plainer background.',
                       )}
                     </span>
                   </p>
@@ -512,113 +413,83 @@ const PosterStudio = () => {
               </p>
 
               <div className="mt-10 space-y-8">
-                {/*
-                  The form disappears once the poster exists.
-
-                  Leaving the fields on screen beside a finished poster invites
-                  somebody to change one and walk away with a download that no
-                  longer matches what they are looking at. After Generate the
-                  column holds the result and the ways to send it, and nothing
-                  else. "Edit and generate again" brings the form back with
-                  every value still in it.
-                */}
                 {!generated && (
                   <>
-                {/* 1 — photo */}
-                <div>
-                  <label
-                    htmlFor="poster-photo"
-                    className="block font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700"
-                  >
-                    {t('1. Your photograph')}
-                  </label>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-600">
-                    {t(
-                      'A clear, front-facing photo from the chest up works best. The background is removed automatically, so it does not need to be plain — but good light helps.'
-                    )}
-                  </p>
+                    {/* 1 — photo */}
+                    <div>
+                      <label htmlFor="poster-photo" className="block font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">
+                        {t('1. Your photograph')}
+                      </label>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-600">
+                        {t(
+                          'A clear, front-facing photo from the chest up works best. The background is removed automatically, so it does not need to be plain — but good light helps.',
+                        )}
+                      </p>
+                      <input
+                        ref={fileInputRef}
+                        id="poster-photo"
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={(e) => {
+                          handleFile(e.target.files?.[0])
+                          e.target.value = ''
+                        }}
+                      />
+                      <button type="button" onClick={openPicker} className="btn-outline mt-4" disabled={!ready || !!busy}>
+                        <FaCamera aria-hidden="true" />
+                        {photoState === 'none' ? t('Choose photo') : t('Change photo')}
+                      </button>
+                      {photoState !== 'none' && !busy && (
+                        <p className="mt-3 flex items-center gap-2 text-sm text-ink-600">
+                          <FaCircleCheck className="shrink-0 text-brand-700" aria-hidden="true" />
+                          {t('Photo added')}
+                        </p>
+                      )}
+                    </div>
 
-                  <input
-                    ref={fileInputRef}
-                    id="poster-photo"
-                    type="file"
-                    accept="image/*"
-                    className="sr-only"
-                    onChange={(e) => handleFile(e.target.files?.[0])}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="btn-outline mt-4"
-                    disabled={!ready || !!busy}
-                  >
-                    <FaCamera aria-hidden="true" />
-                    {photoState === 'none' ? t('Choose photo') : t('Change photo')}
-                  </button>
-                  {photoState !== 'none' && !busy && (
-                    <p className="mt-3 flex items-center gap-2 text-sm text-ink-600">
-                      <FaCircleCheck className="shrink-0 text-brand-700" aria-hidden="true" />
-                      {t('Photo added')}
-                    </p>
-                  )}
-                </div>
+                    {/* 2 — name */}
+                    <div>
+                      <label htmlFor="poster-name" className="block font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">
+                        {t('2. Your name')}
+                      </label>
+                      <input
+                        id="poster-name"
+                        type="text"
+                        value={name}
+                        maxLength={44}
+                        onChange={(e) => {
+                          setName(e.target.value)
+                          invalidate()
+                        }}
+                        placeholder={t('e.g. Talikota Hari Krishna')}
+                        className="mt-3 w-full rounded-sm border border-ink-200 bg-white px-4 py-3.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15"
+                      />
+                      <p className="mt-2 text-xs text-ink-500">{t('Telugu or English — both work.')}</p>
+                    </div>
 
-                {/* 2 — name */}
-                <div>
-                  <label
-                    htmlFor="poster-name"
-                    className="block font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700"
-                  >
-                    {t('2. Your name')}
-                  </label>
-                  <input
-                    id="poster-name"
-                    type="text"
-                    value={name}
-                    maxLength={44}
-                    onChange={(e) => {
-                      setName(e.target.value)
-                      invalidate()
-                    }}
-                    placeholder={t('e.g. Talikota Hari Krishna')}
-                    className="mt-3 w-full rounded-sm border border-ink-200 bg-white px-4 py-3.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15"
-                  />
-                  <p className="mt-2 text-xs text-ink-500">{t('Telugu or English — both work.')}</p>
-                </div>
-
-                {/* 3 — designation */}
-                <div>
-                  <label
-                    htmlFor="poster-designation"
-                    className="block font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700"
-                  >
-                    {t('3. Your designation')}
-                  </label>
-                  <input
-                    id="poster-designation"
-                    type="text"
-                    value={designation}
-                    maxLength={54}
-                    onChange={(e) => {
-                      setDesignation(e.target.value)
-                      invalidate()
-                    }}
-                    placeholder={t('e.g. iTDP Telangana State President')}
-                    className="mt-3 w-full rounded-sm border border-ink-200 bg-white px-4 py-3.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15"
-                  />
-                </div>
-
+                    {/* 3 — designation */}
+                    <div>
+                      <label htmlFor="poster-designation" className="block font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">
+                        {t('3. Your designation')}
+                      </label>
+                      <input
+                        id="poster-designation"
+                        type="text"
+                        value={designation}
+                        maxLength={70}
+                        onChange={(e) => {
+                          setDesignation(e.target.value)
+                          invalidate()
+                        }}
+                        placeholder={t('e.g. iTDP Telangana State President')}
+                        className="mt-3 w-full rounded-sm border border-ink-200 bg-white px-4 py-3.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15"
+                      />
+                      <p className="mt-2 text-xs text-ink-500">{t('A long designation goes onto two lines by itself.')}</p>
+                    </div>
                   </>
                 )}
 
-                {/*
-                  Translated on the way to the screen, not at each setError.
-
-                  The dictionary is keyed by the English sentence itself, so
-                  every failure path can go on raising plain English — which is
-                  what keeps it readable where it is written — and the lookup
-                  happens once, here, where the text actually renders.
-                */}
                 {error && (
                   <p className="rounded-sm bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
                     {t(error)}
@@ -629,12 +500,7 @@ const PosterStudio = () => {
                 <div className={generated ? '' : 'border-t hairline pt-8'}>
                   {!generated ? (
                     <>
-                      <button
-                        type="button"
-                        onClick={generate}
-                        className="btn-brand w-full justify-center sm:w-auto"
-                        disabled={!canGenerate}
-                      >
+                      <button type="button" onClick={generate} className="btn-brand w-full justify-center sm:w-auto" disabled={!canGenerate}>
                         <FaWandMagicSparkles aria-hidden="true" />
                         {busy === 'generating' ? t('Generating…') : t('Generate image')}
                       </button>
@@ -647,11 +513,9 @@ const PosterStudio = () => {
                       )}
                     </>
                   ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-7">
                       <div>
-                        <p className="font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">
-                          {t('Save and share')}
-                        </p>
+                        <p className="font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">{t('Save it')}</p>
                         <div className="mt-4 flex flex-wrap gap-3">
                           <button type="button" onClick={download} className="btn-primary">
                             <FaDownload aria-hidden="true" />
@@ -667,98 +531,73 @@ const PosterStudio = () => {
                       </div>
 
                       <div>
-                        <p className="font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">
-                          {t('Share the link')}
-                        </p>
-                        <p className="mt-2 text-sm leading-relaxed text-ink-600">
-                          {t(
-                            'Anyone who opens your link sees the poster with your name on it, and can make their own in a minute.'
-                          )}
-                        </p>
+                        <p className="font-sans text-xs font-semibold uppercase tracking-[0.08em] text-ink-700">{t('Share the link')}</p>
 
-                        {/*
-                          The one place in this tool where anything leaves the
-                          device, so it is a button with the consequence written
-                          beside it rather than a default somebody would have to
-                          notice in order to avoid.
-                        */}
-                        {previewOffered && !cardId ? (
-                          <div className="mt-4 rounded-sm border border-ink-200 bg-ink-50 p-4">
-                            <button
-                              type="button"
-                              onClick={enablePreview}
-                              disabled={busy === 'preview'}
-                              className="btn-outline"
-                            >
-                              <FaImage aria-hidden="true" />
-                              {busy === 'preview'
-                                ? t('Saving the preview…')
-                                : t('Show my poster in the link preview')}
-                            </button>
-                            <p className="mt-3 text-xs leading-relaxed text-ink-600">
-                              {t(
-                                'Without this, WhatsApp and Facebook show the campaign poster next to your link. Turn it on and they show yours instead — which means uploading a small copy of the finished poster. Not your photograph, and not the full-size image. It is deleted after 30 days.'
-                              )}
+                        {save.state === 'saving' && (
+                          <div className="mt-4 rounded-sm border border-ink-200 bg-white p-4" role="status" aria-live="polite">
+                            <p className="flex items-center gap-2.5 text-sm text-ink-700">
+                              <span className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-ink-300 border-t-ink-900" aria-hidden="true" />
+                              {t('Saving your poster for the link…')} {Math.round(save.progress * 100)}%
                             </p>
+                            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink-100">
+                              <div className="h-full rounded-full bg-brand-500 transition-[width] duration-200" style={{ width: `${Math.max(4, save.progress * 100)}%` }} />
+                            </div>
                           </div>
-                        ) : cardId ? (
-                          <p className="mt-4 flex items-start gap-2 rounded-sm border border-brand-500 bg-brand-50 p-4 text-xs leading-relaxed text-ink-700">
-                            <FaCircleCheck className="mt-0.5 shrink-0 text-brand-600" aria-hidden="true" />
-                            <span>
-                              {t(
-                                'Your poster will show in the link preview. The copy that makes that possible is deleted after 30 days.'
-                              )}
-                            </span>
-                          </p>
-                        ) : null}
+                        )}
 
-                        {cardError && (
-                          <p
-                            className="mt-3 rounded-sm bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900"
-                            role="alert"
-                          >
-                            {cardError}{' '}
-                            {t('Your poster is finished — only the link preview is affected.')}
+                        {save.state === 'saved' && (
+                          <p className="mt-4 flex items-start gap-2 text-sm text-ink-700">
+                            <FaCircleCheck className="mt-0.5 shrink-0 text-brand-700" aria-hidden="true" />
+                            {t('Anyone who opens your link sees this poster, full size, and can make their own.')}
                           </p>
                         )}
 
-                        <div className="mt-3 flex items-stretch gap-2">
-                          <input
-                            readOnly
-                            value={shareUrl}
-                            onFocus={(e) => e.target.select()}
-                            aria-label={t('Your poster link')}
-                            className="min-w-0 flex-1 rounded-sm border border-ink-200 bg-white px-3 py-2.5 font-mono text-xs text-ink-700"
-                          />
-                          <button
-                            type="button"
-                            onClick={copyLink}
-                            className="tap-round shrink-0 rounded-sm bg-ink-900 px-4 font-sans text-xs font-semibold uppercase tracking-[0.08em] text-white hover:bg-ink-800"
-                          >
-                            {copied ? t('Copied') : <FaCopy aria-hidden="true" />}
-                          </button>
-                        </div>
+                        {save.state === 'failed' && (
+                          <div className="mt-4 rounded-sm bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
+                            <p>
+                              {t(save.error)} {t('The link below opens the campaign page instead.')}
+                            </p>
+                            <button type="button" onClick={saveForLink} className="mt-2 inline-flex items-center gap-1.5 font-semibold underline underline-offset-2">
+                              <FaRotateRight className="text-xs" aria-hidden="true" />
+                              {t('Try saving again')}
+                            </button>
+                          </div>
+                        )}
 
-                        <div className="mt-4 flex flex-wrap gap-3">
-                          <a href={waHref} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                            <FaWhatsapp aria-hidden="true" />
-                            {t('WhatsApp')}
-                          </a>
-                          <a href={xHref} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                            <FaXTwitter aria-hidden="true" />
-                            {t('Post on X')}
-                          </a>
-                          <a href={fbHref} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                            <FaFacebookF aria-hidden="true" />
-                            {t('Facebook')}
-                          </a>
-                        </div>
-
-                        <p className="mt-4 text-xs leading-relaxed text-ink-500">
-                          {t(
-                            'WhatsApp, X and Facebook share the link. To send the poster image itself, use Share — your phone’s share sheet passes the picture straight to WhatsApp, Instagram or anywhere else.'
-                          )}
-                        </p>
+                        {linkReady && (
+                          <>
+                            <div className="mt-4 flex items-stretch gap-2">
+                              <input
+                                readOnly
+                                value={shareUrl}
+                                onFocus={(e) => e.target.select()}
+                                aria-label={t('Your poster link')}
+                                className="min-w-0 flex-1 rounded-sm border border-ink-200 bg-white px-3 py-2.5 font-mono text-xs text-ink-700"
+                              />
+                              <button
+                                type="button"
+                                onClick={copyLink}
+                                className="tap-round shrink-0 rounded-sm bg-ink-900 px-4 font-sans text-xs font-semibold uppercase tracking-[0.08em] text-white hover:bg-ink-800"
+                              >
+                                {copied ? t('Copied') : <FaCopy aria-hidden="true" />}
+                              </button>
+                            </div>
+                            <div className="mt-4 flex flex-wrap gap-3">
+                              <a href={waHref} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                                <FaWhatsapp aria-hidden="true" />
+                                {t('WhatsApp')}
+                              </a>
+                              <a href={xHref} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                                <FaXTwitter aria-hidden="true" />
+                                {t('Post on X')}
+                              </a>
+                              <a href={fbHref} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                                <FaFacebookF aria-hidden="true" />
+                                {t('Facebook')}
+                              </a>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       <button
@@ -775,7 +614,7 @@ const PosterStudio = () => {
 
                 <p className="rounded-sm bg-ink-900 px-4 py-3.5 text-xs leading-relaxed text-white/75">
                   {t(
-                    'Your photograph is never uploaded. The background is removed and the poster is composed inside your browser, on your own device. The link you share carries your name and designation. If you ask for your poster to show in the link preview, a small copy of the finished poster is stored so chat apps can fetch it, and it is deleted after 30 days — your original photograph still never leaves this device, and there is no account.'
+                    'Your photograph is never uploaded: the background is removed and the poster is made inside your browser. When you generate a poster, the finished image is saved so your link can show it, and it is deleted after 30 days. There is no account.',
                   )}
                 </p>
               </div>

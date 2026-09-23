@@ -1,30 +1,30 @@
 import { posterBySlug } from '../src/data/posters.js'
 
 /**
- * The page a shared poster link points at. Reached as /s/<slug>/<id> via a
- * rewrite, and it exists for one reason: to hand crawlers a preview card that
- * is specific to the poster the sender actually made.
+ * The page a shared poster link points at: /s/<slug>/<id>, via a rewrite.
  *
- * WHY A NEW PATH INSTEAD OF /posters/<slug>?s=<token>
- * Because that cannot work, and it was checked rather than assumed. On Vercel
- * the filesystem is consulted before rewrites, and query strings are not part
- * of the cache key for a static file, so the prerendered page wins whatever the
- * query string says. Fetched from production as facebookexternalhit, the bare
- * poster URL and the same URL with ?s= return byte-identical HTML with the same
- * ETag. Making the existing path dynamic would mean either deleting its
- * prerendered file or putting middleware in front of a page whose inline script
- * is sha256-pinned in the CSP. A path with no static file behind it avoids all
- * of that — and every link already shared keeps working, previewing as the
- * campaign card.
+ * PEOPLE are sent to /posters/<slug>/view?p=<id>, which opens on the poster
+ * itself — full size, with Download, Share, and a "Generate your own" button
+ * that goes to the generator. The form is not shown to somebody who came to
+ * look at a poster.
  *
- * CRAWLERS GET HTML, PEOPLE GET THE EDITOR. Serving different markup to link
- * crawlers is what Meta's own documentation describes for this case; it is not
- * cloaking, since the crawler is shown exactly the thing the human is being
- * sent to. The branch is an allowlist of crawler user agents, and anything
- * else — a person, an unknown bot — is redirected. That ordering matters: the
- * inverse test ("does it look like a browser?") misfires on any crawler that
- * sends a browser-like header, and the failure is a cached wrong preview that
- * cannot be undone.
+ * LINK-PREVIEW CRAWLERS get a tiny HTML page of meta tags whose image is the
+ * card made from that exact poster. Its title is the CAMPAIGN's, not the
+ * sender's name and designation: the office did not want every forwarded link
+ * announcing who made it in the preview text — the poster says that itself.
+ *
+ * WHY A SEPARATE PATH
+ * The campaign page is prerendered, Vercel serves the filesystem before
+ * rewrites, and query strings are not part of a static file's cache key — so
+ * /posters/<slug>?anything previews identically to the bare page, whatever the
+ * query says. A path with nothing static behind it is the way out, and every
+ * link ever shared keeps working.
+ *
+ * Serving crawlers different markup is what Meta documents for this case; the
+ * crawler is shown exactly what the person is sent to. The branch is an
+ * allowlist of card renderers — anything else, person or unknown bot, gets the
+ * redirect, because the opposite test misfires on crawlers with browser-like
+ * user agents and the result is a wrong preview cached for good.
  */
 
 const ID = /^[A-Za-z0-9_-]{22}$/
@@ -52,24 +52,6 @@ const esc = (s) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
-/** Decode the name/designation token. Mirrors src/lib/posterLink.js, on the
- *  server side and defensively: every field here is attacker-supplied. */
-function readToken(token) {
-  if (!token || token.length > 512) return null
-  try {
-    const b64 = String(token).replace(/-/g, '+').replace(/_/g, '/')
-    const json = Buffer.from(b64 + '='.repeat((4 - (b64.length % 4)) % 4), 'base64').toString('utf8')
-    const data = JSON.parse(json)
-    if (!data || typeof data !== 'object') return null
-    return {
-      name: String(data.n || '').slice(0, 80),
-      designation: String(data.d || '').slice(0, 80),
-    }
-  } catch {
-    return null
-  }
-}
-
 /**
  * The site's own origin, never the one the request claims.
  *
@@ -93,11 +75,12 @@ export default async function handler(req, res) {
   const origin = safeOrigin(req)
   const slug = String(req.query.slug || '')
   const id = String(req.query.id || '')
-  const token = String(req.query.s || '')
   const lang = req.query.l === 'te' ? 'te' : 'en'
 
   const poster = posterBySlug(slug)
-  const editor = `${lang === 'te' ? '/te' : ''}/posters/${slug}${token ? `?s=${encodeURIComponent(token)}` : ''}`
+  // Old links also carried ?s=<name token>. It is ignored now: the page shows
+  // the poster, and somebody making their own starts from blank fields.
+  const editor = `${lang === 'te' ? '/te' : ''}/posters/${slug}/view?p=${encodeURIComponent(id)}`
 
   // An unknown poster or a malformed id is not worth a special page.
   if (!poster || !ID.test(id)) {
@@ -137,33 +120,24 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0')
 
   if (!CARD_CRAWLERS.test(ua)) {
-    // A person, or a bot with no preview to render. Send them to the real
-    // editor with the sender's name already filled in — which is the whole
-    // point of the link, and is what the crawler is being told about.
+    // A person, or a bot with no preview to render: to the poster itself.
     return res.redirect(307, editor)
   }
 
-  const from = readToken(token)
-  const who = from?.name?.trim()
   const card = `${origin}/c/${id}.jpg`
 
   /*
-   * og:url is this URL, token and all — not the poster page.
-   *
-   * Facebook treats og:url as canonical and will fold the share onto whatever
-   * it names. Pointing it at /posters/<slug> would silently collapse every
-   * personalised share back onto the campaign card, which is the exact bug this
-   * endpoint exists to avoid, and it would look like the feature simply did not
-   * work.
+   * og:url is this URL, not the campaign page. Facebook treats og:url as
+   * canonical and would otherwise fold every personal share back onto the
+   * campaign's own card.
    */
-  const self = `${origin}/s/${slug}/${id}${token ? `?s=${encodeURIComponent(token)}` : ''}${
-    lang === 'te' ? `${token ? '&' : '?'}l=te` : ''
-  }`
+  const self = `${origin}/s/${slug}/${id}${lang === 'te' ? '?l=te' : ''}`
 
-  const title = who ? `${who} — ${poster.title}` : poster.title
-  const description = who
-    ? `${who} made a poster for the ${poster.issue} campaign. Make yours in under a minute.`
-    : `Put your name and photo on the ${poster.issue} campaign poster and share it.`
+  const title = poster.title
+  const description =
+    lang === 'te'
+      ? `${poster.issue} ప్రచార పోస్టర్. మీ పేరు, ఫోటోతో మీ పోస్టర్ ఒక నిమిషంలో తయారు చేసుకోండి.`
+      : `A poster for the ${poster.issue} campaign. Make your own with your name and photo in a minute.`
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
 

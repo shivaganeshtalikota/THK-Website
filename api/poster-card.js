@@ -4,62 +4,46 @@ import { imageSize, isJpeg } from '../server/image.js'
 import { posterBySlug } from '../src/data/posters.js'
 
 /**
- * Stores the preview card for a poster somebody has personalised, so that chat
- * apps can show it when they forward the link.
+ * Stores a poster somebody has made, so the link they share can show it.
  *
- * WHY THIS EXISTS AT ALL, GIVEN THE REST OF THIS FEATURE UPLOADS NOTHING
- * Link-preview crawlers do not run JavaScript and will not accept a data: URL.
- * For WhatsApp to show somebody's own poster, that image has to be sitting at a
- * URL when the crawler asks. There is no client-side way round it. Everything
- * else stays on the device: the photograph, the segmentation, the compositing.
- * What lands here is the finished 1200x630 card and nothing else — never the
- * original photograph, never the full-resolution poster.
+ * WHAT ARRIVES
+ * Two JPEGs in one request: the finished poster at full resolution — what the
+ * person who opens the link sees, and can download — and a 1200x630 card of it
+ * for link-preview crawlers, which want that shape and a small file. The
+ * photograph the poster was made from never leaves the device; the background
+ * is removed and the poster composed in the browser.
  *
- * AND IT IS OPT-IN. Nothing reaches this endpoint unless the visitor presses
- * "Show my poster in the link preview". Someone who does not press it uploads
- * nothing at all, which is why the page can still promise what it promises.
+ * WHY IT IS NO LONGER OPT-IN
+ * It was: a button asked whether to put the poster in the link preview. The
+ * office found that nobody understood the question and everybody wanted the
+ * answer to be yes — a shared link that opens on the actual poster is the
+ * point of sharing it. So it happens when the poster is generated, with a
+ * plain notice on the page saying what is stored and for how long.
  *
- * WHAT THIS ENDPOINT IS, HONESTLY
- * It accepts an image from anyone and serves it back from this domain. The
- * checks below bound that — a JPEG, exactly card-shaped, small, rate-limited
- * per address, at an unguessable key, deleted after thirty days by an R2
- * lifecycle rule. They do not make it impossible to abuse: nothing here proves
- * the bytes came from this tool rather than from a script that produced a
- * 1200x630 JPEG. Binding uploads to the artwork would mean decoding pixels
- * server-side and comparing them against a fingerprint of the fixed left-hand
- * region of the card; that is the next control worth adding if this is ever
- * abused, and POSTER_CARDS_ENABLED=0 turns the whole thing off in the meantime
- * without a deploy.
+ * WHAT BOUNDS IT
+ * JPEG by magic bytes, the exact dimensions of the campaign's artwork (so an
+ * arbitrary picture cannot be hosted here under this domain), a real campaign
+ * slug, a byte ceiling, a per-address hourly limit, an unguessable id, and an
+ * R2 lifecycle rule that deletes everything under cards/ after thirty days.
+ * POSTER_CARDS_ENABLED=0 turns uploads off without a deploy.
  *
- * Environment (Vercel > Settings > Environment Variables — never in the repo,
- * which is public):
- *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
- *   POSTER_CARDS_ENABLED   optional; set to "0" to refuse new uploads
+ * WHY A RAW BODY
+ * A full-resolution poster is 1–3MB. Base64 inside JSON would inflate that by a
+ * third and push against Vercel's ~4.5MB request cap, so the bytes are sent
+ * as-is: a 4-byte big-endian card length, the card, then the poster.
  */
 
-/** The card is 1200x630 and about 150KB. The ceiling is generous enough for a
- *  busy photograph and far below Vercel's ~4.5MB body cap. */
-const MAX_BYTES = 400 * 1024
-
-/** Base64 inflates by a third, and the JSON wrapper adds a little more. */
-const MAX_BODY_CHARS = Math.ceil((MAX_BYTES * 4) / 3) + 2048
+export const config = { api: { bodyParser: false } }
 
 const CARD_W = 1200
 const CARD_H = 630
+const MAX_CARD = 450 * 1024
+const MAX_POSTER = 4 * 1024 * 1024
+/** Under Vercel's request limit with room for headers. */
+const MAX_BODY = 4.4 * 1024 * 1024
 
-/** Uploads allowed from one address per hour. A supporter makes one poster,
- *  occasionally a handful; a script makes thousands. */
-const RATE_LIMIT = 12
+const RATE_LIMIT = 12 // per address per hour
 
-/**
- * The caller's address, hashed.
- *
- * Hashed rather than stored, because the point is to count repeats, not to
- * keep a record of who made a poster — this is a political site and a list of
- * addresses that generated campaign material is not a thing worth having. The
- * hash is salted with the account id so the keys are meaningless elsewhere, and
- * the counters expire with everything else under the lifecycle rule.
- */
 function addressKey(req) {
   const fwd = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()
   const ip = fwd || req.socket?.remoteAddress || 'unknown'
@@ -69,85 +53,101 @@ function addressKey(req) {
     .slice(0, 24)
 }
 
+/** Read the raw body, refusing — early — anything over the cap. */
+function readBody(req, limit) {
+  return new Promise((resolve, reject) => {
+    if (Buffer.isBuffer(req.body)) return resolve(req.body)
+    const declared = Number(req.headers['content-length'] || 0)
+    if (declared > limit) {
+      const err = new Error('too large')
+      err.status = 413
+      return reject(err)
+    }
+    const chunks = []
+    let size = 0
+    req.on('data', (c) => {
+      size += c.length
+      if (size > limit) {
+        const err = new Error('too large')
+        err.status = 413
+        req.destroy()
+        reject(err)
+        return
+      }
+      chunks.push(c)
+    })
+    req.on('end', () => resolve(Buffer.concat(chunks)))
+    req.on('error', reject)
+  })
+}
+
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store')
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     return res.status(405).json({ error: 'Method not allowed' })
   }
-
   if (process.env.POSTER_CARDS_ENABLED === '0') {
-    return res.status(503).json({ error: 'Link previews are turned off at the moment.' })
+    return res.status(503).json({ error: 'Sharing is turned off at the moment. You can still download your poster.' })
   }
   if (!r2Config()) {
-    return res.status(501).json({ error: 'Card storage is not configured.' })
+    return res.status(501).json({ error: 'Poster storage is not configured.' })
   }
 
-  const body = typeof req.body === 'string' ? safeParse(req.body) : req.body ?? {}
-  // Checked against the real campaigns, not merely against a shape. Accepting
-  // any slug-shaped string would make this a general image host for posters
-  // that do not exist, which is a strictly larger surface for no benefit.
-  const slug = String(body.slug || '').slice(0, 64)
-  if (!/^[a-z0-9-]+$/.test(slug) || !posterBySlug(slug)) {
-    return res.status(400).json({ error: 'Unknown poster.' })
-  }
+  const slug = String(req.query.slug || '').slice(0, 64)
+  const poster = /^[a-z0-9-]+$/.test(slug) ? posterBySlug(slug) : null
+  if (!poster) return res.status(400).json({ error: 'Unknown poster.' })
 
-  const raw = String(body.image || '')
-  if (!raw || raw.length > MAX_BODY_CHARS) {
-    return res.status(413).json({ error: 'That image is too large.' })
-  }
-
-  let buf
+  let body
   try {
-    buf = Buffer.from(raw.includes(',') ? raw.slice(raw.indexOf(',') + 1) : raw, 'base64')
-  } catch {
-    return res.status(400).json({ error: 'That image could not be read.' })
+    body = await readBody(req, MAX_BODY)
+  } catch (err) {
+    return res.status(err.status || 400).json({ error: 'That poster is too large to share. Download it instead.' })
+  }
+  if (body.length < 8) return res.status(400).json({ error: 'Nothing was sent.' })
+
+  const cardLen = body.readUInt32BE(0)
+  if (cardLen < 100 || cardLen > MAX_CARD || 4 + cardLen >= body.length) {
+    return res.status(400).json({ error: 'The upload was malformed.' })
+  }
+  const card = body.subarray(4, 4 + cardLen)
+  const full = body.subarray(4 + cardLen)
+
+  if (!isJpeg(card) || !isJpeg(full)) return res.status(415).json({ error: 'Both images must be JPEGs.' })
+  if (full.length > MAX_POSTER) return res.status(413).json({ error: 'That poster is too large to share.' })
+
+  const cardSize = imageSize(card)
+  if (!cardSize || cardSize.w !== CARD_W || cardSize.h !== CARD_H) {
+    return res.status(400).json({ error: `The preview must be ${CARD_W}x${CARD_H}.` })
+  }
+  // Exactly the campaign's own artwork size: the page can only produce that,
+  // and anything else is not a poster made here.
+  const fullSize = imageSize(full)
+  if (!fullSize || fullSize.w !== poster.width || fullSize.h !== poster.height) {
+    return res.status(400).json({ error: 'That is not a poster from this page.' })
   }
 
-  // The real first bytes, not the declared type and not the filename.
-  if (!isJpeg(buf)) return res.status(415).json({ error: 'The card must be a JPEG.' })
-  if (buf.length > MAX_BYTES) return res.status(413).json({ error: 'That image is too large.' })
-
-  const size = imageSize(buf)
-  if (!size || size.w !== CARD_W || size.h !== CARD_H) {
-    return res.status(400).json({
-      error: `The card must be exactly ${CARD_W}x${CARD_H}.`,
-    })
-  }
-
-  // Rate limit. Counted by listing this hour's markers for the address, which
-  // is racy under a burst and deliberately so: it bounds sustained abuse
-  // without a database, and a few extra cards slipping through a race is a far
-  // smaller problem than another runtime dependency.
   const who = addressKey(req)
-  const hour = new Date().toISOString().slice(0, 13) // YYYY-MM-DDTHH
+  const hour = new Date().toISOString().slice(0, 13)
   const rlPrefix = `rl/${hour}/${who}/`
   try {
     const seen = await r2List(rlPrefix, RATE_LIMIT + 1)
     if (seen.length >= RATE_LIMIT) {
       res.setHeader('Retry-After', '3600')
-      return res.status(429).json({ error: 'Too many posters from this connection. Try again later.' })
+      return res.status(429).json({ error: 'Too many posters from this connection. Try again in an hour — you can still download yours.' })
     }
   } catch {
-    // A failure to count must not become a failure to make a poster.
+    // A failure to count must not become a failure to share.
   }
 
   const id = randomBytes(16).toString('base64url') // 128 bits, unguessable
   try {
-    await r2Put(`cards/${id}.jpg`, buf, 'image/jpeg')
-    // Written after the card, so a failed upload does not spend the allowance.
+    await Promise.all([r2Put(`cards/${id}.jpg`, card, 'image/jpeg'), r2Put(`cards/${id}-p.jpg`, full, 'image/jpeg')])
     r2Put(`${rlPrefix}${Date.now().toString(36)}`, Buffer.from('1'), 'text/plain').catch(() => {})
   } catch (err) {
-    console.error('poster-card upload failed:', err)
-    return res.status(502).json({ error: 'The preview could not be saved. Your poster is unaffected.' })
+    console.error('poster upload failed:', err)
+    return res.status(502).json({ error: 'The poster could not be saved just now. Download it, or try sharing again.' })
   }
 
   return res.status(200).json({ id })
-}
-
-function safeParse(s) {
-  try {
-    return JSON.parse(s || '{}')
-  } catch {
-    return {}
-  }
 }
