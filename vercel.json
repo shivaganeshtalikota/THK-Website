@@ -4,18 +4,15 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "admin.talikotaharikrishna.com"
-        }
-      ],
-      "destination": "/admin",
-      "permanent": false
+  "functions": {
+    "api/admin.js": {
+      "maxDuration": 60
     },
+    "api/poster-card.js": {
+      "maxDuration": 30
+    }
+  },
+  "redirects": [
     {
       "source": "/(.*)",
       "has": [
@@ -32,6 +29,10 @@
     {
       "source": "/s/:slug/:id",
       "destination": "/api/share?slug=:slug&id=:id"
+    },
+    {
+      "source": "/c/:id([A-Za-z0-9_-]{22})-p.jpg",
+      "destination": "/api/card?id=:id&v=p"
     },
     {
       "source": "/c/:id([A-Za-z0-9_-]{22}).jpg",
@@ -218,6 +219,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/version.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
         }
       ]
     }

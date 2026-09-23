@@ -56,6 +56,35 @@ try {
   failures.push(`campaign manifest: ${String(err?.message || err).split('\n')[0]}`)
 }
 
+/*
+ * The same for the admin-edited site content, which the public pages and the
+ * admin API both read, and for the routing middleware — which runs in front of
+ * every request, so a middleware that cannot load takes the whole site down.
+ */
+try {
+  const { readFileSync } = await import('node:fs')
+  const { parseDataModule, serializeDataModule } = await import(
+    pathToFileURL(join(ROOT, 'server', 'data-module.js')).href
+  )
+  const { SITE_CONTENT_PATH, SITE_CONTENT_HEADER } = await import(
+    pathToFileURL(join(ROOT, 'server', 'site-content.js')).href
+  )
+  const onDisk = parseDataModule(readFileSync(join(ROOT, SITE_CONTENT_PATH), 'utf8'))
+  const again = parseDataModule(serializeDataModule(onDisk, SITE_CONTENT_HEADER))
+  if (JSON.stringify(again) !== JSON.stringify(onDisk)) {
+    failures.push(`${SITE_CONTENT_PATH}: does not survive a serialise/parse round trip`)
+  }
+} catch (err) {
+  failures.push(`site content: ${String(err?.message || err).split('\n')[0]}`)
+}
+
+try {
+  const mw = await import(pathToFileURL(join(ROOT, 'middleware.js')).href)
+  if (typeof mw.default !== 'function') failures.push('middleware.js: no default-exported function')
+} catch (err) {
+  failures.push(`middleware.js: ${String(err?.message || err).split('\n')[0]}`)
+}
+
 if (failures.length) {
   console.error('\n  API check FAILED — these functions would crash on Vercel:\n')
   for (const f of failures) console.error(`    ${f}`)

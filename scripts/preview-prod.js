@@ -34,17 +34,34 @@
  *   what they mean in a raw regex.
  *
  *   node scripts/preview-prod.js      -> http://localhost:4180
+ *
+ * WITH --api it also runs what Vercel runs in front of and beside the files:
+ * the routing middleware (middleware.js), vercel.json's rewrites, and the
+ * serverless functions in api/, through a small shim of Vercel's req/res.
+ * That is enough to exercise the admin panel end to end on a laptop —
+ * sign-in, the authenticator, uploads, publishing — with
+ *
+ *   ADMIN_DEV=1 ADMIN_ID=... ADMIN_PASSWORD=... \
+ *   R2_LOCAL_DIR=<folder> GITHUB_LOCAL_DIR=<folder> \
+ *   node scripts/preview-prod.js --api
+ *
+ * and the panel at http://admin.localhost:4180. R2_LOCAL_DIR and
+ * GITHUB_LOCAL_DIR make storage and "commits" plain folders (see server/r2.js
+ * and server/github.js), so nothing real is touched. ADMIN_DEV=1 is what lets
+ * admin.localhost stand in for the admin host; it is never set on Vercel.
  */
 import { createServer } from 'node:http'
 import { readFileSync, existsSync, statSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join, extname, normalize } from 'node:path'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(ROOT, 'dist')
 const PORT = Number(process.env.PORT) || 4180
 
-const rules = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8')).headers
+const vercel = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8'))
+const rules = vercel.headers
+const WITH_API = process.argv.includes('--api')
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -55,6 +72,8 @@ const TYPES = {
   // testing is not representative of production.
   '.wasm': 'application/wasm',
   '.tflite': 'application/octet-stream',
+  '.onnx': 'application/octet-stream',
+  '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.webmanifest': 'application/manifest+json; charset=utf-8',
@@ -106,27 +125,170 @@ function headersFor(pathname) {
   return out
 }
 
-createServer((req, res) => {
-  const url = new URL(req.url, `http://localhost:${PORT}`)
+/* ---------------------------------------------------------- API emulation */
+
+/** A vercel.json `source` with named params -> a matcher returning params. */
+function routeMatcher(source) {
+  const names = []
+  let out = ''
+  for (let i = 0; i < source.length; i++) {
+    const rest = source.slice(i)
+    const param = /^:([A-Za-z0-9_]+)(\(([^)]+)\))?/.exec(rest)
+    if (param) {
+      names.push(param[1])
+      out += param[3] ? `(${param[3]})` : '([^/]+)'
+      i += param[0].length - 1
+      continue
+    }
+    out += source[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  }
+  const re = new RegExp(`^${out}$`)
+  return (path) => {
+    const m = re.exec(path)
+    if (!m) return null
+    return Object.fromEntries(names.map((n, k) => [n, m[k + 1]]))
+  }
+}
+const REWRITES = (vercel.rewrites || []).map((r) => ({ match: routeMatcher(r.source), dest: r.destination }))
+
+function applyRewrite(pathname, search) {
+  for (const r of REWRITES) {
+    const params = r.match(pathname)
+    if (!params) continue
+    let dest = r.dest
+    for (const [k, v] of Object.entries(params)) dest = dest.replaceAll(`:${k}`, v)
+    const u = new URL(dest, 'http://x')
+    new URLSearchParams(search).forEach((v, k) => {
+      if (!u.searchParams.has(k)) u.searchParams.set(k, v)
+    })
+    return u
+  }
+  return null
+}
+
+/** Enough of Vercel's Node helpers for the functions in api/. */
+async function runFunction(name, req, res, url) {
+  const file = join(ROOT, 'api', `${name}.js`)
+  if (!/^[a-z0-9-]+$/.test(name) || !existsSync(file)) {
+    res.writeHead(404, { 'Content-Type': 'application/json' }).end('{"error":"Not found"}')
+    return
+  }
+  const mod = await import(pathToFileURL(file).href)
+  req.query = Object.fromEntries(url.searchParams)
+  if (mod.config?.api?.bodyParser !== false && req.method === 'POST') {
+    const chunks = []
+    for await (const c of req) chunks.push(c)
+    const raw = Buffer.concat(chunks).toString('utf8')
+    try {
+      req.body = raw ? JSON.parse(raw) : {}
+    } catch {
+      req.body = raw
+    }
+  }
+  res.status = (code) => {
+    res.statusCode = code
+    return res
+  }
+  res.json = (obj) => {
+    if (!res.getHeader('Content-Type')) res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    res.end(JSON.stringify(obj))
+    return res
+  }
+  res.send = (body) => {
+    res.end(typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body))
+    return res
+  }
+  res.redirect = (code, loc) => {
+    res.statusCode = code
+    res.setHeader('Location', loc)
+    res.end()
+    return res
+  }
+  try {
+    await mod.default(req, res)
+  } catch (err) {
+    console.error(`api/${name} threw:`, err)
+    if (!res.headersSent) res.writeHead(500).end('function error')
+  }
+}
+
+/** Run middleware.js the way the edge would, and say what it decided. */
+async function runMiddleware(req, url) {
+  const { default: middleware } = await import(pathToFileURL(join(ROOT, 'middleware.js')).href)
+  const request = new Request(url.href, { method: req.method, headers: { host: req.headers.host || '' } })
+  const r = await middleware(request)
+  const extra = {}
+  r.headers.forEach((v, k) => {
+    if (!k.startsWith('x-middleware-')) extra[k] = v
+  })
+  if (r.headers.get('x-middleware-next')) return { kind: 'next', headers: extra }
+  const to = r.headers.get('x-middleware-rewrite')
+  if (to) return { kind: 'rewrite', url: new URL(to), headers: extra }
+  return { kind: 'respond', response: r }
+}
+
+/* ------------------------------------------------------------------ server */
+
+function serveFile(pathname, res, extraHeaders = {}) {
   // Contain the path inside dist/ — a served path is attacker-controlled even
   // on a local tool, and `..` would otherwise walk out of the directory.
-  const rel = normalize(decodeURIComponent(url.pathname)).replace(/^([/\\])+/, '')
+  const rel = normalize(decodeURIComponent(pathname)).replace(/^([/\\])+/, '')
   let file = join(DIST, rel)
   if (!file.startsWith(DIST)) {
     res.writeHead(403).end('Forbidden')
-    return
+    return true
   }
-
   // cleanUrls: /about -> dist/about/index.html, mirroring Vercel.
   if (!existsSync(file) || statSync(file).isDirectory()) {
     const candidates = [join(file, 'index.html'), `${file}.html`]
-    file = candidates.find((c) => existsSync(c) && statSync(c).isFile()) ?? join(DIST, '404.html')
+    const found = candidates.find((c) => existsSync(c) && statSync(c).isFile())
+    if (!found) return false
+    file = found
+  }
+  const type = TYPES[extname(file)] ?? 'application/octet-stream'
+  res.writeHead(200, { 'Content-Type': type, ...headersFor(pathname), ...extraHeaders })
+  res.end(readFileSync(file))
+  return true
+}
+
+function notFound(pathname, res) {
+  res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', ...headersFor(pathname) })
+  res.end(readFileSync(join(DIST, '404.html')))
+}
+
+createServer(async (req, res) => {
+  let url = new URL(req.url, `http://${req.headers.host || `localhost:${PORT}`}`)
+  let extra = {}
+
+  if (WITH_API) {
+    const mw = await runMiddleware(req, url)
+    if (mw.kind === 'respond') {
+      const headers = {}
+      mw.response.headers.forEach((v, k) => (headers[k] = v))
+      res.writeHead(mw.response.status, headers)
+      res.end(Buffer.from(await mw.response.arrayBuffer()))
+      return
+    }
+    extra = mw.headers
+    if (mw.kind === 'rewrite') url = new URL(mw.url.pathname + mw.url.search, url)
+
+    if (url.pathname.startsWith('/api/')) {
+      for (const [k, v] of Object.entries(extra)) res.setHeader(k, v)
+      await runFunction(url.pathname.slice(5), req, res, url)
+      return
+    }
   }
 
-  const status = file.endsWith('404.html') && url.pathname !== '/404.html' ? 404 : 200
-  const type = TYPES[extname(file)] ?? 'application/octet-stream'
-  res.writeHead(status, { 'Content-Type': type, ...headersFor(url.pathname) })
-  res.end(readFileSync(file))
+  // Filesystem first, then rewrites — Vercel's order.
+  if (serveFile(url.pathname, res, extra)) return
+  if (WITH_API) {
+    const to = applyRewrite(url.pathname, url.search)
+    if (to && to.pathname.startsWith('/api/')) {
+      await runFunction(to.pathname.slice(5), req, res, to)
+      return
+    }
+  }
+  notFound(url.pathname, res)
 }).listen(PORT, () => {
-  console.log(`dist/ with production headers -> http://localhost:${PORT}`)
+  console.log(`dist/ with production headers -> http://localhost:${PORT}${WITH_API ? '  (+ middleware, rewrites, api/)' : ''}`)
 })

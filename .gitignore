@@ -46,3 +46,7 @@ __pycache__/
 scripts/image-audit.json
 scripts/preview-*.png
 scripts/audit-findings.txt
+
+# Local-only benchmark and test material
+public/_bench/
+bench.html

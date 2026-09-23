@@ -82,13 +82,14 @@ const TE_ROUTES = EN_ROUTES.map((r) => (r === '/' ? '/te' : `/te${r}`))
 
 const ROUTES = [...EN_ROUTES, ...TE_ROUTES]
 
-// Rendered so a direct visit to /admin serves a real file rather than the 404
-// page — every route on a static host needs one. It is deliberately NOT in
-// ROUTES above, because it must stay out of the sitemap: it is an operational
-// page, marked noindex, and its own <Seo> says so. The password is checked in
-// api/publish.js, server-side, so shipping the form as a static file gives away
-// nothing.
-const UNLISTED_ROUTES = ['/admin']
+// Routes rendered but kept out of the sitemap: the viewer a shared poster link
+// opens on (one per campaign and language — which poster it shows comes from
+// ?p= in the browser). They are noindex; they exist only to be linked to.
+//
+// The admin panel is NOT here. It moved to its own app on
+// admin.talikotaharikrishna.com (admin.html) and must not exist as a page on
+// the public site at all.
+const UNLISTED_ROUTES = posterSlugs.flatMap((slug) => [`/posters/${slug}/view`, `/te/posters/${slug}/view`])
 
 /** Escape a value for use inside a double-quoted HTML attribute. */
 const attr = (v) =>

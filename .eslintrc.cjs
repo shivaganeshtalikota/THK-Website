@@ -55,6 +55,7 @@ module.exports = {
         'api/**/*.js',
         'server/**/*.js',
         'scripts/**/*.js',
+        'middleware.js',
         'vite.config.js',
         'tailwind.config.js',
         'postcss.config.js',

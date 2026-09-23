@@ -12,7 +12,7 @@
  * component kit — a single geometric sans at three weights is the tell.
  */
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./index.html', './admin.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {

@@ -23,7 +23,7 @@ export const MANIFEST_PATH = 'src/data/campaign-posters.js'
 const HEADER = `/**
  * Campaign posters published from the admin panel.
  *
- * WRITTEN BY api/publish-poster.js — do not edit by hand. Everything after
+ * WRITTEN BY api/admin.js — do not edit by hand. Everything after
  * \`export default\` must stay plain JSON: it is parsed back as JSON when the
  * next poster is published. See server/campaign-manifest.js.
  */

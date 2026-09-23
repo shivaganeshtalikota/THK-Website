@@ -99,7 +99,15 @@ const problems = []
 const usage = new Map()
 let checked = 0
 
+/*
+ * admin.html is the office console's shell, served only on the admin host and
+ * marked noindex/nofollow. It is never shared as a link, so it deliberately
+ * has no preview card — checking it would be checking for a mistake.
+ */
+const PRIVATE_SHELLS = new Set(['admin.html'])
+
 for (const file of htmlFiles(DIST)) {
+  if (PRIVATE_SHELLS.has(path.relative(DIST, file).replace(/\\/g, '/'))) continue
   const route = '/' + path.relative(DIST, file).replace(/\\/g, '/').replace(/(index)?\.html$/, '')
   const html = readFileSync(file, 'utf8')
 

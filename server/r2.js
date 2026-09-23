@@ -26,11 +26,42 @@
  *   R2_BUCKET              bucket name, e.g. thk-web
  */
 import { createHash, createHmac } from 'node:crypto'
+import { promises as fs } from 'node:fs'
+import { dirname, join, resolve, sep } from 'node:path'
 
 const REGION = 'auto' // R2 has one region and expects this literal
 const SERVICE = 's3'
 
+/**
+ * A folder standing in for the bucket, for local testing only.
+ *
+ * The admin panel keeps its sessions, second factor, audit log and staged
+ * uploads in R2, so without a bucket nothing about it can be exercised before
+ * it is live — and the real keys are, correctly, only in Vercel. Setting
+ * R2_LOCAL_DIR swaps every call below for plain file reads and writes under
+ * that folder. It is never set on Vercel, and a key cannot climb out of the
+ * folder: every resolved path is checked to still be inside it.
+ */
+const LOCAL = process.env.R2_LOCAL_DIR ? resolve(process.env.R2_LOCAL_DIR) : null
+
+function localPath(key) {
+  const p = resolve(LOCAL, ...String(key).split('/'))
+  if (p !== LOCAL && !p.startsWith(LOCAL + sep)) throw new Error('R2 local: key escapes the folder')
+  return p
+}
+
+async function walk(dir) {
+  const out = []
+  for (const e of await fs.readdir(dir, { withFileTypes: true }).catch(() => [])) {
+    const p = join(dir, e.name)
+    if (e.isDirectory()) out.push(...(await walk(p)))
+    else out.push(p)
+  }
+  return out
+}
+
 export function r2Config() {
+  if (LOCAL) return { local: true, bucket: 'local' }
   const accountId = process.env.R2_ACCOUNT_ID
   const accessKeyId = process.env.R2_ACCESS_KEY_ID
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
@@ -139,6 +170,12 @@ export async function r2Request({ method, key, body, contentType, query }) {
 
 /** Store an object. Throws with R2's own message so a failure is diagnosable. */
 export async function r2Put(key, body, contentType) {
+  if (LOCAL) {
+    const p = localPath(key)
+    await fs.mkdir(dirname(p), { recursive: true })
+    await fs.writeFile(p, Buffer.isBuffer(body) ? body : Buffer.from(body ?? ''))
+    return true
+  }
   const res = await r2Request({ method: 'PUT', key, body, contentType })
   if (!res.ok) {
     throw new Error(`R2 PUT ${key} failed: ${res.status} ${(await res.text()).slice(0, 300)}`)
@@ -149,6 +186,7 @@ export async function r2Put(key, body, contentType) {
 /** Fetch an object. Returns null for 404 rather than throwing, since a missing
  *  card is an ordinary outcome once the lifecycle rule has expired it. */
 export async function r2Get(key) {
+  if (LOCAL) return fs.readFile(localPath(key)).catch((e) => (e.code === 'ENOENT' ? null : Promise.reject(e)))
   const res = await r2Request({ method: 'GET', key })
   if (res.status === 404) return null
   if (!res.ok) {
@@ -160,6 +198,13 @@ export async function r2Get(key) {
 /** Keys under a prefix, capped. Used for counting, not for listing anything to
  *  a visitor — object keys are unguessable ids and stay that way. */
 export async function r2List(prefix, max = 100) {
+  if (LOCAL) {
+    const keys = (await walk(LOCAL))
+      .map((p) => p.slice(LOCAL.length + 1).split(sep).join('/'))
+      .filter((k) => k.startsWith(prefix))
+      .sort()
+    return keys.slice(0, max)
+  }
   const res = await r2Request({
     method: 'GET',
     key: '',
@@ -168,4 +213,17 @@ export async function r2List(prefix, max = 100) {
   if (!res.ok) return []
   const xml = await res.text()
   return [...xml.matchAll(/<Key>([^<]+)<\/Key>/g)].map((m) => m[1])
+}
+
+/** Remove an object. A key that is already gone counts as removed. */
+export async function r2Delete(key) {
+  if (LOCAL) {
+    await fs.rm(localPath(key), { force: true })
+    return true
+  }
+  const res = await r2Request({ method: 'DELETE', key })
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`R2 DELETE ${key} failed: ${res.status} ${(await res.text()).slice(0, 300)}`)
+  }
+  return true
 }
