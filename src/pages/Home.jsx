@@ -3,10 +3,11 @@ import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { site, party, focusAreas, temple, roles } from '../data/site'
+import { site, party, focusAreas, temple, templeBoard, roles } from '../data/site'
 import { photos, gallery } from '../data/photos'
 import { useT } from '../i18n/useT'
 import UpcomingEvents from '../components/UpcomingEvents'
+import PosterPromo from '../components/PosterPromo'
 
 const Home = () => {
   const t = useT()
@@ -18,7 +19,16 @@ const Home = () => {
   }
 
 
-  const featured = gallery.filter((g) => ['party', 'temple'].includes(g.group)).slice(0, 4)
+  /*
+   * Four DIFFERENT moments, chosen by name. Taking the first four party photos
+   * put two near-identical frames of greeting the national president side by
+   * side; a strip meant to show the range of the work showed one handshake
+   * twice. Any name no longer in the gallery is skipped, and the strip tops
+   * itself up from the rest so it never shows fewer than four.
+   */
+  const FEATURED = ['with-chandrababu-naidu', 'with-nara-lokesh', 'with-nandamuri-balakrishna', 'kuchipudi-natyotsavam-stage']
+  const picked = FEATURED.map((slug) => gallery.find((g) => g.slug === slug)).filter(Boolean)
+  const featured = [...picked, ...gallery.filter((g) => !picked.includes(g))].slice(0, 4)
 
   return (
     <>
@@ -121,7 +131,7 @@ const Home = () => {
                 size fills an entire screen and stops being readable. */}
             <blockquote className="relative mt-8">
               <span
-                className="absolute -left-1 -top-8 font-display text-[5rem] leading-none text-brand-700 sm:-left-8 sm:-top-6 sm:text-[7rem]"
+                className="absolute -left-1 -top-8 font-display text-[5rem] leading-none text-brand-700 lg:-left-16 lg:-top-6 lg:text-[7rem]"
                 aria-hidden="true"
               >
                 “
@@ -157,8 +167,13 @@ const Home = () => {
                 {t('Trust Board Member — Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, Vijayawada')}
               </h2>
               <p className="mt-6 text-lead text-white/70">{t(temple.intro)}</p>
+              {/* The intro above already says what the seat is; this line adds the
+                  record — when, where, and among how many — rather than saying
+                  "one of several members, not the chairman" a second time. */}
               <p className="mt-5 text-white/60">
-                {t('The Devasthanam at Indrakeeladri in Vijayawada is one of the most visited Devi temples in South India, drawing millions of devotees each year. Talikota Hari Krishna sits on its trust board — one of several members, not the chairman — with responsibility for temple administration, financial stewardship, devotee facilities and the continuity of tradition.')}
+                {t(
+                  `Sworn in on ${templeBoard.sworn} before the Rajagopuram on Indrakeeladri, as one of seventeen members of the trust board alongside its chairman.`
+                )}
               </p>
               <Link
                 to="/community"
@@ -294,6 +309,9 @@ const Home = () => {
           </ul>
         </div>
       </section>
+
+      {/* ================= POSTER MAKER ================= */}
+      <PosterPromo />
 
       {/* ================= CTA ================= */}
       <section className="section bg-white">

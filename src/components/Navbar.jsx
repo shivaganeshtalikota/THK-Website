@@ -4,7 +4,7 @@ import Link, { LocaleNavLink as NavLink } from './LocaleLink'
 // fa6 renames the FA5 icons: FaTimes -> FaXmark.
 import { FaBars, FaXmark } from 'react-icons/fa6'
 import { nav, social, site } from '../data/site'
-import { useT } from '../i18n/useT'
+import { useLang, useT } from '../i18n/useT'
 import LanguageToggle from './LanguageToggle'
 import { socialGlyph } from './socialGlyph'
 
@@ -16,12 +16,12 @@ import { socialGlyph } from './socialGlyph'
  * than AnimatePresence. It is one line of CSS, needs no JS to settle, and
  * `aria-hidden` plus `inert` keep the collapsed panel out of the tab order.
  */
-const MobilePanel = ({ isOpen, onNavigate }) => {
+const MobilePanel = ({ isOpen, onNavigate, wide }) => {
   const t = useT()
   return (
   <div
     id="mobile-menu"
-    className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out lg:hidden ${
+    className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${wide ? 'xl:hidden' : 'lg:hidden'} ${
       isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
     }`}
     aria-hidden={!isOpen}
@@ -88,6 +88,16 @@ const MobilePanel = ({ isOpen, onNavigate }) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const t = useT()
+  /*
+   * Telugu labels run about half as wide again as the English ones
+   * ("రాజకీయ నాయకత్వం" against "Political Leadership" at the same size), and
+   * at the English breakpoints they wrapped onto two lines inside a one-line
+   * bar. So in Telugu the full bar takes over one breakpoint later, the icons
+   * step aside while it needs the room (they are in the menu and the footer
+   * too) and come back on the widest screens, and no label is ever allowed to
+   * wrap.
+   */
+  const wide = useLang() === 'te'
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
 
@@ -138,7 +148,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop nav */}
-          <ul className="hidden items-center gap-7 lg:flex">
+          <ul className={wide ? 'hidden items-center gap-5 xl:flex' : 'hidden items-center gap-7 lg:flex'}>
             {nav.map((link) => (
               <li key={link.path}>
                 <NavLink
@@ -146,7 +156,7 @@ const Navbar = () => {
                   end={link.path === '/'}
                   className={({ isActive }) =>
                     [
-                      'relative py-2 font-sans text-[0.82rem] font-medium transition-colors duration-200',
+                      'relative whitespace-nowrap py-2 font-sans text-[0.82rem] font-medium transition-colors duration-200',
                       'after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:bg-ink-900',
                       'after:transition-all after:duration-300 hover:text-ink-900',
                       isActive
@@ -162,7 +172,7 @@ const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <ul className="hidden items-center gap-0.5 md:flex">
+            <ul className={wide ? 'hidden items-center gap-0.5 md:flex xl:hidden 2xl:flex' : 'hidden items-center gap-0.5 md:flex'}>
               {social.map((s) => {
                 const Glyph = socialGlyph(s.name)
                 return (
@@ -183,11 +193,11 @@ const Navbar = () => {
 
             {/* Desktop only — the phone gets it inside the menu panel, where
                 there is room for both scripts without crowding the wordmark. */}
-            <LanguageToggle className="hidden lg:inline-flex" />
+            <LanguageToggle className={wide ? 'hidden xl:inline-flex' : 'hidden lg:inline-flex'} />
 
             <Link
               to="/contact"
-              className="tap-round hidden rounded-sm bg-ink-900 px-5 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink-800 xl:inline-flex"
+              className="tap-round hidden whitespace-nowrap rounded-sm bg-ink-900 px-5 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink-800 xl:inline-flex"
             >
               {t('Get Involved')}
             </Link>
@@ -195,7 +205,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => setIsOpen((v) => !v)}
-              className="tap-round grid h-11 w-11 place-items-center rounded-sm text-ink-900 hover:bg-ink-900/10 lg:hidden"
+              className={`tap-round grid h-11 w-11 place-items-center rounded-sm text-ink-900 hover:bg-ink-900/10 ${wide ? 'xl:hidden' : 'lg:hidden'}`}
               aria-label={isOpen ? t('Close menu') : t('Open menu')}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
@@ -205,7 +215,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <MobilePanel isOpen={isOpen} onNavigate={() => setIsOpen(false)} />
+        <MobilePanel isOpen={isOpen} onNavigate={() => setIsOpen(false)} wide={wide} />
       </nav>
     </header>
   )

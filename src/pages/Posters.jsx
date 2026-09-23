@@ -1,7 +1,7 @@
 import Link from '../components/LocaleLink'
 import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
-import PageHero from '../components/PageHero'
+import PostersHero from '../components/PostersHero'
 import Reveal from '../components/Reveal'
 import { site } from '../data/site'
 import { posters, posterImage, posterCard } from '../data/posters'
@@ -61,15 +61,9 @@ const Posters = () => {
         schema={schema}
       />
 
-      <PageHero
-        eyebrow={t('Campaign Material')}
-        title={t('Create your own poster')}
-        lead={t(
-          'Pick a campaign, add your photo and your name, and download a poster ready to share. It takes under a minute, it works on a phone, and your photograph never leaves your device.'
-        )}
-      />
+      <PostersHero posters={posters} />
 
-      <section className="section bg-white">
+      <section id="campaigns" className="section scroll-mt-[var(--nav-h)] bg-white">
         <div className="container-custom">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">{t('Current Campaigns')}</p>
@@ -126,15 +120,17 @@ const Posters = () => {
       </section>
 
       {/* A plain statement of what happens to their photo. Asking somebody to
-          upload a picture of their own face is asking for trust, and the honest
-          answer here is unusually good — the whole thing runs in the browser —
-          so it is stated rather than buried in a privacy page. */}
+          use a picture of their own face is asking for trust, and the honest
+          answer is unusually good — the photo is processed in the browser and
+          never uploaded — so it is stated rather than buried in a privacy page.
+          (It said "Nothing is uploaded" until finished posters started being
+          saved for shared links; the heading now says only what is true.) */}
       <section className="bg-ink-950 py-16 lg:py-20">
         <div className="on-dark container-custom">
           <Reveal className="max-w-3xl">
             <p className="eyebrow">{t('Your photo')}</p>
             <h2 className="mt-5 font-display text-title text-white">
-              {t('Nothing is uploaded')}
+              {t('Your photo stays with you')}
             </h2>
             <p className="mt-6 text-lead text-white/70">
               {t(

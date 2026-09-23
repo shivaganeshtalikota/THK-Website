@@ -58,6 +58,9 @@ export default {
         heading: ['Inter', 'system-ui', 'sans-serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
         telugu: ['"Noto Sans Telugu"', '"Noto Sans"', 'sans-serif'],
+        // The heavy poster face (Anek Telugu 700-800), for poster-style type
+        // outside the canvas: the posters page's tagline.
+        poster: ['"Anek Telugu"', '"Noto Sans Telugu"', 'Inter', 'sans-serif'],
       },
       fontSize: {
         // Wider scale contrast than a stock kit: the hero is genuinely large,

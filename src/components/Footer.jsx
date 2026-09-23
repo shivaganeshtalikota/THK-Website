@@ -25,6 +25,7 @@ const Footer = () => {
       title: 'Resources',
       links: [
         { name: 'Media & Updates', path: '/media' },
+        { name: 'Campaign Posters', path: '/posters' },
         { name: 'Contact', path: '/contact' },
         { name: 'Privacy Policy', path: '/privacy' },
         { name: 'Terms of Use', path: '/terms' },

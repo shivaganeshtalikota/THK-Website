@@ -21,7 +21,7 @@ function Stat({ to, icon: Icon, label, value }) {
         <Icon className="text-lg text-brand-700" aria-hidden="true" />
         <FaArrowRight className="text-xs text-ink-300 transition group-hover:translate-x-0.5 group-hover:text-ink-600" aria-hidden="true" />
       </div>
-      <p className="mt-4 font-display text-3xl font-bold text-ink-950 tabular-nums">{value ?? '—'}</p>
+      <p className="mt-4 font-display text-3xl font-bold text-ink-950 tabular-nums lining-nums">{value ?? '—'}</p>
       <p className="mt-1 text-sm text-ink-500">{label}</p>
     </Link>
   )

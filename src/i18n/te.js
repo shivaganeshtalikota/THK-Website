@@ -324,6 +324,7 @@ export const te = {
     'విజయవాడ ఇంద్రకీలాద్రిలోని శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలిలో తాళికోట హరికృష్ణ సేవలందిస్తున్నారు — పాలన, భక్తుల సౌకర్యాలు, సంప్రదాయ కొనసాగింపు.',
   'A life in public service': 'ప్రజా సేవలో ఒక జీవితం',
   'Media & Updates': 'మీడియా, తాజా సమాచారం',
+  'Campaign Posters': 'ప్రచార పోస్టర్లు',
   'In pictures': 'చిత్రాల్లో',
   'Party events, constituency programmes, temple service and Telugu cultural celebrations.':
     'పార్టీ కార్యక్రమాలు, నియోజకవర్గ కార్యక్రమాలు, ఆలయ సేవ, తెలుగు సాంస్కృతిక వేడుకలు.',
@@ -947,4 +948,22 @@ export const te = {
     'సంప్రదింపు ఫారం ద్వారా పంపిన సందేశాలను Web3Forms కార్యాలయ ఇన్‌బాక్స్‌కు చేరవేస్తుంది. వెబ్‌సైట్‌ను Vercel హోస్ట్ చేస్తుంది, షేర్ చేసిన పోస్టర్లు Cloudflareలో భద్రపరచబడతాయి. ఫాంట్‌లు ఈ వెబ్‌సైట్ నుంచే అందించబడతాయి. సేవను అందించే క్రమంలో ఈ సంస్థలు మీ IP చిరునామా వంటి సాంకేతిక సమాచారాన్ని ప్రాసెస్ చేయవచ్చు.',
   'This website does not set advertising or tracking cookies, and does not build a profile of your browsing. It uses Vercel Web Analytics, which counts page visits without cookies and without identifying you.':
     'ఈ వెబ్‌సైట్ ప్రకటనల లేదా ట్రాకింగ్ కుకీలను ఉంచదు, మీ బ్రౌజింగ్‌పై ప్రొఫైల్ తయారు చేయదు. ఇది Vercel Web Analyticsను ఉపయోగిస్తుంది — కుకీలు లేకుండా, మిమ్మల్ని గుర్తించకుండా పేజీ సందర్శనలను మాత్రమే లెక్కిస్తుంది.',
+
+  // ---- Posters page header: the offer, three steps, the showcase ------------
+  'Make my poster': 'నా పోస్టర్ తయారు చేయండి',
+  'See all campaigns': 'అన్ని ప్రచారాలు చూడండి',
+  Step: 'దశ',
+  'Add your photo': 'మీ ఫోటో చేర్చండి',
+  'The background is removed for you.': 'నేపథ్యం దానంతట అదే తొలగిపోతుంది.',
+  'Type your name': 'మీ పేరు టైప్ చేయండి',
+  'Telugu or English, with your designation.': 'తెలుగు లేదా ఇంగ్లీష్‌లో, మీ హోదాతో సహా.',
+  'Share it': 'షేర్ చేయండి',
+  'Download it, or send the link on WhatsApp.': 'డౌన్‌లోడ్ చేసుకోండి, లేదా వాట్సాప్‌లో లింక్ పంపండి.',
+  'Your name. Your photo. Your poster.': 'మీ పేరు. మీ ఫోటో. మీ పోస్టర్.',
+  'Your photo here': 'మీ ఫోటో ఇక్కడ',
+  'Your name here': 'మీ పేరు ఇక్కడ',
+  Free: 'ఉచితం',
+  'Works on a phone': 'ఫోన్‌లోనే పని చేస్తుంది',
+  'Ready in a minute': 'ఒక్క నిమిషంలో సిద్ధం',
+  'Your photo stays with you': 'మీ ఫోటో మీ దగ్గరే ఉంటుంది',
 }
