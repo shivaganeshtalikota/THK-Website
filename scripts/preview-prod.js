@@ -22,6 +22,13 @@
  *       the favicons hit, but these are the largest assets on the site; if a
  *       photograph is ever re-cropped, change its slug rather than its bytes.
  *
+ *   /posters/*.jpg -> immutable, one year — the ARTWORK only.
+ *       Artwork and cards carry a version in the name (-v2.jpg), so new
+ *       artwork is a new URL. The rule used to be /posters/(.*), which also
+ *       matched the poster PAGES (/posters/<slug>, /posters/<slug>/view) and
+ *       told browsers to keep that HTML for a year — a returning visitor could
+ *       be served a page whose scripts no longer exist after a deploy.
+ *
  *   favicons, og-image, tdp-*, site.webmanifest -> revalidate daily.
  *       These are UNVERSIONED names whose CONTENT changes in place. A blanket
  *       immutable rule for png/jpg/ico used to catch them, which told every

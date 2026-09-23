@@ -102,7 +102,7 @@
       ]
     },
     {
-      "source": "/posters/(.*)",
+      "source": "/posters/(.*).jpg",
       "headers": [
         {
           "key": "Cache-Control",
