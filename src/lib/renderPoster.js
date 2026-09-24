@@ -98,8 +98,7 @@ function asPerson(person) {
 }
 
 /**
- * Stand a person on a bar: the placement for template 3, and for the 22A
- * poster, whose yellow slogan band plays the part of the bar.
+ * Stand a person on a bar: the placement for template 3.
  *
  * SIZED BY THE FACE when a face was found. Photos arrive at every framing —
  * a selfie that is mostly face, a full-length shot where the face is a speck —
@@ -157,6 +156,94 @@ function placeStanding(p, W, H, o) {
   else x = p.cut.right ? W - w : W - w - margin
 
   return { x, y, w, h, below: y + h > barTop + 1 }
+}
+
+/**
+ * Where the subject's outline starts, row by row: for each of `rows` bands
+ * down the cut-out, the leftmost opaque column as a fraction of its width (1
+ * for a row with nothing in it). Read once per render from a small copy.
+ */
+function leftProfile(src, rows = 160) {
+  const sw = 120
+  const c = document.createElement('canvas')
+  c.width = sw
+  c.height = rows
+  const x = c.getContext('2d', { willReadFrequently: true })
+  x.drawImage(src, 0, 0, sw, rows)
+  const d = x.getImageData(0, 0, sw, rows).data
+  const out = new Float32Array(rows).fill(1)
+  for (let r = 0; r < rows; r += 1) {
+    for (let q = 0; q < sw; q += 1) {
+      if (d[(r * sw + q) * 4 + 3] > 48) {
+        out[r] = q / sw
+        break
+      }
+    }
+  }
+  return out
+}
+
+/**
+ * The 22A placement: the person in the bottom-right corner, big, standing on
+ * the poster's own bottom edge and drawn OVER the right-hand end of the yellow
+ * band and the name bar — the empty part of both.
+ *
+ * Sized by the face (faceRange of the poster's height), so a selfie and a
+ * full-length shot come out alike; a tall figure keeps its head below `minY`
+ * and runs off the bottom edge, where the poster itself crops it.
+ *
+ * Then kept off the type. `keepOut` lists the text on the artwork as rows and
+ * the x where the text ends; the subject's REAL outline (not its box) is
+ * walked through those rows, and the figure moves right until it clears them.
+ * It may run past the right edge — the poster edge crops a shoulder the way a
+ * photographer's frame would — but never so far that the face is cut. If
+ * that is still not enough, the figure is made a little smaller and tried
+ * again.
+ */
+function placeCorner(p, W, H, o) {
+  const aspect = p.src.width / p.src.height
+  const prof = leftProfile(p.src)
+  const pad = 0.012 * W
+  const margin = (o.margin ?? 0.015) * W
+  let h0 = o.h * H
+  if (p.face && p.face.h > 0.02) {
+    const faceH = p.face.h * h0
+    const lo = o.faceRange[0] * H
+    const hi = o.faceRange[1] * H
+    if (faceH > hi) h0 *= hi / faceH
+    else if (faceH < lo) h0 *= lo / faceH
+  }
+  // The top of the head, as a fraction of the cut-out: the hair above the
+  // face box is roughly half a face again.
+  const headTop = p.face ? Math.max(0, p.face.y - 0.45 * p.face.h) : 0
+
+  let box = null
+  for (let k = 0; k < 24; k += 1) {
+    const h = h0 * 0.96 ** k
+    const w = h * aspect
+    let y = H - h
+    if (y + headTop * h < o.minY * H) y = o.minY * H - headTop * h
+    let x = p.cut.right ? W - w : W - w - margin
+
+    // How far right the figure must go to clear every line of type.
+    let need = 0
+    for (const r of o.keepOut) {
+      const y0 = r.y0 * H
+      const y1 = r.y1 * H
+      for (let i = 0; i < prof.length; i += 1) {
+        const ry = y + ((i + 0.5) / prof.length) * h
+        if (ry < y0 || ry > y1 || prof[i] >= 1) continue
+        need = Math.max(need, r.x * W + pad - (x + prof[i] * w))
+      }
+    }
+    // How far it may go: the face stays whole and on the poster, and no more
+    // than a third of the figure leaves it.
+    const faceRight = p.face ? x + (p.face.x + p.face.w) * w : x + w * 0.5
+    const room = Math.min(W - margin - faceRight, w / 3 - (x + w - W))
+    box = { x: x + Math.max(0, need), y, w, h }
+    if (need <= Math.max(0, room)) return box
+  }
+  return box
 }
 
 /** Draw the artwork again from `top` down, over whatever is there. */
@@ -478,18 +565,9 @@ export function renderPoster({ canvas, poster, artwork, person, name, designatio
   // Templates 1–2 and the hand-measured built-in poster.
   if (poster.band) drawLegacyBand(ctx, poster.band, logo, W, H)
   const p = asPerson(person)
-  if (p && poster.photoSlot?.mode === 'bar') {
-    /*
-     * The 22A poster: the person stands behind the yellow slogan band. The
-     * band is drawn again from the artwork on top of them, so their lower
-     * body disappears behind its straight top edge — the way a person stands
-     * behind a banner — and nothing about the person is clipped or faded to
-     * keep them off the slogan.
-     */
-    const slot = poster.photoSlot
-    const box = placeStanding(p, W, H, slot)
-    drawPersonWithCuts(ctx, p, box, W, H, { shadow: true, hiddenBottom: true })
-    occludeBelow(ctx, artwork, slot.barTop * H, W, H)
+  if (p && poster.photoSlot?.mode === 'corner') {
+    const box = placeCorner(p, W, H, poster.photoSlot)
+    drawPersonWithCuts(ctx, p, box, W, H, { shadow: true, hiddenBottom: false })
   } else if (p && poster.photoSlot) {
     const box = placeInSlot(poster.photoSlot, p, W, H)
     const slotFoot = (poster.photoSlot.y + poster.photoSlot.h) * H

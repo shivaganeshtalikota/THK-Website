@@ -117,31 +117,34 @@ const builtIn = [
      * portrait smaller — never stretched, never cropped into.
      */
     /*
-     * September 2026: the person stands BEHIND the yellow slogan band.
+     * September 2026. Standing behind the yellow band, the person covered the
+     * artwork (the padlock, the passbook) and left the right-hand end of the
+     * band and of the name bar empty — the office's call. So the person
+     * now stands in the bottom-right CORNER, big, on the poster's own bottom
+     * edge, over the empty end of the band and the bar.
      *
-     * Contained in the box described above, supporters came out small; sized
-     * up and clipped at the box's edge with a fade, the fade cut through
-     * shoulders and faces — the office rejected both. So the band now acts as
-     * the bar a person stands behind: the photo is sized by the FACE (so a
-     * selfie and a full-length shot come out the same size), stands with its
-     * foot on the band's top edge at y 0.7617 (measured), and the band is
-     * drawn again over it. Nothing of the person is faded or clipped.
+     * What keeps them off the type is `keepOut`: every line of text, as the
+     * rows it occupies and the x where it ends, all measured off the artwork.
+     * The renderer walks the subject's real outline through those rows and
+     * moves them right until it clears (see placeCorner).
      *
-     * The other numbers keep them clear of the type, all measured off the
-     * artwork: maxW 0.40 plus the flush-right placement keeps them right of
-     * x 0.58, past the end of "16th సెప్టెంబర్ 2026" (x 0.575); minY 0.38 keeps
-     * the head below the REVENUE OFFICE signboard (y 0.27–0.33); and the
-     * slogan itself is under the redrawn band, so it cannot be covered.
+     *   "16th సెప్టెంబర్ 2026"   rows 0.6746–0.7434, ends x 0.5693
+     *   the band's two Telugu lines  rows 0.7758–0.8762, ends x 0.6543
+     *   name + designation (ours)     rows 0.905–0.985,   ends by x 0.585
+     *
+     * minY 0.38 keeps the head below the REVENUE OFFICE signboard.
      */
     photoSlot: {
-      mode: 'bar',
-      barTop: 0.7617,
+      mode: 'corner',
       minY: 0.38,
-      h: 0.4,
-      maxW: 0.4,
-      side: 'right',
+      h: 0.6,
+      faceRange: [0.15, 0.2],
       margin: 0.015,
-      faceRange: [0.115, 0.165],
+      keepOut: [
+        { y0: 0.6746, y1: 0.7434, x: 0.5693 },
+        { y0: 0.7758, y1: 0.8762, x: 0.6543 },
+        { y0: 0.905, y1: 0.985, x: 0.585 },
+      ],
     },
 
     /*
