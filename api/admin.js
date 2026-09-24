@@ -21,6 +21,14 @@ import {
   signOutEverywhere,
   strongSecretConfigured,
   verifySecondFactor,
+  MAX_DEVICES,
+  addDevice,
+  cleanDeviceName,
+  deviceCount,
+  listDevices,
+  newDeviceEnrolment,
+  removeDevice,
+  renameDevice,
 } from '../server/security.js'
 import { r2Config, r2Delete, r2Get, r2Put } from '../server/r2.js'
 import { githubReady, mutateFiles, readFiles } from '../server/github.js'
@@ -252,7 +260,8 @@ ops.verify = {
       await penalty()
       fail(429, 'Too many wrong attempts. Wait fifteen minutes and try again.')
     }
-    const via = await verifySecondFactor(body.code)
+    const from = {}
+    const via = await verifySecondFactor(body.code, from)
     if (via === 'replay') fail(401, USED_CODE)
     if (!via) {
       await noteFailure(req)
@@ -261,7 +270,7 @@ ops.verify = {
       fail(401, 'That code is not right. Codes change every 30 seconds — use the current one.')
     }
     await issueSession(req, res, 'full', { via })
-    let note = 'signed in'
+    let note = from.device ? `signed in with ${from.device}` : 'signed in'
     if (via === 'recovery') {
       const state = await loadState({ fresh: true })
       const left = (state.totp?.recovery || []).filter((r) => !r.used).length
@@ -383,6 +392,9 @@ ops.security = {
     return {
       enrolledAt: state.totp?.createdAt || null,
       recoveryCodesLeft: (state.totp?.recovery || []).filter((r) => !r.used).length,
+      devices: listDevices(state),
+      maxDevices: MAX_DEVICES,
+      adding: Boolean(session.pe),
       session: { since: session.iat * 1000, expires: session.exp * 1000, via: session.via || null, device: deviceLabel(req) },
       strongSessionKey: strongSecretConfigured(),
     }
@@ -710,7 +722,7 @@ ops.summarize = {
 /* ------------------------------------------------------------ security */
 
 async function requireFreshCode(req, code) {
-  const via = await verifySecondFactor(code)
+  const via = await verifySecondFactor(code, {})
   if (via === 'replay') fail(401, USED_CODE)
   if (via !== 'totp') {
     await noteFailure(req)
@@ -741,6 +753,77 @@ ops['security-recovery'] = {
   },
 }
 
+/*
+ * Adding a phone takes two codes: one from a phone ALREADY on the account
+ * (so an open session alone cannot add an attacker's phone), then the first
+ * code from the new phone (so a mistyped scan is not saved). Between the two,
+ * the new secret rides sealed in the session cookie, as at first set-up.
+ */
+ops['device-add-start'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, res, body, session }) {
+    const name = cleanDeviceName(body.name)
+    if (!name) fail(400, 'Give the new phone a name, like “Dad’s phone”.')
+    if ((await deviceCount()) >= MAX_DEVICES) fail(409, `The account already has ${MAX_DEVICES} phones. Remove one first.`)
+    await requireFreshCode(req, body.code)
+    const e = newDeviceEnrolment(name)
+    await issueSession(req, res, 'full', { sid: session.sid, iat: session.iat, via: session.via, pe: e.sealed, pn: name })
+    return { secret: e.secretB32, uri: e.uri, name }
+  },
+}
+
+ops['device-add-confirm'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, res, body, session }) {
+    if (!session.pe) fail(400, 'Start adding the phone again.')
+    if (await lockedOut(req)) {
+      await penalty()
+      fail(429, 'Too many wrong attempts. Wait fifteen minutes and try again.')
+    }
+    const ok = await addDevice(session.pe, body.code, session.pn)
+    if (!ok) {
+      await noteFailure(req)
+      await penalty()
+      fail(401, 'That code is not right. Use the code the NEW phone shows for “Talikota Hari Krishna Admin”.')
+    }
+    await issueSession(req, res, 'full', { sid: session.sid, iat: session.iat, via: session.via })
+    await audit(req, 'authenticator', true, `phone added: ${session.pn}`)
+    return { ok: true }
+  },
+}
+
+ops['device-add-cancel'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, res, session }) {
+    await issueSession(req, res, 'full', { sid: session.sid, iat: session.iat, via: session.via })
+    return { ok: true }
+  },
+}
+
+ops['device-remove'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, body }) {
+    await requireFreshCode(req, body.code)
+    const name = await removeDevice(String(body.id || ''))
+    await audit(req, 'authenticator', true, `phone removed: ${name}`)
+    return { ok: true }
+  },
+}
+
+ops['device-rename'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, body }) {
+    const name = await renameDevice(String(body.id || ''), body.name)
+    await audit(req, 'authenticator', true, `phone renamed: ${name}`)
+    return { ok: true, name }
+  },
+}
+
 ops['security-reset'] = {
   method: 'POST',
   auth: 'full',
@@ -748,7 +831,7 @@ ops['security-reset'] = {
     await requireFreshCode(req, body.code)
     await resetSecondFactor()
     clearSession(res)
-    await audit(req, 'security', true, 'authenticator removed; a new one will be set up at next sign-in')
+    await audit(req, 'security', true, 'every authenticator removed; a new one will be set up at next sign-in')
     return { stage: 'none' }
   },
 }

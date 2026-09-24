@@ -100,7 +100,7 @@ function RecoveryCodes({ codes, onDone }) {
   )
 }
 
-export { RecoveryCodes }
+export { RecoveryCodes, CodeInput }
 
 const SignIn = ({ stage, onStage }) => {
   const [id, setId] = useState('')

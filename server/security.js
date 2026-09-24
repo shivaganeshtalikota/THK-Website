@@ -314,8 +314,8 @@ export function matchTotp(secret, code, lastStep = 0, now = Date.now()) {
   return hit !== null ? hit : replay ? 'replay' : null
 }
 
-export function otpauthUri(secretB32) {
-  const label = encodeURIComponent('Talikota Hari Krishna Admin:office')
+export function otpauthUri(secretB32, account = 'office') {
+  const label = encodeURIComponent(`Talikota Hari Krishna Admin:${account}`)
   const issuer = encodeURIComponent('Talikota Hari Krishna Admin')
   return `otpauth://totp/${label}?secret=${secretB32}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`
 }
@@ -347,36 +347,74 @@ const hashRecovery = (code, salt) =>
 
 /* ---------------------------------------------------- second factor */
 
-/** Unseal the enrolled secret, re-sealing it under the primary key if an
+/*
+ * UP TO THREE AUTHENTICATOR PHONES.
+ *
+ * The office is run by more than one person — Hari Krishna, his son, and a
+ * team member — and each needs their own phone to sign in. They share the one
+ * password; each phone has its own secret, so a phone can be taken off the
+ * account without touching the others.
+ *
+ * Stored for compatibility with the single-phone state that came first: the
+ * FIRST phone keeps the original fields on `state.totp` (enc, keyId,
+ * createdAt, lastStep, and now an optional name); the others are in
+ * `state.totp.extra`. An older deployment rolled back to still reads the
+ * first phone correctly and simply ignores the rest.
+ */
+export const MAX_DEVICES = 3
+const FIRST = 'main'
+
+function devicesOf(state) {
+  if (!state.totp) return []
+  return [
+    { id: FIRST, name: state.totp.name || 'First phone', ref: state.totp },
+    ...(state.totp.extra || []).map((d) => ({ id: d.id, name: d.name, ref: d })),
+  ]
+}
+
+/** The phones on the account, for the Security page. Nothing secret. */
+export function listDevices(state) {
+  return devicesOf(state).map((d) => ({ id: d.id, name: d.name, createdAt: d.ref.createdAt || null }))
+}
+
+/** Unseal one phone's secret, re-sealing it under the primary key if an
  *  older one was needed. Returns the secret Buffer, or throws. */
-async function enrolledSecret(state) {
-  const got = unseal(state.totp.enc)
-  if (!got) throw new Error('The authenticator secret could not be unsealed')
+async function deviceSecret(state, ref) {
+  const got = unseal(ref.enc)
+  if (!got) throw new Error('An authenticator secret could not be unsealed')
   if (got.keyId !== rootKeys().primaryId) {
-    state.totp.enc = seal(rootKeys().primary, got.plain)
-    state.totp.keyId = rootKeys().primaryId
+    ref.enc = seal(rootKeys().primary, got.plain)
+    ref.keyId = rootKeys().primaryId
     await saveState(state).catch(() => {})
   }
   return got.plain
 }
 
 /**
- * Verify a second-factor code: an authenticator code, or one of the
- * recovery codes (each works once). Records the use.
+ * Verify a second-factor code: a code from any of the enrolled phones, or one
+ * of the recovery codes (each works once). Records the use. When `out` is
+ * given, `out.device` is set to the name of the phone the code came from.
  * Returns 'totp' | 'recovery' | 'replay' (right code, already used) | null.
  */
-export async function verifySecondFactor(code) {
+export async function verifySecondFactor(code, out = {}) {
   const state = await loadState({ fresh: true })
   if (!state.totp) return null
   const given = String(code || '').trim()
 
   if (/^\d{6}$/.test(given.replace(/\s/g, ''))) {
-    const secret = await enrolledSecret(state)
-    const step = matchTotp(secret, given.replace(/\s/g, ''), state.totp.lastStep || 0)
-    if (step === null) return null
-    if (step === 'replay') return 'replay'
-    state.totp.lastStep = step
+    const digits = given.replace(/\s/g, '')
+    let hit = null
+    let replay = false
+    // Every phone is checked, match or not, so timing does not say which.
+    for (const d of devicesOf(state)) {
+      const step = matchTotp(await deviceSecret(state, d.ref), digits, d.ref.lastStep || 0)
+      if (step === 'replay') replay = true
+      else if (step !== null && !hit) hit = { d, step }
+    }
+    if (!hit) return replay ? 'replay' : null
+    hit.d.ref.lastStep = hit.step
     await saveState(state)
+    out.device = hit.d.name
     return 'totp'
   }
 
@@ -386,6 +424,90 @@ export async function verifySecondFactor(code) {
   state.totp.recovery[idx].used = new Date().toISOString()
   await saveState(state)
   return 'recovery'
+}
+
+/** A phone's name as typed: trimmed, one line, at most 40 characters. */
+export function cleanDeviceName(name) {
+  // eslint-disable-next-line no-control-regex
+  return String(name || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40)
+}
+
+/** Start adding another phone: a fresh secret, sealed to ride in the cookie. */
+export function newDeviceEnrolment(name) {
+  const secret = randomBytes(20)
+  return {
+    secretB32: base32(secret),
+    uri: otpauthUri(base32(secret), name || 'office'),
+    sealed: seal(rootKeys().primary, secret),
+  }
+}
+
+function conflict(message) {
+  const err = new Error(message)
+  err.status = 409
+  return err
+}
+
+/** How many phones the account has now. */
+export async function deviceCount() {
+  return devicesOf(await loadState({ fresh: true })).length
+}
+
+/** Finish adding a phone if its first code matches. Returns true, or null
+ *  for a wrong code; throws 409 when the account already has three. */
+export async function addDevice(sealed, code, name) {
+  const got = unseal(sealed)
+  if (!got) return null
+  const step = matchTotp(got.plain, String(code || '').replace(/\s/g, ''), 0)
+  if (step === null || step === 'replay') return null
+  const state = await loadState({ fresh: true })
+  if (!state.totp) throw conflict('Set up the first authenticator before adding another.')
+  if (devicesOf(state).length >= MAX_DEVICES) throw conflict(`The account already has ${MAX_DEVICES} phones. Remove one first.`)
+  state.totp.extra = [
+    ...(state.totp.extra || []),
+    {
+      id: b64u(randomBytes(6)),
+      name: cleanDeviceName(name) || 'Another phone',
+      enc: seal(rootKeys().primary, got.plain),
+      keyId: rootKeys().primaryId,
+      createdAt: new Date().toISOString(),
+      lastStep: step,
+    },
+  ]
+  await saveState(state)
+  return true
+}
+
+/** Take one phone off the account. The last one cannot be removed this way —
+ *  that is "start over", which signs everybody out. Returns its name. */
+export async function removeDevice(id) {
+  const state = await loadState({ fresh: true })
+  const list = devicesOf(state)
+  const target = list.find((d) => d.id === id)
+  if (!target) throw conflict('That phone is no longer on the account.')
+  if (list.length === 1) throw conflict('This is the only phone. Use “Start over” to replace it.')
+  const extra = state.totp.extra || []
+  if (id === FIRST) {
+    // The next phone takes the first phone's place in the original fields.
+    const [next, ...rest] = extra
+    Object.assign(state.totp, { enc: next.enc, keyId: next.keyId, createdAt: next.createdAt, lastStep: next.lastStep, name: next.name })
+    state.totp.extra = rest
+  } else {
+    state.totp.extra = extra.filter((d) => d.id !== id)
+  }
+  await saveState(state)
+  return target.name
+}
+
+export async function renameDevice(id, name) {
+  const clean = cleanDeviceName(name)
+  if (!clean) throw conflict('Give the phone a name.')
+  const state = await loadState({ fresh: true })
+  const target = devicesOf(state).find((d) => d.id === id)
+  if (!target) throw conflict('That phone is no longer on the account.')
+  target.ref.name = clean
+  await saveState(state)
+  return clean
 }
 
 /** Start enrolment: a fresh secret, sealed so it can ride in the cookie. */
@@ -516,6 +638,7 @@ export async function issueSession(req, res, stage, extra = {}) {
     ua: uaTag(req),
     pw: passwordTag(),
     ...(extra.pe ? { pe: extra.pe } : {}),
+    ...(extra.pn ? { pn: extra.pn } : {}),
     ...(extra.via ? { via: extra.via } : {}),
   }
   const maxAge = stage === 'full' ? Math.min(IDLE, payload.exp - now) : payload.exp - now
@@ -544,7 +667,8 @@ export async function readSession(req, res) {
   if (p.ep !== state.epoch) return null
 
   if (res && p.st === 'full' && now - p.seen > 60) {
-    await issueSession(req, res, 'full', { sid: p.sid, iat: p.iat, via: p.via })
+    // A phone being added stays pending across the refresh.
+    await issueSession(req, res, 'full', { sid: p.sid, iat: p.iat, via: p.via, pe: p.pe, pn: p.pn })
   }
   return p
 }
