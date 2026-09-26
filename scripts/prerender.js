@@ -62,6 +62,7 @@ const EN_ROUTES = [
   '/political',
   '/community',
   '/media',
+  '/press',
   '/contact',
   '/posters',
   ...posterSlugs.map((slug) => `/posters/${slug}`),

@@ -8,6 +8,7 @@ import { photos, gallery } from '../data/photos'
 import { useT } from '../i18n/useT'
 import UpcomingEvents from '../components/UpcomingEvents'
 import PosterPromo from '../components/PosterPromo'
+import IssuesHighlight from '../components/IssuesHighlight'
 
 const Home = () => {
   const t = useT()
@@ -226,6 +227,10 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* ================= ON THE GROUND =================
+          The local issues he has taken up, with the papers that reported them. */}
+      <IssuesHighlight />
 
       {/* ================= FOCUS AREAS =================
           A numbered editorial list. The icon-in-a-rounded-tile grid this

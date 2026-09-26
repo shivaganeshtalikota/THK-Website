@@ -23,6 +23,7 @@ import About from './pages/About'
 import Political from './pages/Political'
 import Community from './pages/Community'
 import Media from './pages/Media'
+import Press from './pages/Press'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
@@ -46,6 +47,7 @@ const PAGES = [
   { path: '/political', element: <Political /> },
   { path: '/community', element: <Community /> },
   { path: '/media', element: <Media /> },
+  { path: '/press', element: <Press /> },
   { path: '/contact', element: <Contact /> },
   { path: '/posters', element: <Posters /> },
   // One editor, addressed by slug, so a new campaign poster is a data entry

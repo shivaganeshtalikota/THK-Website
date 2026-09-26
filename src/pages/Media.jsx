@@ -1,3 +1,4 @@
+import Link from '../components/LocaleLink'
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { FaArrowRight, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
 import PostsFeed from '../components/PostsFeed'
@@ -431,6 +432,9 @@ const Media = () => {
             <p className="mt-6 text-lead text-ink-600">
               {t("Dated statements and announcements are published here. Until then, the office posts on X — the most recent are below, and the photo gallery above records recent activity.")}
             </p>
+            <Link to="/press" className="mt-5 inline-block font-sans text-sm font-semibold text-ink-900 underline underline-offset-4">
+              {t('Newspaper cuttings →')}
+            </Link>
           </Reveal>
 
           <div className="mt-12">

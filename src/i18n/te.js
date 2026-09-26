@@ -966,4 +966,62 @@ export const te = {
   'Works on a phone': 'ఫోన్‌లోనే పని చేస్తుంది',
   'Ready in a minute': 'ఒక్క నిమిషంలో సిద్ధం',
   'Your photo stays with you': 'మీ ఫోటో మీ దగ్గరే ఉంటుంది',
+
+  // ---- Press: /press, the home-page issues, the footer (September 2026) ------
+  'In the news': 'వార్తల్లో',
+  Press: 'పత్రికలు',
+  'What the newspapers have reported — the cuttings as printed, with the paper and the date.':
+    'పత్రికలు ప్రచురించిన వార్తలు — ముద్రించిన క్లిప్పింగులే, పత్రిక పేరు, తేదీతో సహా.',
+  'On the ground': 'క్షేత్రస్థాయిలో',
+  'Issues he has taken up': 'ఆయన చేపట్టిన సమస్యలు',
+  'open the cutting': 'క్లిప్పింగ్ తెరవండి',
+  Coverage: 'వార్తా కథనాలు',
+  'Newspaper cuttings': 'పత్రికా క్లిప్పింగులు',
+  'Newest first. Tap a cutting to read it full size.': 'తాజావి ముందు. పూర్తి పరిమాణంలో చదవడానికి క్లిప్పింగ్‌పై నొక్కండి.',
+  'Full size': 'పూర్తి పరిమాణం',
+  'Continued on the inside page': 'లోపలి పేజీలో కొనసాగింపు',
+  'Photos and video': 'ఫోటోలు, వీడియోలు',
+  Page: 'పేజీ',
+  dateline: 'డేట్‌లైన్',
+  'Reported in': 'ప్రచురించిన పత్రికలు:',
+  'Newspaper cuttings →': 'పత్రికా క్లిప్పింగులు →',
+  'Newspaper coverage of Talikota Hari Krishna: the Jawahar Nagar dumping yard, two divisions for Nagaram, party and temple work — the cuttings as printed.':
+    'తాళికోట హరికృష్ణపై పత్రికా కథనాలు: జవహర్ నగర్ డంపింగ్ యార్డ్, నాగారానికి రెండు డివిజన్లు, పార్టీ, ఆలయ సేవ — ముద్రించిన క్లిప్పింగులు.',
+  'Janam Vaartha': 'జనం వార్త',
+  Eenadu: 'ఈనాడు',
+  'Andhra Jyothy': 'ఆంధ్రజ్యోతి',
+  'Mana Telangana': 'మన తెలంగాణ',
+  Vaartha: 'వార్త',
+  Suryaa: 'సూర్య',
+  'News24 Telugu': 'న్యూస్24 తెలుగు',
+  'Shift the Jawahar Nagar dumping yard': 'జవహర్ నగర్ డంపింగ్ యార్డ్‌ను తరలించాలి',
+  'Hyderabad’s garbage is trucked daily to the Jawahar Nagar dumping yard near Nagaram and Keesara. Talikota Hari Krishna has demanded that the yard be moved elsewhere: residents of the surrounding villages live with the stench, polluted water and air, skin and kidney ailments, and groundwater reported contaminated for up to 15 km. He has warned of a larger agitation if the government does not respond.':
+    'హైదరాబాద్ నగరపు చెత్తను ప్రతిరోజూ నాగారం, కీసర సమీపంలోని జవహర్ నగర్ డంపింగ్ యార్డ్‌కు తరలిస్తున్నారు. ఆ యార్డ్‌ను మరో చోటికి తరలించాలని తాళికోట హరికృష్ణ డిమాండ్ చేశారు: చుట్టుపక్కల గ్రామాల ప్రజలు దుర్వాసన, కలుషితమైన నీరు, గాలి, చర్మ, కిడ్నీ వ్యాధులతో బాధపడుతున్నారు; 15 కిలోమీటర్ల మేర భూగర్భ జలాలు కలుషితమయ్యాయని చెబుతున్నారు. ప్రభుత్వం స్పందించకుంటే పెద్ద ఎత్తున ఉద్యమిస్తామని ఆయన హెచ్చరించారు.',
+  'Two divisions for Nagaram': 'నాగారానికి రెండు డివిజన్లు',
+  'With Nagaram now part of Greater Hyderabad, TDP leaders led by Talikota Hari Krishna petitioned the Ghatkesar circle Deputy Commissioner in January 2026 to split the large Nagaram division into two, so that sanitation, drinking water, roads and street lighting can be looked after properly.':
+    'నాగారం గ్రేటర్ హైదరాబాద్‌లో భాగమైన నేపథ్యంలో, విశాలమైన నాగారం డివిజన్‌ను రెండుగా విభజించాలని తాళికోట హరికృష్ణ సహా టీడీపీ నాయకులు 2026 జనవరిలో ఘట్‌కేసర్ సర్కిల్ డిప్యూటీ కమిషనర్‌కు వినతిపత్రం అందజేశారు — పారిశుద్ధ్యం, తాగునీరు, రహదారులు, వీధి దీపాలపై సరైన పర్యవేక్షణ కోసం.',
+  'Visiting the Shirdi Sai Baba temple at LB Nagar, Talikota Hari Krishna, member of the Indrakeeladri temple trust board, said temples are places of peace of mind and offered special prayers for the well-being of the people of the state.':
+    'ఎల్బీనగర్‌లోని శ్రీ షిర్డీ సాయిబాబా ఆలయాన్ని దర్శించుకున్న ఇంద్రకీలాద్రి ధర్మకర్తల మండలి సభ్యులు తాళికోట హరికృష్ణ, ఆలయాలు మానసిక ప్రశాంతతకు నిలయాలని అన్నారు; రాష్ట్ర ప్రజల సుభిక్షం కోసం ప్రత్యేక పూజలు నిర్వహించారు.',
+  'At the Mahanadu held at NTR Trust Bhavan on N.T. Rama Rao’s 103rd birth anniversary, TDP senior leader and Sri Kanaka Durga temple trust board member Talikota Hari Krishna garlanded the NTR statue and paid tribute.':
+    'ఎన్టీ రామారావు 103వ జయంతి సందర్భంగా ఎన్టీఆర్ ట్రస్ట్ భవన్‌లో జరిగిన మహానాడులో టీడీపీ సీనియర్ నాయకులు, శ్రీ కనకదుర్గ ఆలయ ట్రస్ట్ బోర్డు సభ్యులు తాళికోట హరికృష్ణ ఎన్టీఆర్ విగ్రహానికి పూలమాల వేసి నివాళులు అర్పించారు.',
+  'Talikota Hari Krishna, member of the Sri Kanaka Durga temple trust board, called on the Devasthanam’s Executive Officer Seena Naik to congratulate him on the extension of his tenure, and hoped the temple and its services to devotees would continue to grow under his leadership.':
+    'శ్రీ కనకదుర్గ ఆలయ ట్రస్ట్ బోర్డు సభ్యులు తాళికోట హరికృష్ణ దేవస్థానం కార్యనిర్వహణాధికారి శీనా నాయక్‌ను కలిసి పదవీకాలం పొడిగింపుపై శుభాకాంక్షలు తెలిపారు; ఆయన నాయకత్వంలో దేవస్థానం, భక్తులకు సేవలు మరింత అభివృద్ధి చెందాలని ఆకాంక్షించారు.',
+  'Talikota Hari Krishna called on minister Nara Lokesh after his election as the TDP’s working president, honouring him with a shawl and bouquet, and congratulated the party’s newly appointed Telangana leaders.':
+    'టీడీపీ వర్కింగ్ ప్రెసిడెంట్‌గా ఎన్నికైన మంత్రి నారా లోకేష్‌ను తాళికోట హరికృష్ణ కలిసి శాలువా, పుష్పగుచ్ఛంతో సత్కరించారు; పార్టీ కొత్తగా నియమించిన తెలంగాణ నాయకులకు శుభాకాంక్షలు తెలిపారు.',
+  'In a statement to the media, Talikota Hari Krishna — Kanaka Durga temple trust board member and TDP senior leader — wished the people of Nagaram division a happy Sri Rama Navami and asked devotees to celebrate the Sita Rama Kalyanam festivities peacefully.':
+    'కనకదుర్గ ఆలయ ట్రస్ట్ బోర్డు సభ్యులు, టీడీపీ సీనియర్ నాయకులు తాళికోట హరికృష్ణ మీడియాకు విడుదల చేసిన ప్రకటనలో నాగారం డివిజన్ ప్రజలకు శ్రీరామనవమి శుభాకాంక్షలు తెలిపారు; సీతారాముల కల్యాణ మహోత్సవాలను శాంతియుతంగా జరుపుకోవాలని భక్తులను కోరారు.',
+  'A full-page report on the Jawahar Nagar dumping yard. Talikota Hari Krishna said villagers around the yard live amid the stench, suffer skin and kidney ailments from polluted water and air, and that groundwater is reported contaminated for up to 15 km — and demanded the yard be shifted, warning of a larger agitation if the government does not respond.':
+    'జవహర్ నగర్ డంపింగ్ యార్డ్‌పై పూర్తి పేజీ కథనం. యార్డ్ చుట్టుపక్కల గ్రామాల ప్రజలు దుర్వాసన మధ్య జీవిస్తున్నారని, కలుషిత నీరు, గాలి వల్ల చర్మ, కిడ్నీ వ్యాధులకు గురవుతున్నారని, 15 కిలోమీటర్ల మేర భూగర్భ జలాలు కలుషితమయ్యాయని తాళికోట హరికృష్ణ అన్నారు; యార్డ్‌ను తరలించాలని డిమాండ్ చేస్తూ, ప్రభుత్వం స్పందించకుంటే పెద్ద ఎత్తున ఉద్యమిస్తామని హెచ్చరించారు.',
+  'On N.T. Rama Rao’s 30th death anniversary, Talikota Hari Krishna led a bike rally of TDP leaders and workers from the NTR statue in Nagaram to NTR Ghat, saying NTR’s rule stood for welfare of the poor, respect for women and Telugu self-respect.':
+    'ఎన్టీ రామారావు 30వ వర్ధంతి సందర్భంగా తాళికోట హరికృష్ణ ఆధ్వర్యంలో నాగారంలోని ఎన్టీఆర్ విగ్రహం నుంచి ఎన్టీఆర్ ఘాట్ వరకు టీడీపీ నాయకులు, కార్యకర్తలతో బైక్ ర్యాలీ జరిగింది; పేదల సంక్షేమం, మహిళల గౌరవం, ప్రజల ఆత్మగౌరవమే ఎన్టీఆర్ పాలనకు నిదర్శనమని ఆయన అన్నారు.',
+  'TDP leaders of Nagaram division, including Kanaka Durga temple committee member Talikota Hari Krishna, met Ghatkesar circle Deputy Commissioner A. Vani Reddy to ask that the Nagaram division be split in two, so that sanitation, drinking water, roads and street lights can be supervised better. The Deputy Commissioner promised to take it to senior officials.':
+    'కనకదుర్గ ఆలయ కమిటీ సభ్యులు తాళికోట హరికృష్ణ సహా నాగారం డివిజన్ టీడీపీ నాయకులు ఘట్‌కేసర్ సర్కిల్ డిప్యూటీ కమిషనర్ ఎ. వాణి రెడ్డిని కలిసి, పారిశుద్ధ్యం, తాగునీరు, రహదారులు, వీధి దీపాలపై మెరుగైన పర్యవేక్షణ కోసం నాగారం డివిజన్‌ను రెండుగా విభజించాలని కోరారు. ఉన్నతాధికారుల దృష్టికి తీసుకెళ్తామని డిప్యూటీ కమిషనర్ హామీ ఇచ్చారు.',
+  'Nagaram TDP leaders, among them Talikota Hari Krishna, handed a petition to the Ghatkesar circle Deputy Commissioner asking for Nagaram division to be divided into two.':
+    'నాగారం డివిజన్‌ను రెండుగా విభజించాలని కోరుతూ తాళికోట హరికృష్ణ సహా నాగారం టీడీపీ నాయకులు ఘట్‌కేసర్ సర్కిల్ డిప్యూటీ కమిషనర్‌కు వినతిపత్రం అందజేశారు.',
+  'TDP leaders including Talikota Hari Krishna met the Ghatkesar circle Deputy Commissioner and asked for Nagaram to be split into two divisions; she said she would take it up with senior officials.':
+    'తాళికోట హరికృష్ణ సహా టీడీపీ నాయకులు ఘట్‌కేసర్ సర్కిల్ డిప్యూటీ కమిషనర్‌ను కలిసి నాగారాన్ని రెండు డివిజన్లుగా విభజించాలని కోరారు; ఉన్నతాధికారుల దృష్టికి తీసుకెళ్తామని ఆమె తెలిపారు.',
+  'Speaking after the TDP delegation’s meeting with the Deputy Commissioner, Talikota Hari Krishna said local people want Nagaram made into two divisions, because one division this large holds back its development.':
+    'డిప్యూటీ కమిషనర్‌తో టీడీపీ బృందం సమావేశం అనంతరం తాళికోట హరికృష్ణ మాట్లాడుతూ, నాగారాన్ని రెండు డివిజన్లుగా చేయాలని స్థానిక ప్రజలు కోరుకుంటున్నారని, ఇంత పెద్ద డివిజన్ ఒక్కటిగా ఉంటే అభివృద్ధి కుంటుపడుతుందని అన్నారు.',
+  'IT employees protested at Wipro Circle, Nanakramguda, against the arrest of N. Chandrababu Naidu. The report names Talikota Hari Krishna as president of the Telangana TDP’s IT wing, which called the silent protest.':
+    'ఎన్. చంద్రబాబు నాయుడు అరెస్టుకు నిరసనగా నానక్‌రామ్‌గూడ విప్రో కూడలిలో ఐటీ ఉద్యోగులు నిరసన చేపట్టారు. మౌన దీక్షకు పిలుపునిచ్చిన తెలంగాణ తెదేపా ఐటీ విభాగం అధ్యక్షుడిగా తాళికోట హరికృష్ణను కథనం పేర్కొంది.',
 }

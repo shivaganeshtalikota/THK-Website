@@ -46,6 +46,7 @@ const PAGES = [
   ['/political', 'His work as iTDP Telangana State President: the party, its principles, focus areas, and the September 2023 Wipro Circle mobilisation with press coverage.'],
   ['/community', 'The temple board seat — the institution, the governing body, the chairman, the date he was sworn in, and the press reports behind it.'],
   ['/media', 'Photographs and video coverage of party, constituency, temple and cultural work.'],
+  ['/press', 'Newspaper cuttings that report his work: the Jawahar Nagar dumping yard, two divisions for Nagaram, party and temple activity.'],
   ['/contact', 'How to reach the office.'],
 ]
 
