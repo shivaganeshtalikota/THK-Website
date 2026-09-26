@@ -9,6 +9,7 @@ import { useT } from '../i18n/useT'
 import UpcomingEvents from '../components/UpcomingEvents'
 import PosterPromo from '../components/PosterPromo'
 import IssuesHighlight from '../components/IssuesHighlight'
+import { cuttings, onlineReports, interviews } from '../data/press'
 
 const Home = () => {
   const t = useT()
@@ -124,8 +125,10 @@ const Home = () => {
       {/* ================= MISSION PULL-QUOTE =================
           Set as an actual quotation at display size, not another centred card. */}
       <section className="section bg-white">
-        <div className="container-text">
-          <Reveal>
+        {/* Quote on the left, the two offices at a glance on the right: the
+            quote alone left the right half of a wide screen empty. */}
+        <div className="container-custom grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:col-span-7 lg:pl-16">
             <p className="eyebrow">{t('Mission')}</p>
             {/* Sized as a quotation, not a headline. `text-display` is tuned
                 for three or four words; a sixty-word mission statement at that
@@ -141,6 +144,27 @@ const Home = () => {
                 {t(site.mission)}
               </p>
             </blockquote>
+          </Reveal>
+          <Reveal delay={0.1} className="lg:col-span-5">
+            <p className="eyebrow">{t('At a glance')}</p>
+            <ul className="mt-6 divide-y divide-ink-100 border-y hairline">
+              {[
+                ['/community', t('Trust Board Member'), t('Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada — since 11 October 2025')],
+                ['/political', t('iTDP Telangana State President'), t('Telugu Desam Party')],
+                ['/press', t('In the news'), `${cuttings.length + onlineReports.length} ${t('reports')} · ${interviews.length} ${t('interviews and TV reports')}`],
+                ['/posters', t('Campaign posters'), t('Put your own photo and name on the campaign')],
+              ].map(([to, title, text]) => (
+                <li key={to}>
+                  <Link to={to} className="group flex items-center justify-between gap-4 py-4">
+                    <span>
+                      <span className="block font-semibold text-ink-900">{title}</span>
+                      <span className="mt-0.5 block text-sm text-ink-600">{text}</span>
+                    </span>
+                    <FaArrowRight className="shrink-0 text-ink-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-ink-900" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
       </section>
@@ -173,7 +197,7 @@ const Home = () => {
                   "one of several members, not the chairman" a second time. */}
               <p className="mt-5 text-white/60">
                 {t(
-                  `Sworn in on ${templeBoard.sworn} before the Rajagopuram on Indrakeeladri, as one of seventeen members of the trust board alongside its chairman.`
+                  `Sworn in on ${templeBoard.sworn} before the Rajagopuram on Indrakeeladri, as one of the 16 members the Andhra Pradesh government appointed to the trust board under its chairman.`
                 )}
               </p>
               <Link

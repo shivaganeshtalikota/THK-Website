@@ -81,6 +81,8 @@ const MAX_JSON = 256 * 1024
 const MAX_PART = 3.9 * 1024 * 1024
 const MAX_PARTS = 8 // 31MB — above anything the panel sends
 const CATEGORIES = ['party', 'constituency', 'temple', 'culture', 'press']
+// What a press report is about — the same topics the /press page groups by.
+const PRESS_TOPICS = ['dumping-yard', 'nagaram-divisions', 'party', 'temple', 'community']
 
 const KNOWN_TEXT = new Set(Object.keys(te))
 
@@ -197,6 +199,7 @@ const parseUploads = (text) => {
   const m = text ? JSON.parse(text) : {}
   m.photos ??= []
   m.updates ??= []
+  m.press ??= []
   return m
 }
 const serializeUploads = (m) => `${JSON.stringify(m, null, 2)}\n`
@@ -424,9 +427,20 @@ function entryFields(body, kind) {
   const title = String(body.title ?? '').trim()
   if (title.length < 3) fail(400, 'Give it a title of at least 3 characters.')
   if (title.length > 200) fail(400, 'Keep the title under 200 characters.')
+  const text = String(body.description ?? '').trim().slice(0, 4000)
+  if (kind === 'press') {
+    // A newspaper or channel, the date it ran, and optionally the page.
+    const paper = String(body.paper ?? '').trim()
+    if (paper.length < 2 || paper.length > 80) fail(400, 'Name the newspaper or channel.')
+    const date = String(body.date ?? '').trim()
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date))) fail(400, 'Give the date it was published.')
+    const page = body.page === '' || body.page == null ? null : Number(body.page)
+    if (page !== null && (!Number.isInteger(page) || page < 1 || page > 99)) fail(400, 'The page number should be between 1 and 99.')
+    const topic = PRESS_TOPICS.includes(body.category) ? body.category : 'party'
+    return { title, category: topic, text, paper, date, page, sources: cleanSources(body.sources) }
+  }
   const category = body.category || (kind === 'photo' ? 'party' : undefined)
   if (category && !CATEGORIES.includes(category)) fail(400, 'Unknown category.')
-  const text = String(body.description ?? '').trim().slice(0, 4000)
   return { title, category, text, sources: cleanSources(body.sources) }
 }
 
@@ -441,7 +455,9 @@ function saveEntry(kind) {
       let sig = null
       let orig = null
       let origSig = null
-      if (kind === 'photo' && (body.image || !editing)) {
+      // A photo needs its image; a press report may have a cutting, or be a
+      // link to an online report only.
+      if ((kind === 'photo' && (body.image || !editing)) || (kind === 'press' && body.image)) {
         if (!body.image) fail(400, 'Choose an image to upload.')
         buf = await readUpload(session, body.image)
         sig = detect(buf)
@@ -459,7 +475,7 @@ function saveEntry(kind) {
 
       const { commit, result } = await mutateFiles([UPLOADS_PATH], (files) => {
         const m = parseUploads(files[UPLOADS_PATH])
-        const list = kind === 'photo' ? m.photos : m.updates
+        const list = kind === 'photo' ? m.photos : kind === 'press' ? m.press : m.updates
         const now = new Date().toISOString()
         const out = []
         let entry
@@ -469,19 +485,28 @@ function saveEntry(kind) {
           entry.title = f.title
           if (kind === 'photo') entry.description = f.text
           else entry.summary = f.text
-          entry.category = f.category || entry.category
+          if (kind === 'press') Object.assign(entry, pressFields(f))
+          else entry.category = f.category || entry.category
           entry.sources = f.sources
           entry.updatedAt = now
         } else {
-          const id = `${now.slice(0, 10)}-${idSlug(f.title)}`
+          const id = `${kind === 'press' ? f.date : now.slice(0, 10)}-${idSlug(f.title)}`
           if (list.some((e) => e.id === id)) fail(409, 'Something with that title was already published today.')
-          entry = { id, title: f.title, category: f.category, sources: f.sources, publishedAt: now }
-          if (kind === 'photo') entry.description = f.text
-          else {
+          entry = { id, title: f.title, sources: f.sources, publishedAt: now }
+          if (kind === 'photo') {
+            entry.description = f.text
+            entry.category = f.category
+          } else if (kind === 'press') {
             entry.summary = f.text
+            Object.assign(entry, pressFields(f))
+          } else {
+            entry.summary = f.text
+            entry.category = f.category
             entry.date = now.slice(0, 10)
           }
           list.unshift(entry)
+          // Newest report first on /press, whatever order they are added in.
+          if (kind === 'press') list.sort((a, b) => String(b.date).localeCompare(String(a.date)))
         }
         if (buf) {
           const size = imageSize(buf)
@@ -531,7 +556,7 @@ function deleteEntry(kind) {
       if (!id) fail(400, 'Which entry?')
       const { commit, result } = await mutateFiles([UPLOADS_PATH], (files) => {
         const m = parseUploads(files[UPLOADS_PATH])
-        const list = kind === 'photo' ? m.photos : m.updates
+        const list = kind === 'photo' ? m.photos : kind === 'press' ? m.press : m.updates
         const i = list.findIndex((e) => e.id === id)
         if (i === -1) fail(404, 'That entry no longer exists.')
         const [removed] = list.splice(i, 1)
@@ -549,10 +574,15 @@ function deleteEntry(kind) {
   }
 }
 
+/** The fields a press entry keeps beyond title, summary and sources. */
+const pressFields = (f) => ({ paper: f.paper, date: f.date, page: f.page ?? undefined, topic: f.category })
+
 ops['photo-save'] = saveEntry('photo')
 ops['photo-delete'] = deleteEntry('photo')
 ops['update-save'] = saveEntry('update')
 ops['update-delete'] = deleteEntry('update')
+ops['press-save'] = saveEntry('press')
+ops['press-delete'] = deleteEntry('press')
 
 /* ------------------------------------------------------------- posters */
 

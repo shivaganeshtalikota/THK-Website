@@ -16,6 +16,8 @@
  * made by scripts/process-press.py.
  */
 
+import uploads from './uploads.json'
+
 /** The issues he has taken up, as the reports describe them. */
 export const pressIssues = {
   'dumping-yard': {
@@ -153,6 +155,7 @@ export const press = [
     date: '2026-01-09',
     paper: 'Mana Telangana',
     place: 'Ghatkesar',
+    url: 'https://epaper.manatelangana.news/c/78898601',
     topic: 'nagaram-divisions',
     headline: 'నాగారంను రెండు డివిజన్లు చేయాలి',
     summary:
@@ -188,5 +191,109 @@ export const press = [
   },
 ]
 
+/**
+ * Reports published online that name him, with the link to the original.
+ * The two below are the appointment of the 2025 trust board: both list him
+ * as member no. 5, "హరికృష్ణ – హైదరాబాద్ – టీడీపీ తెలంగాణ".
+ */
+export const onlineReports = [
+  {
+    id: 'ntv-2025-09-26-durga-temple-board',
+    date: '2025-09-26',
+    outlet: 'NTV Telugu',
+    byline: 'Sampath Kumar',
+    topic: 'temple',
+    headline: 'దుర్గ గుడి ఆలయ బోర్డు సభ్యులుగా 16 మంది నియామకం.. లిస్ట్ ఇదే!',
+    summary:
+      'The Andhra Pradesh government appointed 16 members to the Sri Kanaka Durga temple trust board under chairman Borra Radhakrishna. The published list names Hari Krishna of Hyderabad, TDP Telangana, as member no. 5.',
+    url: 'https://ntvtelugu.com/news/vijayawada-durga-temple-board-16-new-members-appointed-full-list-869264.html',
+  },
+  {
+    id: 'disha-2025-09-26-durga-temple-board',
+    date: '2025-09-26',
+    outlet: 'Disha Daily',
+    byline: 'Ramesh Naini',
+    topic: 'temple',
+    headline: 'విజయవాడ కనకదుర్గ ఆలయ కమిటీ నియామకం.. బోర్డు సభ్యులు 16 మంది.. ప్రభుత్వం ఉత్తర్వులు',
+    summary:
+      'Report on the government order appointing the 16-member Kanaka Durga temple committee. Hari Krishna — Hyderabad, TDP Telangana — is listed as member no. 5.',
+    url: 'https://www.dishadaily.com/andhrapradesh/vijayawada-kanakadurga-temple-committee-appointment-478807',
+  },
+]
+
+/** The temple's own record of its trust board. */
+export const officialRecord = {
+  label: 'Sri Durga Malleswara Swamy Varla Devasthanam — Temple Administration, Trust Board',
+  summary: 'The Devasthanam’s official website lists Talikota Hari Krishna among the members of its trust board, under chairman Borra Radha Krishna (Gandhi).',
+  url: 'https://kanakadurgamma.org/tenders',
+}
+
+/**
+ * Interviews and television coverage on YouTube. Thumbnails are kept locally
+ * in public/photos/video (the site loads no third-party images); the video
+ * plays in the page through youtube-nocookie.com.
+ */
+export const interviews = [
+  {
+    id: 'gPpUGw1h88g',
+    date: '2023-09-29',
+    channel: 'Leo Telangana',
+    kind: 'Interview',
+    title: 'ఇబ్బంది పెట్టినా తెలంగాణలో చంద్రబాబుకే మద్దతు',
+    summary: 'Interview as iTDP president after N. Chandrababu Naidu’s arrest: however much the party’s supporters are troubled, in Telangana their support stays with Chandrababu.',
+    minutes: 7,
+  },
+  {
+    id: 'pikT5aJJy7I',
+    date: '2023-09-13',
+    channel: 'V6 News',
+    kind: 'News report',
+    title: 'TDP IT Wing Employees Protest Over Chandra Babu Arrest At Wipro Circle',
+    summary: 'Television coverage of the protest by IT employees at Wipro Circle, Gachibowli — the silent protest called by the Telangana TDP’s IT wing, which he leads.',
+    minutes: 1,
+  },
+  {
+    id: 'EyfkvHu_UGM',
+    date: '2023-07-05',
+    channel: 'RTV Telugu',
+    kind: 'Interview',
+    title: 'iTDP State Leader Talikota Harikrishna on the KCR government',
+    summary: 'Speaking to RTV as the iTDP state leader, he criticised the BRS government of K. Chandrashekar Rao, saying only media that praise the government enjoy freedom in Telangana.',
+    minutes: 7,
+  },
+  {
+    id: 'N2TWmdgpl_Y',
+    date: '2023-07-03',
+    channel: 'RTV Telugu',
+    kind: 'Speech',
+    title: 'Talikota Harikrishna on the iTDP social media team',
+    summary: 'A speech on the work of the iTDP social media team — the party wing, he said, that brings people’s problems to the attention of its leaders.',
+    minutes: 4,
+  },
+]
+
 export const pressImage = (slug) => `/press/${slug}.jpg`
 export const pressThumb = (slug) => `/press/${slug}-640.webp`
+
+/**
+ * Every cutting as one list, newest first: the ones kept here and the ones
+ * the office adds from the admin panel (uploads.json → press). Shaped the
+ * same way so the page treats them alike.
+ */
+export const cuttings = [
+  ...(uploads.press ?? []).map((u) => ({
+    slug: u.id,
+    date: u.date,
+    page: u.page,
+    paper: u.paper,
+    topic: u.topic,
+    headline: u.title,
+    summary: u.summary,
+    image: u.src || null,
+    thumb: u.src || null,
+    w: u.width,
+    h: u.height,
+    url: u.sources?.[0]?.url,
+  })),
+  ...press.map((p) => ({ ...p, image: pressImage(p.slug), thumb: pressThumb(p.slug), also: p.also ? pressImage(p.also) : null })),
+].sort((a, b) => String(b.date).localeCompare(String(a.date)))

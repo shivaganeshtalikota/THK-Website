@@ -735,8 +735,8 @@ export const te = {
   // ---- The appointment record ---------------------------------------------
   'The Appointment': 'నియామకం',
   'The seat, and the record': 'బాధ్యత, దానికి ఆధారాలు',
-  'Sworn in on 11 October 2025 before the Rajagopuram on Indrakeeladri, as one of seventeen members of the trust board alongside its chairman.':
-    '2025 అక్టోబరు 11న ఇంద్రకీలాద్రిపై రాజగోపురం ఎదుట ప్రమాణ స్వీకారం — ధర్మకర్తల మండలి ఛైర్మన్‌తో పాటు పదిహేడు మంది సభ్యులలో ఒకరిగా.',
+  'Sworn in on 11 October 2025 before the Rajagopuram on Indrakeeladri, as one of the 16 members the Andhra Pradesh government appointed to the trust board under its chairman.':
+    '2025 అక్టోబరు 11న ఇంద్రకీలాద్రిపై రాజగోపురం ఎదుట ప్రమాణ స్వీకారం — ఛైర్మన్ నేతృత్వంలోని ధర్మకర్తల మండలికి ఆంధ్రప్రదేశ్ ప్రభుత్వం నియమించిన 16 మంది సభ్యులలో ఒకరిగా.',
   '119.34 lakh devotees in 2025-26, up from 93.40 lakh in 2023-24':
     '2025-26లో 119.34 లక్షల మంది భక్తులు; 2023-24లో ఇది 93.40 లక్షలు',
   'Figures given by the Andhra Pradesh Endowments Minister':
@@ -754,8 +754,8 @@ export const te = {
   'Borra Radhakrishna (Gandhi) — not Talikota Hari Krishna':
     'బొర్రా రాధాకృష్ణ (గాంధీ) — తాళికోట హరికృష్ణ కాదు',
   'His seat': 'ఆయన బాధ్యత',
-  'Trust board member, one of seventeen alongside the chairman':
-    'ధర్మకర్తల మండలి సభ్యుడు — ఛైర్మన్‌తో పాటు ఉన్న పదిహేడు మందిలో ఒకరు',
+  'Trust board member, one of 16 appointed by the Andhra Pradesh government':
+    'ధర్మకర్తల మండలి సభ్యుడు — ఆంధ్రప్రదేశ్ ప్రభుత్వం నియమించిన 16 మందిలో ఒకరు',
   'Sworn in': 'ప్రమాణ స్వీకారం',
   '11 October 2025, before the Rajagopuram on Indrakeeladri':
     '2025 అక్టోబరు 11, ఇంద్రకీలాద్రిపై రాజగోపురం ఎదుట',
@@ -1024,4 +1024,122 @@ export const te = {
     'డిప్యూటీ కమిషనర్‌తో టీడీపీ బృందం సమావేశం అనంతరం తాళికోట హరికృష్ణ మాట్లాడుతూ, నాగారాన్ని రెండు డివిజన్లుగా చేయాలని స్థానిక ప్రజలు కోరుకుంటున్నారని, ఇంత పెద్ద డివిజన్ ఒక్కటిగా ఉంటే అభివృద్ధి కుంటుపడుతుందని అన్నారు.',
   'IT employees protested at Wipro Circle, Nanakramguda, against the arrest of N. Chandrababu Naidu. The report names Talikota Hari Krishna as president of the Telangana TDP’s IT wing, which called the silent protest.':
     'ఎన్. చంద్రబాబు నాయుడు అరెస్టుకు నిరసనగా నానక్‌రామ్‌గూడ విప్రో కూడలిలో ఐటీ ఉద్యోగులు నిరసన చేపట్టారు. మౌన దీక్షకు పిలుపునిచ్చిన తెలంగాణ తెదేపా ఐటీ విభాగం అధ్యక్షుడిగా తాళికోట హరికృష్ణను కథనం పేర్కొంది.',
+
+  // ---- added 2026-09-26 ----
+  'News':
+    'వార్తలు',
+  'Read the original':
+    'అసలు కథనం చదవండి',
+  'Newer':
+    'కొత్తది',
+  'Older':
+    'పాతది',
+  'Reports':
+    'కథనాలు',
+  'Newspapers & sites':
+    'పత్రికలు, వెబ్‌సైట్లు',
+  'Interviews & TV':
+    'ఇంటర్వ్యూలు, టీవీ',
+  'Local causes he has pressed on behalf of Nagaram and the villages around it — each with the newspapers that reported it.':
+    'నాగారం, చుట్టుపక్కల గ్రామాల తరఫున ఆయన చేపట్టిన స్థానిక సమస్యలు — వాటిని ప్రచురించిన పత్రికలతో సహా.',
+  'Filter by topic':
+    'అంశం వారీగా చూడండి',
+  'Dumping yard':
+    'డంపింగ్ యార్డ్',
+  'Nagaram divisions':
+    'నాగారం డివిజన్లు',
+  'Party work':
+    'పార్టీ కార్యక్రమాలు',
+  'Community':
+    'సమాజం',
+  'Read':
+    'చదవండి',
+  'On camera':
+    'కెమెరా ముందు',
+  'Interviews and television coverage on Telugu news channels. They play here, on this page.':
+    'తెలుగు వార్తా ఛానళ్లలో ఇంటర్వ్యూలు, టీవీ కథనాలు. ఇవి ఇదే పేజీలో ప్లే అవుతాయి.',
+  'Interview':
+    'ఇంటర్వ్యూ',
+  'News report':
+    'వార్తా కథనం',
+  'Speech':
+    'ప్రసంగం',
+  'Interview as iTDP president after N. Chandrababu Naidu’s arrest: however much the party’s supporters are troubled, in Telangana their support stays with Chandrababu.':
+    'ఎన్. చంద్రబాబు నాయుడు అరెస్టు తర్వాత ఐటీడీపీ అధ్యక్షుడిగా ఇంటర్వ్యూ: పార్టీ అభిమానులను ఎంత ఇబ్బంది పెట్టినా తెలంగాణలో తమ మద్దతు చంద్రబాబుకేనని అన్నారు.',
+  'Television coverage of the protest by IT employees at Wipro Circle, Gachibowli — the silent protest called by the Telangana TDP’s IT wing, which he leads.':
+    'గచ్చిబౌలి విప్రో కూడలిలో ఐటీ ఉద్యోగుల నిరసనపై టీవీ కథనం — ఆయన నేతృత్వంలోని తెలంగాణ తెదేపా ఐటీ విభాగం పిలుపునిచ్చిన మౌన నిరసన.',
+  'Speaking to RTV as the iTDP state leader, he criticised the BRS government of K. Chandrashekar Rao, saying only media that praise the government enjoy freedom in Telangana.':
+    'ఐటీడీపీ రాష్ట్ర నాయకుడిగా ఆర్‌టీవీతో మాట్లాడుతూ, కె. చంద్రశేఖర రావు నేతృత్వంలోని బీఆర్‌ఎస్ ప్రభుత్వాన్ని విమర్శించారు; ప్రభుత్వాన్ని పొగిడే మీడియాకు మాత్రమే తెలంగాణలో స్వేచ్ఛ ఉందన్నారు.',
+  'A speech on the work of the iTDP social media team — the party wing, he said, that brings people’s problems to the attention of its leaders.':
+    'ఐటీడీపీ సోషల్ మీడియా బృందం పనిపై ప్రసంగం — ప్రజల సమస్యలను నాయకుల దృష్టికి తీసుకెళ్లేది ఈ విభాగమేనని ఆయన అన్నారు.',
+  'Online':
+    'ఆన్‌లైన్',
+  'Reported online':
+    'ఆన్‌లైన్ కథనాలు',
+  'Read on':
+    'చదవండి:',
+  'The Andhra Pradesh government appointed 16 members to the Sri Kanaka Durga temple trust board under chairman Borra Radhakrishna. The published list names Hari Krishna of Hyderabad, TDP Telangana, as member no. 5.':
+    'ఛైర్మన్ బొర్రా రాధాకృష్ణ నేతృత్వంలోని శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలికి ఆంధ్రప్రదేశ్ ప్రభుత్వం 16 మంది సభ్యులను నియమించింది. ప్రచురించిన జాబితాలో 5వ సభ్యుడిగా హైదరాబాద్‌కు చెందిన హరికృష్ణ (టీడీపీ తెలంగాణ) ఉన్నారు.',
+  'Report on the government order appointing the 16-member Kanaka Durga temple committee. Hari Krishna — Hyderabad, TDP Telangana — is listed as member no. 5.':
+    '16 మంది సభ్యుల కనకదుర్గ ఆలయ కమిటీని నియమిస్తూ ప్రభుత్వం ఇచ్చిన ఉత్తర్వులపై కథనం. 5వ సభ్యుడిగా హరికృష్ణ — హైదరాబాద్, టీడీపీ తెలంగాణ — ఉన్నారు.',
+  'The official record':
+    'అధికారిక రికార్డు',
+  'The Devasthanam’s official website lists Talikota Hari Krishna among the members of its trust board, under chairman Borra Radha Krishna (Gandhi).':
+    'దేవస్థానం అధికారిక వెబ్‌సైట్ తన ధర్మకర్తల మండలి సభ్యులలో తాళికోట హరికృష్ణను చూపుతోంది — ఛైర్మన్ బొర్రా రాధాకృష్ణ (గాంధీ).',
+  'Temple website — Trust Board':
+    'ఆలయ వెబ్‌సైట్ — ధర్మకర్తల మండలి',
+  'Andhra Prabha':
+    'ఆంధ్రప్రభ',
+  'The Durga temple trust board, meeting under chairman Borra Radhakrishna (Gandhi) with Executive Officer V.K. Seena Naik, approved ₹25 crore of arrangements for this year’s Sharannavaratri festival, expecting about 25 lakh devotees. The photograph shows the board in session.':
+    'ఛైర్మన్ బొర్రా రాధాకృష్ణ (గాంధీ) అధ్యక్షతన, ఈఓ వి.కె. శీనా నాయక్ సమక్షంలో సమావేశమైన దుర్గగుడి ధర్మకర్తల మండలి, సుమారు 25 లక్షల మంది భక్తులు వస్తారన్న అంచనాతో ఈ ఏడాది శరన్నవరాత్రి ఉత్సవాలకు రూ.25 కోట్ల ఏర్పాట్లను ఆమోదించింది. ఫోటోలో మండలి సమావేశం.',
+
+  // ---- added 2026-09-26 ----
+  'In short':
+    'సంక్షిప్తంగా',
+  'Questions? Contact the office':
+    'సందేహాలుంటే కార్యాలయాన్ని సంప్రదించండి',
+  'At a glance':
+    'ఒక్క చూపులో',
+  'Trust Board Member':
+    'ధర్మకర్తల మండలి సభ్యుడు',
+  'Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada — since 11 October 2025':
+    'శ్రీ కనకదుర్గ ఆలయం, ఇంద్రకీలాద్రి, విజయవాడ — 2025 అక్టోబరు 11 నుంచి',
+  'reports':
+    'కథనాలు',
+  'interviews and TV reports':
+    'ఇంటర్వ్యూలు, టీవీ కథనాలు',
+  'Campaign posters':
+    'ప్రచార పోస్టర్లు',
+  'Put your own photo and name on the campaign':
+    'ప్రచార పోస్టర్‌పై మీ ఫోటో, మీ పేరు',
+  'Your original photo never leaves your device; a poster you share is kept for 30 days.':
+    'మీ అసలు ఫోటో మీ పరికరం దాటి వెళ్లదు; మీరు షేర్ చేసిన పోస్టర్ 30 రోజులు మాత్రమే ఉంటుంది.',
+  'What you send through the contact form is used only to reply to you.':
+    'సంప్రదింపు ఫారం ద్వారా మీరు పంపినది మీకు జవాబు ఇవ్వడానికి మాత్రమే ఉపయోగిస్తారు.',
+  'No advertising or tracking cookies.':
+    'ప్రకటనలు లేదా ట్రాకింగ్ కుకీలు లేవు.',
+  'You can ask the office to see, correct or delete what it holds about you.':
+    'మీ గురించి కార్యాలయం వద్ద ఉన్న సమాచారాన్ని చూడమని, సరిచేయమని లేదా తొలగించమని మీరు కోరవచ్చు.',
+  'This is the official website of the office of Talikota Hari Krishna.':
+    'ఇది తాళికోట హరికృష్ణ కార్యాలయం అధికారిక వెబ్‌సైట్.',
+  'Views here are his and his office’s, published as political communication.':
+    'ఇక్కడి అభిప్రాయాలు ఆయనవి, ఆయన కార్యాలయానివి — రాజకీయ సమాచారంగా ప్రచురించినవి.',
+  'Party names, symbols and marks belong to the Telugu Desam Party.':
+    'పార్టీ పేర్లు, చిహ్నాలు తెలుగుదేశం పార్టీకి చెందినవి.',
+  'Links to other websites are not under this office’s control.':
+    'ఇతర వెబ్‌సైట్ల లింకులు ఈ కార్యాలయం నియంత్రణలో ఉండవు.',
+  'No account, no sign-up':
+    'ఖాతా అవసరం లేదు, నమోదు అవసరం లేదు',
+  'Your photo is processed on your phone':
+    'మీ ఫోటో మీ ఫోన్‌లోనే ప్రాసెస్ అవుతుంది',
+  'Shared posters are deleted after 30 days':
+    'షేర్ చేసిన పోస్టర్లు 30 రోజుల తర్వాత తొలగిపోతాయి',
+  '16 September 2026':
+    '16 సెప్టెంబర్ 2026',
+
+  // ---- added 2026-09-26 ----
+  'What local issues has Talikota Hari Krishna taken up?':
+    'తాళికోట హరికృష్ణ ఏ స్థానిక సమస్యలను చేపట్టారు?',
+  'He has demanded that the Jawahar Nagar dumping yard, which receives Hyderabad’s garbage, be shifted away from Nagaram and the surrounding villages, citing pollution, disease and contaminated groundwater (Janam Vaartha, 18 March 2026). In January 2026 he was among the TDP leaders who petitioned the Ghatkesar circle Deputy Commissioner to split Nagaram into two municipal divisions (Andhra Jyothy, Mana Telangana, Vaartha and Suryaa, 9 January 2026). The reports are collected on the “In the news” page.':
+    'హైదరాబాద్ చెత్తను తరలించే జవహర్ నగర్ డంపింగ్ యార్డ్‌ను నాగారం, చుట్టుపక్కల గ్రామాల నుంచి దూరంగా తరలించాలని ఆయన డిమాండ్ చేశారు — కాలుష్యం, వ్యాధులు, కలుషితమైన భూగర్భ జలాలను ప్రస్తావిస్తూ (జనం వార్త, 18 మార్చి 2026). 2026 జనవరిలో నాగారాన్ని రెండు మున్సిపల్ డివిజన్లుగా విభజించాలని ఘట్‌కేసర్ సర్కిల్ డిప్యూటీ కమిషనర్‌కు వినతిపత్రం ఇచ్చిన టీడీపీ నాయకులలో ఆయన ఒకరు (ఆంధ్రజ్యోతి, మన తెలంగాణ, వార్త, సూర్య — 9 జనవరి 2026). ఈ కథనాలు “వార్తల్లో” పేజీలో ఉన్నాయి.',
 }

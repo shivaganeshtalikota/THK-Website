@@ -1,7 +1,7 @@
 import { FaArrowRight } from 'react-icons/fa6'
 import Link from './LocaleLink'
 import Reveal from './Reveal'
-import { press, pressIssues, pressThumb } from '../data/press'
+import { cuttings, pressIssues } from '../data/press'
 import { useT } from '../i18n/useT'
 
 /**
@@ -29,14 +29,14 @@ const IssuesHighlight = () => {
         </Reveal>
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {Object.entries(pressIssues).map(([key, issue], i) => {
-            const reports = press.filter((p) => p.topic === key)
+            const reports = cuttings.filter((p) => p.topic === key)
             const lead = reports.find((r) => r.featured) || reports[0]
             const papers = [...new Set(reports.map((r) => t(r.paper)))].join(', ')
             return (
               <Reveal key={key} delay={i * 0.08} as="article" className="grid overflow-hidden rounded-sm border hairline bg-white sm:grid-cols-[11rem_1fr]">
                 <Link to={`/press#${lead.slug}`} className="block aspect-[16/10] overflow-hidden bg-ink-100 sm:aspect-auto">
                   <img
-                    src={pressThumb(lead.slug)}
+                    src={lead.thumb}
                     alt={`${t(lead.paper)}: ${lead.headline}`}
                     loading="lazy"
                     decoding="async"

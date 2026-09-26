@@ -1,21 +1,26 @@
 {
-  "photos": [
+  "photos": [],
+  "updates": [],
+  "press": [
     {
       "id": "2026-09-08-25-25",
       "title": "25 లక్షల మంది భక్తులు.. రూ.25 కోట్లతో ఏర్పాట్లు",
-      "description": "",
+      "paper": "Andhra Prabha",
+      "date": "2026-09-03",
+      "topic": "temple",
+      "summary": "The Durga temple trust board, meeting under chairman Borra Radhakrishna (Gandhi) with Executive Officer V.K. Seena Naik, approved ₹25 crore of arrangements for this year’s Sharannavaratri festival, expecting about 25 lakh devotees. The photograph shows the board in session.",
       "src": "/photos/uploads/2026-09-08-25-25.jpg",
+      "width": 1024,
+      "height": 576,
       "bytes": 140316,
-      "publishedAt": "2026-09-08T02:21:54.488Z",
       "sources": [
         {
           "label": "Prabha News",
           "url": "https://prabhanews.com/2-5-million-devotees-arrangements-made-at-a-cost-of-25-crore/"
         }
       ],
-      "category": "temple",
-      "updatedAt": "2026-09-08T02:42:16.511Z"
+      "publishedAt": "2026-09-08T02:21:54.488Z",
+      "updatedAt": "2026-09-26T09:00:00.000Z"
     }
-  ],
-  "updates": []
+  ]
 }

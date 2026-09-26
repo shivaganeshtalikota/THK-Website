@@ -28,7 +28,7 @@ export const ADMIN_HOST = 'admin.talikotaharikrishna.com'
 
 /** The panel's own pages. Everything else on the admin host is refused. */
 const ADMIN_ROUTES =
-  /^\/(?:|signin|posters|posters\/new|posters\/[a-z0-9][a-z0-9-]{0,47}|gallery|updates|events|announcement|contact|text|activity|security)\/?$/
+  /^\/(?:|signin|posters|posters\/new|posters\/[a-z0-9][a-z0-9-]{0,47}|gallery|updates|press|events|announcement|contact|text|activity|security)\/?$/
 
 /** Files the panel needs: its bundle, fonts, the cut-out runtime, and the
  *  images it shows (gallery photos, poster artwork, the party mark). */

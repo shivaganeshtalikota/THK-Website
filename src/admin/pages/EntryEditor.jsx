@@ -24,7 +24,40 @@ const CATEGORIES = [
   { id: 'press', label: 'Press Coverage' },
 ]
 
-const BLANK = { title: '', description: '', category: 'party', sources: [] }
+// What a press report is about — the groups on the website's /press page.
+const TOPICS = [
+  { id: 'dumping-yard', label: 'Jawahar Nagar dumping yard' },
+  { id: 'nagaram-divisions', label: 'Two divisions for Nagaram' },
+  { id: 'party', label: 'Party work' },
+  { id: 'temple', label: 'Temple trust board' },
+  { id: 'community', label: 'Community' },
+]
+
+const BLANK = { title: '', description: '', category: 'party', sources: [], paper: '', date: '', page: '' }
+
+const TEXT = {
+  photo: {
+    header: 'Photo gallery',
+    subtitle: 'Photos appear first in the gallery on the Media page, under the category you choose. Upload at full quality — nothing is squeezed to 4 MB any more.',
+    add: 'Add a photo',
+    save: 'photo-save',
+    del: 'photo-delete',
+  },
+  update: {
+    header: 'News & updates',
+    subtitle: 'Short written updates for the Media page: what happened, where it was reported.',
+    add: 'Add an update',
+    save: 'update-save',
+    del: 'update-delete',
+  },
+  press: {
+    header: 'Press coverage',
+    subtitle: 'Newspaper cuttings and online reports for the “In the news” page. Upload the cutting as a photo or scan, give the paper and the date, and add the link to the original if it is online.',
+    add: 'Add a report',
+    save: 'press-save',
+    del: 'press-delete',
+  },
+}
 
 function SourcesEditor({ sources, onChange }) {
   const set = (i, k, v) => onChange(sources.map((s, j) => (j === i ? { ...s, [k]: v } : s)))
@@ -50,6 +83,9 @@ function SourcesEditor({ sources, onChange }) {
 
 const EntryEditor = ({ kind }) => {
   const isPhoto = kind === 'photo'
+  const isPress = kind === 'press'
+  const hasImage = isPhoto || isPress
+  const txt = TEXT[kind]
   const { content, reload } = useContent()
   const [form, setForm] = useState(BLANK)
   const [editingId, setEditingId] = useState(null)
@@ -65,7 +101,7 @@ const EntryEditor = ({ kind }) => {
 
   useEffect(() => () => photo?.preview && URL.revokeObjectURL(photo.preview), [photo])
 
-  const list = (isPhoto ? content?.uploads?.photos : content?.uploads?.updates) || []
+  const list = (isPhoto ? content?.uploads?.photos : isPress ? content?.uploads?.press : content?.uploads?.updates) || []
 
   const pick = async (file) => {
     if (!file) return
@@ -85,7 +121,15 @@ const EntryEditor = ({ kind }) => {
 
   const startEdit = (e) => {
     setEditingId(e.id)
-    setForm({ title: e.title || '', description: e.description || e.summary || '', category: e.category || 'party', sources: e.sources || [] })
+    setForm({
+      title: e.title || '',
+      description: e.description || e.summary || '',
+      category: (isPress ? e.topic : e.category) || 'party',
+      sources: e.sources || [],
+      paper: e.paper || '',
+      date: e.date || '',
+      page: e.page ?? '',
+    })
     setPhoto(null)
     setDone(null)
     setError(null)
@@ -119,6 +163,8 @@ const EntryEditor = ({ kind }) => {
     setDone(null)
     if (form.title.trim().length < 3) return setError('Give it a title of at least 3 characters.')
     if (isPhoto && !editingId && !photo) return setError('Choose a photo to upload.')
+    if (isPress && form.paper.trim().length < 2) return setError('Name the newspaper or channel.')
+    if (isPress && !form.date) return setError('Give the date it was published.')
     try {
       let image
       let original
@@ -133,12 +179,13 @@ const EntryEditor = ({ kind }) => {
       }
       setBusy('Publishing…')
       setProgress(null)
-      const d = await api(isPhoto ? 'photo-save' : 'update-save', {
+      const d = await api(txt.save, {
         id: editingId || undefined,
         title: form.title.trim(),
         description: form.description.trim(),
         category: form.category,
         sources: form.sources.filter((s) => s.url.trim()),
+        ...(isPress ? { paper: form.paper.trim(), date: form.date, page: form.page === '' ? null : Number(form.page) } : {}),
         ...(image ? { image } : {}),
         ...(original ? { original } : {}),
       })
@@ -158,7 +205,7 @@ const EntryEditor = ({ kind }) => {
     setBusy('Removing…')
     setError(null)
     try {
-      const d = await api(isPhoto ? 'photo-delete' : 'update-delete', { id: e.id })
+      const d = await api(txt.del, { id: e.id })
       setDone({ commit: d.commit, message: 'Removed.' })
       if (editingId === e.id) reset()
       await reload()
@@ -171,19 +218,12 @@ const EntryEditor = ({ kind }) => {
 
   return (
     <>
-      <PageHeader
-        title={isPhoto ? 'Photo gallery' : 'News & updates'}
-        subtitle={
-          isPhoto
-            ? 'Photos appear first in the gallery on the Media page, under the category you choose. Upload at full quality — nothing is squeezed to 4 MB any more.'
-            : 'Short written updates for the Media page: what happened, where it was reported.'
-        }
-      />
+      <PageHeader title={txt.header} subtitle={txt.subtitle} />
 
       <div ref={formRef} className="scroll-mt-6">
-        <Card title={editingId ? 'Edit' : isPhoto ? 'Add a photo' : 'Add an update'} actions={editingId && <Button variant="ghost" onClick={reset}>Cancel editing</Button>}>
+        <Card title={editingId ? 'Edit' : txt.add} actions={editingId && <Button variant="ghost" onClick={reset}>Cancel editing</Button>}>
           <div className="grid gap-5 md:grid-cols-5">
-            {isPhoto && (
+            {hasImage && (
               <div className="md:col-span-2">
                 <input ref={fileRef} type="file" accept="image/*" className="sr-only" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = '' }} />
                 <button
@@ -196,7 +236,9 @@ const EntryEditor = ({ kind }) => {
                   ) : (
                     <span className="px-4">
                       <FaImage className="mx-auto text-2xl text-ink-400" aria-hidden="true" />
-                      <span className="mt-2 block text-sm font-semibold text-ink-800">{editingId ? 'Replace the photo (optional)' : 'Choose a photo'}</span>
+                      <span className="mt-2 block text-sm font-semibold text-ink-800">
+                        {isPress ? (editingId ? 'Replace the cutting (optional)' : 'Upload the cutting (optional)') : editingId ? 'Replace the photo (optional)' : 'Choose a photo'}
+                      </span>
                       <span className="mt-1 block text-xs text-ink-500">JPG, PNG or WebP · up to 30 MB</span>
                     </span>
                   )}
@@ -208,11 +250,24 @@ const EntryEditor = ({ kind }) => {
                 )}
               </div>
             )}
-            <div className={`space-y-4 ${isPhoto ? 'md:col-span-3' : 'md:col-span-5'}`}>
-              <Field label="Title *">
+            <div className={`space-y-4 ${hasImage ? 'md:col-span-3' : 'md:col-span-5'}`}>
+              {isPress && (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <Field label="Newspaper or channel *" className="sm:col-span-3">
+                    <input className={inputCls} value={form.paper} onChange={(e) => setForm((f) => ({ ...f, paper: e.target.value }))} maxLength={80} placeholder="e.g. Eenadu, Andhra Jyothy, NTV Telugu" />
+                  </Field>
+                  <Field label="Date published *" className="sm:col-span-2">
+                    <input type="date" className={inputCls} value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+                  </Field>
+                  <Field label="Page">
+                    <input type="number" min="1" max="99" className={inputCls} value={form.page} onChange={(e) => setForm((f) => ({ ...f, page: e.target.value }))} />
+                  </Field>
+                </div>
+              )}
+              <Field label={isPress ? 'Headline, as printed *' : 'Title *'}>
                 <input className={inputCls} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} maxLength={200} />
               </Field>
-              <Field label={isPhoto ? 'Caption' : 'Summary'} hint="Telugu or English.">
+              <Field label={isPhoto ? 'Caption' : 'Summary'} hint={isPress ? 'What the report says about him, in a sentence or two. Telugu or English.' : 'Telugu or English.'}>
                 <textarea className={`${inputCls} min-h-[6rem]`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} maxLength={4000} />
               </Field>
               <div>
@@ -229,6 +284,17 @@ const EntryEditor = ({ kind }) => {
                   </div>
                 )}
               </div>
+              {isPress && (
+                <Field label="What it is about">
+                  <select className={inputCls} value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
+                    {TOPICS.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              )}
               {isPhoto && (
                 <Field label="Category">
                   <select className={inputCls} value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
@@ -240,7 +306,10 @@ const EntryEditor = ({ kind }) => {
                   </select>
                 </Field>
               )}
-              <Field label="Sources" hint="Where this was reported. Shown as links under the item.">
+              <Field
+                label={isPress ? 'Link to the original' : 'Sources'}
+                hint={isPress ? 'The e-paper page or the article online. Visitors can open it from the report.' : 'Where this was reported. Shown as links under the item.'}
+              >
                 <SourcesEditor sources={form.sources} onChange={(sources) => setForm((f) => ({ ...f, sources }))} />
               </Field>
             </div>
@@ -267,12 +336,12 @@ const EntryEditor = ({ kind }) => {
       {!content ? (
         <p className="text-sm text-ink-400">Loading…</p>
       ) : list.length === 0 ? (
-        <Empty icon={isPhoto ? FaImage : FaPen} title="Nothing published from the console yet" />
+        <Empty icon={hasImage ? FaImage : FaPen} title="Nothing published from the console yet" />
       ) : (
-        <ul className={isPhoto ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'space-y-3'}>
+        <ul className={hasImage ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'space-y-3'}>
           {list.map((e) => (
             <li key={e.id} className="overflow-hidden rounded-xl border border-ink-200/80 bg-white shadow-sm">
-              {isPhoto && (
+              {hasImage && e.src && (
                 <div className="aspect-[4/3] bg-ink-100">
                   <img
                     src={e.src}
@@ -288,8 +357,9 @@ const EntryEditor = ({ kind }) => {
               <div className="p-4">
                 <p className="font-semibold text-ink-900">{e.title}</p>
                 <p className="mt-1 text-xs text-ink-400">
-                  {fmtDate(e.updatedAt || e.publishedAt)}
-                  {e.category ? ` · ${CATEGORIES.find((c) => c.id === e.category)?.label || e.category}` : ''}
+                  {isPress
+                    ? `${e.paper} · ${e.date}${e.page ? ` · page ${e.page}` : ''} · ${TOPICS.find((c) => c.id === e.topic)?.label || e.topic}`
+                    : `${fmtDate(e.updatedAt || e.publishedAt)}${e.category ? ` · ${CATEGORIES.find((c) => c.id === e.category)?.label || e.category}` : ''}`}
                 </p>
                 <div className="mt-3 flex gap-2">
                   <Button variant="ghost" className="!px-3 !py-1.5 !text-xs" onClick={() => startEdit(e)}>

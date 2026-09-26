@@ -451,6 +451,10 @@ export const faqs = [
     a: 'His stated focus areas are economic development and employment for youth, infrastructure development, social welfare including education and healthcare, good governance and transparency, Telugu cultural preservation, and direct community engagement across Telangana.',
   },
   {
+    q: 'What local issues has Talikota Hari Krishna taken up?',
+    a: 'He has demanded that the Jawahar Nagar dumping yard, which receives Hyderabad’s garbage, be shifted away from Nagaram and the surrounding villages, citing pollution, disease and contaminated groundwater (Janam Vaartha, 18 March 2026). In January 2026 he was among the TDP leaders who petitioned the Ghatkesar circle Deputy Commissioner to split Nagaram into two municipal divisions (Andhra Jyothy, Mana Telangana, Vaartha and Suryaa, 9 January 2026). The reports are collected on the “In the news” page.',
+  },
+  {
     q: 'Where is Talikota Hari Krishna based?',
     a: 'His base of operations is Hyderabad, Telangana, India. His political work covers Telangana state, and his temple board service is in Vijayawada, Andhra Pradesh.',
   },
@@ -482,22 +486,19 @@ export const faqs = [
  * That the Andhra Pradesh government constituted a new trust board for this
  * Devasthanam in September 2025; that it was sworn in before the Rajagopuram on
  * Indrakeeladri on 11 October 2025; that Borra Radhakrishna (Gandhi) chairs it
- * and seventeen members sit alongside him; and that the nominated list records a
- * member as "Harikrishna -- Hyderabad -- TDP Telangana". The Hans India of
- * 22 March 2026 names "T Harikrishna" among the members attending a temple
- * programme, with the chairman listed separately.
+ * and 16 members appointed by the government sit on it (the chief priest is a
+ * further ex-officio member); and that the published list records member
+ * no. 5 as "Harikrishna -- Hyderabad -- TDP Telangana" (NTV Telugu and Disha
+ * Daily, 26 September 2025). The Hans India of 22 March 2026 names
+ * "T Harikrishna" among the members attending a temple programme, with the
+ * chairman listed separately.
  *
- * WHAT THEY DO NOT ESTABLISH -- read before adding more.
- * No published report found spells the surname "Talikota" beside the temple
- * seat. The identification rests on the government list's own tag (Hyderabad,
- * TDP Telangana, a member rather than the chairman) and on the "T" initial.
- * That is strong; it is not a printed surname. So the sources below are
- * presented as the record OF THE BOARD -- which is exactly what they are -- and
- * never captioned as proof of identity.
- *
- * The single document that would settle it is the Endowments Department G.O.
- * constituting this board, which carries full legal names. It is not online.
- * When the office supplies it, put it first in `sources`.
+ * THE SURNAME, SETTLED (September 2026). The Devasthanam's own website lists
+ * "Talikota Hari Krishna" as a trust board member, with his photograph
+ * (kanakadurgamma.org, Temple Administration -> Trust Board), and Janam Vaartha
+ * reports of 18 March and 16 May 2026 print the full name with the seat. The
+ * Endowments Department G.O. constituting the board would add the legal
+ * record; when the office supplies it, put it first in `sources`.
  *
  * NOT CLAIMED ANYWHERE: that he chairs the board. He does not. Borra
  * Radhakrishna does, and the site says so in as many words -- which is also why
@@ -515,7 +516,7 @@ export const templeBoard = {
     ['Temple', 'Sri Kanaka Durga Temple, Indrakeeladri hill, Vijayawada'],
     ['Governing body', 'Non-hereditary trust board, Andhra Pradesh Endowments Department'],
     ['Board chairman', 'Borra Radhakrishna (Gandhi) — not Talikota Hari Krishna'],
-    ['His seat', 'Trust board member, one of seventeen alongside the chairman'],
+    ['His seat', 'Trust board member, one of 16 appointed by the Andhra Pradesh government'],
     ['Sworn in', '11 October 2025, before the Rajagopuram on Indrakeeladri'],
   ],
 
@@ -545,8 +546,20 @@ export const templeBoard = {
     {
       label: 'NTV Telugu',
       title: 'దుర్గ గుడి ఆలయ బోర్డు సభ్యులుగా 16 మంది నియామకం.. లిస్ట్ ఇదే!',
-      date: 'September 2025',
+      date: '26 September 2025',
       url: 'https://ntvtelugu.com/news/vijayawada-durga-temple-board-16-new-members-appointed-full-list-869264.html',
+    },
+    {
+      label: 'Disha Daily',
+      title: 'విజయవాడ కనకదుర్గ ఆలయ కమిటీ నియామకం.. బోర్డు సభ్యులు 16 మంది.. ప్రభుత్వం ఉత్తర్వులు',
+      date: '26 September 2025',
+      url: 'https://www.dishadaily.com/andhrapradesh/vijayawada-kanakadurga-temple-committee-appointment-478807',
+    },
+    {
+      label: 'Sri Durga Malleswara Swamy Varla Devasthanam',
+      title: 'Temple Administration — Trust Board (official website)',
+      date: '2026',
+      url: 'https://kanakadurgamma.org/tenders',
     },
     {
       label: 'The Hans India',
@@ -597,6 +610,7 @@ export const nav = [
   { name: 'Political Leadership', path: '/political' },
   { name: 'Community Service', path: '/community' },
   { name: 'Media', path: '/media' },
+  { name: 'News', path: '/press' },
   { name: 'Posters', path: '/posters' },
   { name: 'Contact', path: '/contact' },
 ]

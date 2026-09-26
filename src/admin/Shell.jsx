@@ -30,6 +30,7 @@ import ContactSocial from './pages/ContactSocial'
 import PageText from './pages/PageText'
 import Activity from './pages/Activity'
 import Security from './pages/Security'
+import PressCoverage from './pages/PressCoverage'
 
 
 const NAV = [
@@ -39,6 +40,7 @@ const NAV = [
   { group: 'Website' },
   { to: '/gallery', label: 'Photo gallery', icon: FaImages },
   { to: '/updates', label: 'News & updates', icon: FaNewspaper },
+  { to: '/press', label: 'Press coverage', icon: FaNewspaper },
   { to: '/events', label: 'Events & programmes', icon: FaCalendarDays },
   { to: '/announcement', label: 'Announcement bar', icon: FaBullhorn },
   { to: '/contact', label: 'Contact & social', icon: FaAddressCard },
@@ -194,6 +196,7 @@ const Shell = ({ onSignedOut }) => {
               <Route path="/posters/:slug" element={<PosterEditor />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/updates" element={<Updates />} />
+              <Route path="/press" element={<PressCoverage />} />
               <Route path="/events" element={<Events />} />
               <Route path="/announcement" element={<Announcement />} />
               <Route path="/contact" element={<ContactSocial />} />

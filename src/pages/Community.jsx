@@ -64,7 +64,7 @@ const Community = () => {
           '@type': 'OrganizationRole',
           '@id': `${site.url}/#devasthanam-board-role`,
           roleName: 'Trust Board Member',
-          description: 'One of seventeen members of the trust board alongside its chairman, not the chairman.',
+          description: 'One of the 16 members appointed to the trust board by the Andhra Pradesh government; not the chairman.',
           startDate: '2025-10-11',
           member: { '@id': `${site.url}/#person` },
         },
@@ -181,7 +181,7 @@ const Community = () => {
               <h2 className="mt-5 font-display text-display">{t('The seat, and the record')}</h2>
               <p className="mt-7 text-lead text-ink-600">
                 {t(
-                  `Sworn in on ${templeBoard.sworn} before the Rajagopuram on Indrakeeladri, as one of seventeen members of the trust board alongside its chairman.`
+                  `Sworn in on ${templeBoard.sworn} before the Rajagopuram on Indrakeeladri, as one of the 16 members the Andhra Pradesh government appointed to the trust board under its chairman.`
                 )}
               </p>
               <p className="mt-5 text-ink-600">
@@ -211,12 +211,14 @@ const Community = () => {
                         href={src.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group inline-flex max-w-full items-baseline gap-2 text-sm text-ink-700 hover:text-ink-900"
+                        className="group block max-w-full text-sm text-ink-700 hover:text-ink-900"
                       >
-                        <span className="font-semibold underline underline-offset-4">
+                        {/* Stacked, not side by side: a long outlet name in a
+                            row squeezed the title into a column a word wide. */}
+                        <span className="block font-semibold underline underline-offset-4">
                           {t(src.label)}
                         </span>
-                        <span className="min-w-0 text-ink-500">
+                        <span className="mt-0.5 block text-ink-500">
                           {src.title} · {t(src.date)}
                           <span className="sr-only"> {t('(opens in a new tab)')}</span>
                         </span>
