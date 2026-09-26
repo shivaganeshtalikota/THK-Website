@@ -126,19 +126,20 @@ const builtIn = [
      * What keeps them off the type is `keepOut`: every line of text, as the
      * rows it occupies and the x where it ends, all measured off the artwork.
      * The renderer walks the subject's real outline through those rows and
-     * moves them right until it clears (see placeCorner).
+     * makes them smaller until it clears (see placeCorner).
      *
      *   "16th సెప్టెంబర్ 2026"   rows 0.6746–0.7434, ends x 0.5693
      *   the band's two Telugu lines  rows 0.7758–0.8762, ends x 0.6543
      *   name + designation (ours)     rows 0.905–0.985,   ends by x 0.585
      *
-     * minY 0.38 keeps the head below the REVENUE OFFICE signboard.
+     * minY 0.44 caps the height: the head stays level with the padlock at most,
+     * and the whole figure — the office asked — always stays on the poster.
      */
     photoSlot: {
       mode: 'corner',
-      minY: 0.38,
-      h: 0.6,
-      faceRange: [0.15, 0.2],
+      minY: 0.44,
+      h: 0.5,
+      faceRange: [0.12, 0.17],
       margin: 0.015,
       keepOut: [
         { y0: 0.6746, y1: 0.7434, x: 0.5693 },

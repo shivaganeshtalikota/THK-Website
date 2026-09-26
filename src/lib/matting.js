@@ -679,9 +679,16 @@ export function subjectBox(alpha, w, h, cut) {
 export function finishCutout(rgba, alpha, w, h, face = null) {
   // Snap the last whisper of the tails. Below 2% nobody sees it except as a
   // grey smudge on a light poster; above 98% it is simply solid.
+  //
+  // Below 30%, the alpha is also CRUSHED (a -> a²/0.3): a faint veil of the
+  // photo's own background — a dark wall behind the head, say — otherwise
+  // shows on the poster as a grey patch around the subject, and its drop
+  // shadow makes it worse. Hair wisps sit mostly above 30% and are untouched;
+  // what is fainter than that fades much faster than it did.
   for (let i = 0; i < alpha.length; i += 1) {
-    const a = alpha[i]
-    alpha[i] = a < 0.02 ? 0 : a > 0.98 ? 1 : a
+    let a = alpha[i]
+    if (a < 0.3) a = (a * a) / 0.3
+    alpha[i] = a < 0.03 ? 0 : a > 0.98 ? 1 : a
   }
   decontaminate(rgba, alpha, w, h)
   const { cut, frac } = frameCuts(alpha, w, h)

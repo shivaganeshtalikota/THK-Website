@@ -184,27 +184,32 @@ function leftProfile(src, rows = 160) {
 }
 
 /**
- * The 22A placement: the person in the bottom-right corner, big, standing on
- * the poster's own bottom edge and drawn OVER the right-hand end of the yellow
- * band and the name bar — the empty part of both.
+ * The 22A placement: the person in the bottom-right corner, standing on the
+ * poster's own bottom edge, drawn over the right-hand end of the yellow band
+ * and the name bar — the empty part of both.
+ *
+ * THE WHOLE PERSON STAYS ON THE POSTER. The poster's edges never cut them: no
+ * shoulder runs off the right side, no legs run off the bottom, and the head
+ * stays below `minY`. (A photo the camera already cut — at the chest, say —
+ * puts that cut on the poster's bottom edge, where it reads as the frame.)
+ * Earlier versions let a big figure run past the edges; the office's verdict
+ * was that it looked cut off.
  *
  * Sized by the face (faceRange of the poster's height), so a selfie and a
- * full-length shot come out alike; a tall figure keeps its head below `minY`
- * and runs off the bottom edge, where the poster itself crops it.
+ * full-length shot come out alike — then made smaller, never cropped, until
+ * the whole figure fits and clears the type.
  *
- * Then kept off the type. `keepOut` lists the text on the artwork as rows and
- * the x where the text ends; the subject's REAL outline (not its box) is
- * walked through those rows, and the figure moves right until it clears them.
- * It may run past the right edge — the poster edge crops a shoulder the way a
- * photographer's frame would — but never so far that the face is cut. If
- * that is still not enough, the figure is made a little smaller and tried
- * again.
+ * Kept off the type by `keepOut`: the text on the artwork as the rows it
+ * occupies and the x where it ends. The subject's REAL outline (not its box)
+ * is walked through those rows, so hair and shoulders are what is checked,
+ * not the empty corners of the photo.
  */
 function placeCorner(p, W, H, o) {
   const aspect = p.src.width / p.src.height
   const prof = leftProfile(p.src)
-  const pad = 0.012 * W
+  const pad = 0.014 * W
   const margin = (o.margin ?? 0.015) * W
+  const minY = o.minY * H
   let h0 = o.h * H
   if (p.face && p.face.h > 0.02) {
     const faceH = p.face.h * h0
@@ -214,34 +219,33 @@ function placeCorner(p, W, H, o) {
     else if (faceH < lo) h0 *= lo / faceH
   }
   // The top of the head, as a fraction of the cut-out: the hair above the
-  // face box is roughly half a face again.
-  const headTop = p.face ? Math.max(0, p.face.y - 0.45 * p.face.h) : 0
+  // face box is roughly half a face again. A photo with no face found is
+  // treated as starting at its own top edge.
+  const headTop = p.face ? Math.max(0, p.face.y - 0.5 * p.face.h) : 0
+  // Tall enough that the head would pass minY with the feet on the bottom
+  // edge: smaller, not pushed down past the edge.
+  h0 = Math.min(h0, (H - minY) / (1 - headTop))
+  // Never wider than the poster minus its margins.
+  h0 = Math.min(h0, (W - 2 * margin) / aspect)
 
   let box = null
-  for (let k = 0; k < 24; k += 1) {
-    const h = h0 * 0.96 ** k
+  for (let k = 0; k < 40; k += 1) {
+    const h = h0 * 0.97 ** k
     const w = h * aspect
-    let y = H - h
-    if (y + headTop * h < o.minY * H) y = o.minY * H - headTop * h
-    let x = p.cut.right ? W - w : W - w - margin
-
-    // How far right the figure must go to clear every line of type.
-    let need = 0
+    const y = H - h
+    const x = p.cut.right ? W - w : W - w - margin
+    box = { x, y, w, h }
+    let clear = true
     for (const r of o.keepOut) {
       const y0 = r.y0 * H
       const y1 = r.y1 * H
-      for (let i = 0; i < prof.length; i += 1) {
+      for (let i = 0; i < prof.length && clear; i += 1) {
         const ry = y + ((i + 0.5) / prof.length) * h
         if (ry < y0 || ry > y1 || prof[i] >= 1) continue
-        need = Math.max(need, r.x * W + pad - (x + prof[i] * w))
+        if (x + prof[i] * w < r.x * W + pad) clear = false
       }
     }
-    // How far it may go: the face stays whole and on the poster, and no more
-    // than a third of the figure leaves it.
-    const faceRight = p.face ? x + (p.face.x + p.face.w) * w : x + w * 0.5
-    const room = Math.min(W - margin - faceRight, w / 3 - (x + w - W))
-    box = { x: x + Math.max(0, need), y, w, h }
-    if (need <= Math.max(0, room)) return box
+    if (clear) return box
   }
   return box
 }
@@ -250,6 +254,28 @@ function placeCorner(p, W, H, o) {
 function occludeBelow(ctx, artwork, top, W, H) {
   const sy = (top / H) * artwork.height
   ctx.drawImage(artwork, 0, sy, artwork.width, artwork.height - sy, 0, top, W, H - top)
+}
+
+/**
+ * The office placed the photo by hand in the panel: fit the person inside
+ * that box, whole — as large as the box allows, feet (or the photo's own
+ * bottom cut) on the box's bottom edge, centred across it, or flush to a side
+ * the photo itself cuts through. The box is where supporters' photos go on
+ * every poster made from this campaign, so it is honoured exactly.
+ */
+function placeInPhotoBox(p, b, W, H, barTop) {
+  const bx = b.x * W
+  const by = b.y * H
+  const bw = b.w * W
+  const bh = b.h * H
+  const s = Math.min(bw / p.src.width, bh / p.src.height)
+  const w = p.src.width * s
+  const h = p.src.height * s
+  let x = bx + (bw - w) / 2
+  if (p.cut.right && !p.cut.left) x = bx + bw - w
+  if (p.cut.left && !p.cut.right) x = bx
+  const y = by + bh - h
+  return { x, y, w, h, below: y + h > barTop + 1 }
 }
 
 /** Template 3's own numbers for placeStanding. */
@@ -355,14 +381,22 @@ function logoBox(g, logo, W, H) {
 }
 
 function drawBarText(ctx, g, name, designation, lb, W, H) {
-  const barTop = g.bar.y * H
-  const barH = H - barTop
+  let barTop = g.bar.y * H
+  let barH = H - barTop
   const margin = 0.035 * W
   const gap = 0.03 * W
   let x0 = margin
   let x1 = W - margin
   if (lb && g.logo.side === 'left') x0 = lb.x + lb.w + gap
   if (lb && g.logo.side === 'right') x1 = lb.x - gap
+  // The office dragged the name somewhere else in the panel: that box is the
+  // region, and everything below centres in it the same way.
+  if (g.textBox) {
+    x0 = g.textBox.x * W
+    x1 = (g.textBox.x + g.textBox.w) * W
+    barTop = g.textBox.y * H
+    barH = g.textBox.h * H
+  }
   const regionW = x1 - x0
   const cx = (x0 + x1) / 2
 
@@ -446,7 +480,7 @@ function renderTemplate3(ctx, poster, artwork, person, name, designation, logo, 
 
   // 1. The person, before the bar, so a chest-level cut tucks behind it.
   if (p) {
-    const box = placeStanding(p, W, H, standingFor(g))
+    const box = g.photoBox ? placeInPhotoBox(p, g.photoBox, W, H, barTop) : placeStanding(p, W, H, standingFor(g))
     drawPersonWithCuts(ctx, p, box, W, H, { shadow: g.person.shadow !== false, hiddenBottom: p.cut.bottom || box.below })
   }
 
