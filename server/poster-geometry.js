@@ -55,6 +55,7 @@ export function sanitizeGeometry(g) {
     logo: {
       side: pick(g.logo?.side, ['left', 'right'], 'left'),
       w: num(g.logo?.w, 0.08, 0.22, 'the logo size'),
+      show: g.logo?.show !== false,
     },
     person: {
       side: pick(g.person?.side, ['left', 'right', 'center'], 'right'),
@@ -62,6 +63,7 @@ export function sanitizeGeometry(g) {
       maxW: num(g.person?.maxW, 0.3, 0.75, 'the photo width'),
       top: num(g.person?.top ?? 0.1, 0, 0.4, 'the photo limit'),
       shadow: g.person?.shadow !== false,
+      layer: pick(g.person?.layer, ['behind', 'front'], 'behind'),
     },
     name: {
       color: colour(g.name?.color, '#D0021B'),

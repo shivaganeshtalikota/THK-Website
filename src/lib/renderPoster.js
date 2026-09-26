@@ -93,9 +93,54 @@ function fitWithEllipsis(ctx, text, maxW) {
  */
 function asPerson(person) {
   if (!person) return null
-  if (person.canvas) return { src: person.canvas, cut: person.cut || {}, face: person.face || null }
-  return { src: person, cut: { left: true, right: true, top: true, bottom: true }, face: null }
+  if (person.canvas) {
+    const cut = person.cut || {}
+    return { src: person.canvas, cut, face: person.face || null, sideCut: sideCutTop(person.canvas, cut) }
+  }
+  return { src: person, cut: { left: true, right: true, top: true, bottom: true }, face: null, sideCut: 1 }
 }
+
+const sideCutCache = new WeakMap()
+
+/**
+ * How far down the cut-out the camera's frame starts cutting its SIDES, as a
+ * fraction of its height (1 = the sides are not cut).
+ *
+ * A chest-up photo is usually cut through both shoulders by the edge of the
+ * frame: two straight vertical lines from the shoulders down. Drawn as they
+ * are, they read as a body chopped off (the office's words), and the fades
+ * that used to soften them looked generated. So placement uses this number to
+ * put everything below it out of sight — behind the name bar, or below the
+ * poster's bottom edge — and the person shows as a clean bust.
+ */
+function sideCutTop(src, cut) {
+  if (!cut.left && !cut.right) return 1
+  if (sideCutCache.has(src)) return sideCutCache.get(src)
+  const rows = 200
+  const cols = 60
+  const c = document.createElement('canvas')
+  c.width = cols
+  c.height = rows
+  const x = c.getContext('2d', { willReadFrequently: true })
+  x.drawImage(src, 0, 0, cols, rows)
+  const d = x.getImageData(0, 0, cols, rows).data
+  const firstOpaque = (col) => {
+    for (let r = 0; r < rows; r += 1) if (d[(r * cols + col) * 4 + 3] > 128) return r / rows
+    return 1
+  }
+  let top = 1
+  if (cut.left) top = Math.min(top, firstOpaque(0))
+  if (cut.right) top = Math.min(top, firstOpaque(cols - 1))
+  sideCutCache.set(src, top)
+  return top
+}
+
+/**
+ * The share of the figure (from the top) to keep in view so its side cuts
+ * are hidden: everything from `sideCut` down. Never less than `floor`, so a
+ * photo cut at the sides almost to the head still shows head and shoulders.
+ */
+const keepVisible = (p, floor) => (p.sideCut < 1 ? Math.max(p.sideCut, floor) : 1)
 
 /**
  * Stand a person on a bar: the placement for template 3.
@@ -135,6 +180,9 @@ function placeStanding(p, W, H, o) {
   }
   const tuck = p.cut.bottom ? 0.012 * H : 0
   let y = barTop + tuck - h
+  // Photo cut at the sides: sink it so the cut sides are behind the bar (or
+  // below the poster's edge when the person is in front of the bar).
+  if (p.sideCut < 1) y = Math.max(y, barTop - keepVisible(p, 0.55) * h)
   if (y < minY) {
     y = minY
     // Never let the bar cover the face itself.
@@ -224,7 +272,7 @@ function placeCorner(p, W, H, o) {
   const headTop = p.face ? Math.max(0, p.face.y - 0.5 * p.face.h) : 0
   // Tall enough that the head would pass minY with the feet on the bottom
   // edge: smaller, not pushed down past the edge.
-  h0 = Math.min(h0, (H - minY) / (1 - headTop))
+  h0 = Math.min(h0, (H - minY) / Math.max(0.2, keepVisible(p, 0.6) - headTop))
   // Never wider than the poster minus its margins.
   h0 = Math.min(h0, (W - 2 * margin) / aspect)
 
@@ -232,7 +280,9 @@ function placeCorner(p, W, H, o) {
   for (let k = 0; k < 40; k += 1) {
     const h = h0 * 0.97 ** k
     const w = h * aspect
-    const y = H - h
+    // Standing on the bottom edge; a photo cut at the sides sinks so its cut
+    // sides are below the edge, and only the bust shows.
+    const y = H - keepVisible(p, 0.6) * h
     const x = p.cut.right ? W - w : W - w - margin
     box = { x, y, w, h }
     let clear = true
@@ -280,14 +330,16 @@ function placeInPhotoBox(p, b, W, H, barTop) {
 
 /** Template 3's own numbers for placeStanding. */
 const standingFor = (g) => ({
-  barTop: g.bar.y,
+  barTop: inFront(g) ? 1 : g.bar.y,
   minY: g.person.top ?? 0.1,
-  h: g.person.h,
+  h: inFront(g) ? g.person.h + (1 - g.bar.y) : g.person.h,
   maxW: g.person.maxW,
   side: g.person.side,
-  // A face between a tenth and a sixth of the poster's height: big enough to
-  // be the subject, not so big that a selfie swamps the artwork.
-  faceRange: [0.1, 0.17],
+  // A face between a tenth and a sixth of the poster's height at the default
+  // size ("Large", h 0.47), scaled with the size the office picks. Fixed, the
+  // face correction overrode the size choice and Medium / Large / Extra large
+  // all came out the same.
+  faceRange: [0.1 * (g.person.h / 0.47), 0.17 * (g.person.h / 0.47)],
 })
 
 /** Legacy placement (templates 1–2 and the hand-measured 22A poster):
@@ -308,69 +360,40 @@ function placeInSlot(slot, p, W, H) {
   return { x, y, w, h, clip: { x: bx, y: by, w: bw, h: bh } }
 }
 
-const EASE = [0, 0.028, 0.104, 0.216, 0.352, 0.5, 0.648, 0.784, 0.896, 0.972, 1]
-
 /**
- * Fade ONLY where the photograph itself was cut and that cut is now visible.
+ * Draw the cut-out person, exactly as cut out: no fade on any edge and no
+ * drop shadow.
  *
- * The subject's own outline is never softened: where the matte found hair or
- * a shoulder, that edge is the edge. What gets faded is the straight line
- * where the camera's frame sliced through an arm or a shoulder — and only if
- * that line lands inside the poster. A cut that sits on the poster's own edge,
- * or behind the bar, is already natural and is left alone.
+ * Both used to be here — a fade where the camera's frame cut through an arm
+ * or a shoulder, and a soft shadow to lift the figure off the artwork. The
+ * office's verdict (September 2026): the fades and the halo looked like the
+ * generated posters every chatbot makes. Where a photo's own cut must not
+ * show, the placement puts it on the poster's edge or behind the name bar
+ * instead. (`shadow` and `hiddenBottom` are still accepted from callers and
+ * ignored.)
  */
-function drawPersonWithCuts(ctx, p, box, W, H, { shadow, hiddenBottom }) {
-  const w = Math.max(1, Math.round(box.w))
-  const h = Math.max(1, Math.round(box.h))
-  const off = document.createElement('canvas')
-  off.width = w
-  off.height = h
-  const o = off.getContext('2d')
-  o.imageSmoothingEnabled = true
-  o.imageSmoothingQuality = 'high'
-  o.drawImage(p.src, 0, 0, w, h)
-
-  const exposed = {
-    left: p.cut.left && box.x > 1,
-    right: p.cut.right && box.x + box.w < W - 1,
-    top: p.cut.top && box.y > 1,
-    bottom: p.cut.bottom && !hiddenBottom && box.y + box.h < H - 1,
-  }
-  const fade = (x0, y0, x1, y1) => {
-    const g = o.createLinearGradient(x0, y0, x1, y1)
-    EASE.forEach((a, i) => g.addColorStop(i / (EASE.length - 1), `rgba(0,0,0,${a})`))
-    o.globalCompositeOperation = 'destination-in'
-    o.fillStyle = g
-    o.fillRect(0, 0, w, h)
-    o.globalCompositeOperation = 'source-over'
-  }
-  const band = Math.round(w * 0.14)
-  const vband = Math.round(h * 0.1)
-  if (exposed.left) fade(0, 0, band, 0)
-  if (exposed.right) fade(w, 0, w - band, 0)
-  if (exposed.top) fade(0, 0, 0, vband)
-  if (exposed.bottom) fade(0, h, 0, h - vband)
-
+// eslint-disable-next-line no-unused-vars
+function drawPersonWithCuts(ctx, p, box, W, H, _opts = {}) {
   ctx.save()
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
   if (box.clip) {
     ctx.beginPath()
     ctx.rect(box.clip.x, box.clip.y, box.clip.w, box.clip.h)
     ctx.clip()
   }
-  if (shadow) {
-    // Lifts the figure off busy artwork without the sticker-outline look.
-    ctx.shadowColor = 'rgba(0,0,0,0.32)'
-    ctx.shadowBlur = Math.round(W * 0.014)
-    ctx.shadowOffsetY = Math.round(W * 0.003)
-  }
-  ctx.drawImage(off, Math.round(box.x), Math.round(box.y))
+  ctx.drawImage(p.src, Math.round(box.x), Math.round(box.y), Math.max(1, Math.round(box.w)), Math.max(1, Math.round(box.h)))
   ctx.restore()
 }
 
 /* -------------------------------------------------------- template 3 */
 
+/** The office chose to put the photo in front of the name bar. */
+const inFront = (g) => g.person?.layer === 'front'
+
 function logoBox(g, logo, W, H) {
-  if (!logo) return null
+  // The office can leave the party mark off a poster.
+  if (!logo || g.logo?.show === false) return null
   const w = g.logo.w * W
   const h = w * (logo.height / logo.width)
   const margin = 0.035 * W
@@ -380,7 +403,7 @@ function logoBox(g, logo, W, H) {
   return { x, y, w, h }
 }
 
-function drawBarText(ctx, g, name, designation, lb, W, H) {
+function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
   let barTop = g.bar.y * H
   let barH = H - barTop
   const margin = 0.035 * W
@@ -389,6 +412,13 @@ function drawBarText(ctx, g, name, designation, lb, W, H) {
   let x1 = W - margin
   if (lb && g.logo.side === 'left') x0 = lb.x + lb.w + gap
   if (lb && g.logo.side === 'right') x1 = lb.x - gap
+  // A person standing in front of the bar covers part of it: the name takes
+  // the wider side the person leaves free, so nothing is written on them.
+  if (avoid && !g.textBox && avoid.x < x1 && avoid.x + avoid.w > x0) {
+    const left = [x0, Math.min(x1, avoid.x - gap)]
+    const right = [Math.max(x0, avoid.x + avoid.w + gap), x1]
+    ;[x0, x1] = left[1] - left[0] >= right[1] - right[0] ? left : right
+  }
   // The office dragged the name somewhere else in the panel: that box is the
   // region, and everything below centres in it the same way.
   if (g.textBox) {
@@ -403,9 +433,9 @@ function drawBarText(ctx, g, name, designation, lb, W, H) {
   let nameSize = g.name.size * H
   let desSize = g.designation.size * H
 
-  // Name: shrink to fit, down to 60%; only then truncate.
+  // Name: shrink to fit, down to half size; only then truncate.
   ctx.font = font(g.name.weight, nameSize)
-  while (name && ctx.measureText(name).width > regionW && nameSize > g.name.size * H * 0.6) {
+  while (name && ctx.measureText(name).width > regionW && nameSize > g.name.size * H * 0.5) {
     nameSize -= 2
     ctx.font = font(g.name.weight, nameSize)
   }
@@ -477,12 +507,37 @@ function renderTemplate3(ctx, poster, artwork, person, name, designation, logo, 
   const g = poster
   const barTop = g.bar.y * H
   const p = asPerson(person)
-
-  // 1. The person, before the bar, so a chest-level cut tucks behind it.
-  if (p) {
-    const box = g.photoBox ? placeInPhotoBox(p, g.photoBox, W, H, barTop) : placeStanding(p, W, H, standingFor(g))
-    drawPersonWithCuts(ctx, p, box, W, H, { shadow: g.person.shadow !== false, hiddenBottom: p.cut.bottom || box.below })
+  const front = inFront(g)
+  let box = p ? (g.photoBox ? placeInPhotoBox(p, g.photoBox, W, H, barTop) : placeStanding(p, W, H, standingFor(g))) : null
+  /*
+   * In front of the bar, the person covers part of it, and the name has to fit
+   * in what is left. Placed automatically, a wide figure left the name a
+   * sliver ("తా…"); so the figure is made smaller — anchored at its foot and
+   * its outer edge — until at least 42% of the poster's width is free for the
+   * name. A box the office placed by hand is left exactly as placed.
+   */
+  if (box && front && !g.photoBox && !g.textBox && g.person.side !== 'center') {
+    const margin = 0.035 * W
+    const logoW = g.logo?.show === false || !logo ? 0 : g.logo.w * W + 0.03 * W
+    const room = W - 2 * margin - logoW - 0.42 * W - 0.03 * W
+    if (box.w > room && room > 0) {
+      const k = room / box.w
+      const w = box.w * k
+      const h = box.h * k
+      box = { ...box, x: g.person.side === 'right' ? box.x + box.w - w : box.x, y: box.y + box.h - h, w, h }
+    }
   }
+  const drawPerson = () =>
+    drawPersonWithCuts(ctx, p, box, W, H, {
+      shadow: g.person.shadow !== false,
+      // Behind the bar, the bar hides a chest-level cut; in front of it, only
+      // the poster's own bottom edge can.
+      hiddenBottom: front ? box.y + box.h >= H - 1 : p.cut.bottom || box.below,
+    })
+
+  // 1. Behind the bar (the default): the person first, so the bar covers
+  //    their lower edge.
+  if (p && !front) drawPerson()
 
   // 2. The bar, with a soft shadow above it and a thin rule along its top.
   if (g.bar.paint !== false) {
@@ -497,14 +552,15 @@ function renderTemplate3(ctx, poster, artwork, person, name, designation, logo, 
       ctx.fillStyle = g.bar.rule
       ctx.fillRect(0, barTop, W, Math.max(3, 0.005 * H))
     }
-  } else if (p) {
+  } else if (p && !front) {
     // The artwork's own bar: drawn again from the artwork, over the person, so
     // whatever of them reaches below its top edge is behind it — exactly as
     // with a bar we paint ourselves.
     occludeBelow(ctx, artwork, barTop, W, H)
   }
 
-  // 3. The party mark, as a tile standing on the bar and rising above it.
+  // 3. The party mark, as a tile standing on the bar and rising above it —
+  //    unless the office has left it off this poster.
   const lb = logoBox(g, logo, W, H)
   if (lb) {
     ctx.save()
@@ -515,8 +571,12 @@ function renderTemplate3(ctx, poster, artwork, person, name, designation, logo, 
     ctx.restore()
   }
 
-  // 4. Name and designation, centred in the room the mark leaves.
-  drawBarText(ctx, g, name, designation, lb, W, H)
+  // 4. In front of the bar: the person over the bar and the mark.
+  if (p && front) drawPerson()
+
+  // 5. Name and designation last, so they are never covered — centred in the
+  //    room the mark (and a person in front of the bar) leaves.
+  drawBarText(ctx, g, name, designation, lb, W, H, front && box ? box : null)
 }
 
 /* ------------------------------------------------- legacy templates */

@@ -70,16 +70,19 @@ const sampleCutouts = {}
  */
 function suggestedBoxes(g) {
   const barY = g.bar.y
+  const front = g.person.layer === 'front'
   const w = Math.min(0.56, g.person.maxW)
-  const h = Math.min(g.person.h, barY - 0.04) + 0.012
-  const x = g.person.side === 'left' ? 0.02 : g.person.side === 'center' ? (1 - w) / 2 : 1 - 0.02 - w
-  const logoRight = 0.035 + g.logo.w + 0.03
-  const text =
-    g.logo.side === 'left'
-      ? { x: logoRight, y: barY, w: 0.965 - logoRight, h: 1 - barY }
-      : { x: 0.035, y: barY, w: 1 - logoRight - 0.035, h: 1 - barY }
+  const top = Math.max(0, barY - Math.min(g.person.h, barY - 0.04))
+  // In front of the bar the photo runs to the poster's bottom edge.
+  const photo = { x: g.person.side === 'left' ? 0.02 : g.person.side === 'center' ? (1 - w) / 2 : 1 - 0.02 - w, y: top, w, h: (front ? 1 : barY + 0.012) - top }
+  const logoOn = g.logo.show !== false
+  let x0 = logoOn && g.logo.side === 'left' ? 0.035 + g.logo.w + 0.03 : 0.035
+  let x1 = logoOn && g.logo.side === 'right' ? 1 - 0.035 - g.logo.w - 0.03 : 0.965
+  // A person in front of the bar takes part of it: the name goes beside them.
+  if (front && g.person.side === 'right') x1 = Math.min(x1, photo.x - 0.02)
+  if (front && g.person.side === 'left') x0 = Math.max(x0, photo.x + photo.w + 0.02)
   const r = (b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, Math.round(v * 10000) / 10000]))
-  return { photo: r({ x, y: Math.max(0, barY + 0.012 - h), w, h }), text: r(text) }
+  return { photo: r(photo), text: r({ x: x0, y: barY, w: Math.max(0.1, x1 - x0), h: 1 - barY }) }
 }
 
 const PosterEditor = () => {
@@ -94,7 +97,7 @@ const PosterEditor = () => {
   const [source, setSource] = useState(null) // uploaded image (new artwork)
   const [art, setArt] = useState(null) // {canvas, mode}
   const [ownBar, setOwnBar] = useState(null)
-  const [design, setDesign] = useState({ theme: 'classic', side: 'auto', size: 'large', fit: 'auto', bar: 'auto' })
+  const [design, setDesign] = useState({ theme: 'classic', side: 'auto', size: 'large', fit: 'auto', bar: 'auto', layer: 'behind', logo: 'show' })
   const [sample, setSample] = useState(SAMPLE)
   const [person, setPerson] = useState(() => silhouette())
   const [personKind, setPersonKind] = useState('silhouette')
@@ -145,6 +148,8 @@ const PosterEditor = () => {
         size: existing.size || 'large',
         fit: existing.layout?.fit || 'auto',
         bar: existing.bar?.paint === false ? 'own' : 'auto',
+        layer: existing.person?.layer === 'front' ? 'front' : 'behind',
+        logo: existing.logo?.show === false ? 'hide' : 'show',
       })
       setBoxes({ photo: existing.photoBox || null, text: existing.textBox || null })
     }
@@ -177,7 +182,14 @@ const PosterEditor = () => {
     const auto = chooseSide(art.canvas, barY)
     const side = design.side === 'auto' ? auto.side : design.side
     return {
-      ...templateGeometry({ theme: design.theme, side, size: design.size, ownBar: useOwnBar ? ownBar : null }),
+      ...templateGeometry({
+        theme: design.theme,
+        side,
+        size: design.size,
+        ownBar: useOwnBar ? ownBar : null,
+        layer: design.layer,
+        showLogo: design.logo === 'show',
+      }),
       ...(boxes.photo ? { photoBox: boxes.photo } : {}),
       ...(boxes.text ? { textBox: boxes.text } : {}),
       layout: { side, chosenBy: design.side === 'auto' ? 'auto' : 'office', fit: art.mode, ownBar: Boolean(useOwnBar) },
@@ -488,6 +500,15 @@ const PosterEditor = () => {
           </Card>
 
           <Card title="2. Name bar" subtitle="Where the supporter's name and designation go.">
+            <p className="text-[0.8rem] font-semibold text-ink-700">Party logo</p>
+            <div className="mb-5 mt-2 flex flex-wrap gap-2">
+              <Choice value="show" current={design.logo} onPick={(v) => setDesign((d) => ({ ...d, logo: v }))}>
+                Show the party logo
+              </Choice>
+              <Choice value="hide" current={design.logo} onPick={(v) => setDesign((d) => ({ ...d, logo: v }))}>
+                No logo
+              </Choice>
+            </div>
             {ownBar && (
               <div className="mb-4">
                 <Notice tone="info">
@@ -544,6 +565,20 @@ const PosterEditor = () => {
                 </Choice>
               ))}
             </div>
+            <p className="mt-4 text-[0.8rem] font-semibold text-ink-700">Photo and name bar</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Choice value="behind" current={design.layer} onPick={(v) => setDesign((d) => ({ ...d, layer: v }))}>
+                Behind the name bar
+              </Choice>
+              <Choice value="front" current={design.layer} onPick={(v) => setDesign((d) => ({ ...d, layer: v }))}>
+                In front of the name bar
+              </Choice>
+            </div>
+            <p className="mt-1.5 text-xs text-ink-500">
+              {design.layer === 'front'
+                ? 'The person stands on the poster’s bottom edge, over the bar; the name moves beside them so it is never covered.'
+                : 'The bar covers the bottom of the photo, like a person standing behind a banner.'}
+            </p>
             <p className="mt-4 text-[0.8rem] font-semibold text-ink-700">Size</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {Object.entries(PERSON_SIZES).map(([k, s]) => (

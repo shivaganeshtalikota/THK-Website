@@ -86,7 +86,7 @@ export const BAR_Y = 0.872
  * @param {{y:number,color:string}|null} o.ownBar  an empty bar found in the
  *        artwork itself — used instead of painting one
  */
-export function templateGeometry({ theme = 'classic', side = 'right', size = 'large', ownBar = null } = {}) {
+export function templateGeometry({ theme = 'classic', side = 'right', size = 'large', ownBar = null, layer = 'behind', showLogo = true } = {}) {
   const t = THEMES[theme] || THEMES.classic
   const personH = (PERSON_SIZES[size] || PERSON_SIZES.large).h
   const barY = ownBar ? ownBar.y : BAR_Y
@@ -104,8 +104,11 @@ export function templateGeometry({ theme = 'classic', side = 'right', size = 'la
       paint: !ownBar,
       rule: ownBar ? null : t.rule,
     },
-    logo: { side: side === 'left' ? 'right' : 'left', w: 0.16 },
-    person: { side, h: personH, maxW: 0.6, top: 0.1, shadow: true },
+    // show: false leaves the party mark off this poster.
+    logo: { side: side === 'left' ? 'right' : 'left', w: 0.16, show: showLogo !== false },
+    // layer: 'behind' — the bar covers the person's lower edge (the default);
+    // 'front' — the person stands on the poster's bottom edge, over the bar.
+    person: { side, h: personH, maxW: 0.6, top: 0.1, shadow: true, layer: layer === 'front' ? 'front' : 'behind' },
     name: {
       color: darkBar && !isLight(t.name) ? '#FFFFFF' : !darkBar && isLight(t.name) ? '#D0021B' : t.name,
       // The name leads: on the reference posters it is the biggest thing on
