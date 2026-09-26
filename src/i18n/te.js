@@ -1142,4 +1142,32 @@ export const te = {
     'తాళికోట హరికృష్ణ ఏ స్థానిక సమస్యలను చేపట్టారు?',
   'He has demanded that the Jawahar Nagar dumping yard, which receives Hyderabad’s garbage, be shifted away from Nagaram and the surrounding villages, citing pollution, disease and contaminated groundwater (Janam Vaartha, 18 March 2026). In January 2026 he was among the TDP leaders who petitioned the Ghatkesar circle Deputy Commissioner to split Nagaram into two municipal divisions (Andhra Jyothy, Mana Telangana, Vaartha and Suryaa, 9 January 2026). The reports are collected on the “In the news” page.':
     'హైదరాబాద్ చెత్తను తరలించే జవహర్ నగర్ డంపింగ్ యార్డ్‌ను నాగారం, చుట్టుపక్కల గ్రామాల నుంచి దూరంగా తరలించాలని ఆయన డిమాండ్ చేశారు — కాలుష్యం, వ్యాధులు, కలుషితమైన భూగర్భ జలాలను ప్రస్తావిస్తూ (జనం వార్త, 18 మార్చి 2026). 2026 జనవరిలో నాగారాన్ని రెండు మున్సిపల్ డివిజన్లుగా విభజించాలని ఘట్‌కేసర్ సర్కిల్ డిప్యూటీ కమిషనర్‌కు వినతిపత్రం ఇచ్చిన టీడీపీ నాయకులలో ఆయన ఒకరు (ఆంధ్రజ్యోతి, మన తెలంగాణ, వార్త, సూర్య — 9 జనవరి 2026). ఈ కథనాలు “వార్తల్లో” పేజీలో ఉన్నాయి.',
+
+  // ---- added 2026-09-26 ----
+  'As reported in':
+    'ప్రచురించిన పత్రికలు, ఛానళ్లు',
+  'Newspaper cuttings, online reports and TV interviews':
+    'పత్రికా క్లిప్పింగులు, ఆన్‌లైన్ కథనాలు, టీవీ ఇంటర్వ్యూలు',
+  'Arrow keys to move between cuttings · Esc to close':
+    'క్లిప్పింగుల మధ్య కదలడానికి బాణం కీలు · మూసివేయడానికి Esc',
+  'Photo gallery':
+    'ఫోటో గ్యాలరీ',
+  'Leo Telangana':
+    'లియో తెలంగాణ',
+  'RTV Telugu':
+    'ఆర్‌టీవీ తెలుగు',
+  'V6 News':
+    'వీ6 న్యూస్',
+  'Disha Daily':
+    'దిశ డైలీ',
+
+  // ---- added 2026-09-26 ----
+  'Write to the office — enquiries, invitations, constituent help':
+    'కార్యాలయానికి రాయండి — సందేహాలు, ఆహ్వానాలు, ప్రజా సమస్యలు',
+  'Make a campaign poster':
+    'ప్రచార పోస్టర్ తయారు చేయండి',
+  'Your photo and name on the campaign, ready to share':
+    'ప్రచార పోస్టర్‌పై మీ ఫోటో, మీ పేరు — షేర్ చేయడానికి సిద్ధం',
+  'His two offices and the work behind them':
+    'ఆయన రెండు బాధ్యతలు, వాటి వెనుక ఉన్న పని',
 }

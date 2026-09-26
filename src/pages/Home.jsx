@@ -9,7 +9,6 @@ import { useT } from '../i18n/useT'
 import UpcomingEvents from '../components/UpcomingEvents'
 import PosterPromo from '../components/PosterPromo'
 import IssuesHighlight from '../components/IssuesHighlight'
-import { cuttings, onlineReports, interviews } from '../data/press'
 
 const Home = () => {
   const t = useT()
@@ -151,7 +150,7 @@ const Home = () => {
               {[
                 ['/community', t('Trust Board Member'), t('Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada — since 11 October 2025')],
                 ['/political', t('iTDP Telangana State President'), t('Telugu Desam Party')],
-                ['/press', t('In the news'), `${cuttings.length + onlineReports.length} ${t('reports')} · ${interviews.length} ${t('interviews and TV reports')}`],
+                ['/press', t('In the news'), t('Newspaper cuttings, online reports and TV interviews')],
                 ['/posters', t('Campaign posters'), t('Put your own photo and name on the campaign')],
               ].map(([to, title, text]) => (
                 <li key={to}>
@@ -343,21 +342,37 @@ const Home = () => {
       <PosterPromo />
 
       {/* ================= CTA ================= */}
+      {/* Heading and invitation on the left, the ways to act on the right —
+          centred alone, it sat in a narrow column between two empty margins. */}
       <section className="section bg-white">
-        <div className="container-text text-center">
-          <Reveal>
+        <div className="container-custom grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
+          <Reveal className="lg:col-span-7">
             <h2 className="font-display text-display">{t('Join the movement')}</h2>
-            <p className="mx-auto mt-6 max-w-xl text-lead text-ink-600">
+            <p className="mt-6 max-w-xl text-lead text-ink-600">
               {t('Be part of the change. Together we can build a prosperous, inclusive Telangana that honours its heritage while embracing progress.')}
             </p>
-            <div className="mt-10 flex flex-wrap justify-center gap-3">
-              <Link to="/contact" className="btn-primary">
-                {t('Contact the office')} <FaArrowRight aria-hidden="true" />
-              </Link>
-              <Link to="/about" className="btn-outline">
-                {t('About Hari Krishna')}
-              </Link>
-            </div>
+          </Reveal>
+          <Reveal delay={0.1} as="ul" className="grid gap-3 lg:col-span-5">
+            {[
+              ['/contact', t('Contact the office'), t('Write to the office — enquiries, invitations, constituent help')],
+              ['/posters', t('Make a campaign poster'), t('Your photo and name on the campaign, ready to share')],
+              ['/about', t('About Hari Krishna'), t('His two offices and the work behind them')],
+            ].map(([to, title, text], i) => (
+              <li key={to}>
+                <Link
+                  to={to}
+                  className={`group flex items-center justify-between gap-4 rounded-sm border px-5 py-4 transition-colors ${
+                    i === 0 ? 'border-ink-900 bg-ink-900 text-white hover:bg-ink-800' : 'hairline bg-white hover:border-ink-900'
+                  }`}
+                >
+                  <span>
+                    <span className="block font-semibold">{title}</span>
+                    <span className={`mt-0.5 block text-sm ${i === 0 ? 'text-white/70' : 'text-ink-600'}`}>{text}</span>
+                  </span>
+                  <FaArrowRight className="shrink-0 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
           </Reveal>
         </div>
       </section>

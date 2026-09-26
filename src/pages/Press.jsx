@@ -25,10 +25,41 @@ const TOPICS = [
 ]
 
 /**
+ * The cutting in the viewer: the small copy the grid already loaded shows at
+ * once, and the full-size scan fades in over it when it arrives. The first
+ * version waited for the full scan and showed an empty black panel meanwhile
+ * — on a phone connection that read as broken.
+ */
+const CuttingImage = ({ item, alt }) => {
+  const [full, setFull] = useState(false)
+  return (
+    <span className="relative inline-block max-h-full max-w-full">
+      <img
+        src={item.thumb || item.image}
+        alt=""
+        aria-hidden="true"
+        // The full scan's size, so the small copy is drawn at the size the
+        // full one will take — no jump when it arrives.
+        width={item.w}
+        height={item.h}
+        className={`block h-auto max-w-full bg-white shadow-2xl lg:max-h-[calc(100vh-3rem)] lg:w-auto ${full ? 'invisible' : ''}`}
+      />
+      <img
+        src={item.image}
+        alt={alt}
+        onLoad={() => setFull(true)}
+        className={`absolute inset-0 h-full w-full bg-white object-contain transition-opacity duration-300 ${full ? 'opacity-100' : 'opacity-0'}`}
+      />
+    </span>
+  )
+}
+
+/**
  * The cutting, full size, in the page — with the paper, the date, what it
  * says, and the link to the original where it is online. Arrow keys step
- * through; Escape closes. Opening a new tab for every cutting (the first
- * version) took people away from the page; this keeps them on it.
+ * through; Escape, the close button, or a tap on the dark area closes it.
+ * Opening a new tab for every cutting (the first version) took people away
+ * from the page; this keeps them on it.
  */
 const Viewer = ({ items, index, onClose, onStep, meta }) => {
   const t = useT()
@@ -36,42 +67,64 @@ const Viewer = ({ items, index, onClose, onStep, meta }) => {
   const closeRef = useRef(null)
   useEffect(() => {
     closeRef.current?.focus()
+    // On window, in the capture phase: nothing else on the page can swallow
+    // the key before the viewer sees it.
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault()
+        onClose()
+      }
       if (e.key === 'ArrowRight') onStep(1)
       if (e.key === 'ArrowLeft') onStep(-1)
     }
-    document.addEventListener('keydown', onKey)
+    window.addEventListener('keydown', onKey, true)
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
-      document.removeEventListener('keydown', onKey)
+      window.removeEventListener('keydown', onKey, true)
       document.body.style.overflow = prev
     }
   }, [onClose, onStep])
+  // The next and previous scans load in the background, so stepping is instant.
+  useEffect(() => {
+    for (const d of [1, -1]) {
+      const n = items[(index + d + items.length) % items.length]
+      if (n?.image) new Image().src = n.image
+    }
+  }, [items, index])
   if (!item) return null
   return (
     <div data-overlay="viewer" className="fixed inset-0 z-[70] flex flex-col bg-ink-950 lg:flex-row" role="dialog" aria-modal="true" aria-label={item.headline}>
-      <div className="relative flex min-h-0 flex-1 items-start justify-center overflow-auto p-3 sm:p-6 lg:items-center">
+      <div
+        className="relative flex min-h-0 flex-1 cursor-zoom-out items-start justify-center overflow-auto p-3 sm:p-6 lg:items-center"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
         {item.image ? (
-          <img src={item.image} alt={`${t(item.paper)}: ${item.headline}`} className="h-auto max-w-full bg-white shadow-2xl lg:max-h-full lg:w-auto lg:object-contain" />
+          <CuttingImage key={item.slug} item={item} alt={`${t(item.paper)}: ${item.headline}`} />
         ) : (
           <div className="grid h-full place-items-center text-white/60">
             <FaNewspaper className="text-5xl" aria-hidden="true" />
           </div>
         )}
       </div>
-      <aside className="max-h-[45vh] shrink-0 overflow-auto border-t border-white/10 bg-ink-900 p-5 text-white sm:p-7 lg:max-h-none lg:w-[26rem] lg:border-l lg:border-t-0">
-        <div className="flex items-center justify-between gap-3">
-          <p className="font-sans text-micro uppercase text-brand-400">{meta(item)}</p>
-          <button ref={closeRef} type="button" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 hover:bg-white/20" aria-label={t('Close')}>
-            <FaXmark aria-hidden="true" />
+      <aside className="max-h-[48vh] shrink-0 overflow-auto border-t border-white/10 bg-ink-900 p-5 text-white sm:p-7 lg:max-h-none lg:w-[26rem] lg:border-l lg:border-t-0">
+        <div className="flex items-start justify-between gap-3">
+          <p className="pt-2 font-sans text-micro uppercase text-brand-400">{meta(item)}</p>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20"
+          >
+            <FaXmark aria-hidden="true" /> {t('Close')}
           </button>
         </div>
-        <h2 lang="te" className="mt-4 font-sans text-xl font-semibold leading-snug">
+        {/* text-white here, not inherited: the site's headings default to
+            near-black, which on this panel made the headline invisible. */}
+        <h2 lang="te" className="mt-5 font-sans text-xl font-semibold leading-snug text-white">
           {item.headline}
         </h2>
-        {item.summary && <p className="mt-4 text-sm leading-relaxed text-white/75">{t(item.summary)}</p>}
+        {item.summary && <p className="mt-4 text-sm leading-relaxed text-white/80">{t(item.summary)}</p>}
         <div className="mt-6 flex flex-wrap gap-2">
           {item.url && (
             <a href={item.url} target="_blank" rel="noopener noreferrer" className="btn-brand !px-4 !py-2.5">
@@ -85,40 +138,60 @@ const Viewer = ({ items, index, onClose, onStep, meta }) => {
           )}
         </div>
         <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5">
-          <button type="button" onClick={() => onStep(-1)} className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white">
+          <button type="button" onClick={() => onStep(-1)} className="inline-flex items-center gap-2 rounded-sm px-2 py-2 text-sm font-semibold text-white/85 hover:bg-white/10 hover:text-white">
             <FaChevronLeft aria-hidden="true" /> {t('Newer')}
           </button>
-          <span className="text-xs text-white/50">
-            {index + 1} / {items.length}
-          </span>
-          <button type="button" onClick={() => onStep(1)} className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white">
+          <button type="button" onClick={() => onStep(1)} className="inline-flex items-center gap-2 rounded-sm px-2 py-2 text-sm font-semibold text-white/85 hover:bg-white/10 hover:text-white">
             {t('Older')} <FaChevronRight aria-hidden="true" />
           </button>
         </div>
+        <p className="mt-4 hidden text-xs text-white/40 lg:block">{t('Arrow keys to move between cuttings · Esc to close')}</p>
       </aside>
     </div>
   )
 }
 
-/** A YouTube video, played in the page (youtube-nocookie.com: no tracking cookies until play). */
+/**
+ * A YouTube video, played in the page (youtube-nocookie.com: no tracking
+ * cookies until play). Once the video itself has focus, the browser gives
+ * key presses to YouTube, not to this page — so the close button is large
+ * and labelled, and a tap anywhere outside the video closes it too.
+ */
 const Player = ({ video, onClose }) => {
   const t = useT()
   const closeRef = useRef(null)
   useEffect(() => {
     closeRef.current?.focus()
-    const onKey = (e) => e.key === 'Escape' && onClose()
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    const onKey = (e) => (e.key === 'Escape' || e.key === 'Esc') && onClose()
+    window.addEventListener('keydown', onKey, true)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey, true)
+      document.body.style.overflow = prev
+    }
   }, [onClose])
   return (
-    <div data-overlay="player" className="fixed inset-0 z-[70] grid place-items-center bg-ink-950 p-3 sm:p-8" role="dialog" aria-modal="true" aria-label={video.title}>
-      <div className="w-full max-w-5xl">
+    <div
+      data-overlay="player"
+      className="fixed inset-0 z-[70] grid cursor-zoom-out place-items-center bg-ink-950 p-3 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      aria-label={video.title}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-5xl cursor-auto">
         <div className="mb-3 flex items-center justify-between gap-4 text-white">
           <p className="min-w-0 truncate text-sm font-semibold">
             {video.channel} · {video.title}
           </p>
-          <button ref={closeRef} type="button" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 hover:bg-white/20" aria-label={t('Close')}>
-            <FaXmark aria-hidden="true" />
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/20"
+          >
+            <FaXmark aria-hidden="true" /> {t('Close')}
           </button>
         </div>
         <div className="aspect-video w-full bg-black">
@@ -145,7 +218,10 @@ const Press = () => {
   const [video, setVideo] = useState(null)
 
   const shown = useMemo(() => (topic === 'all' ? cuttings : cuttings.filter((c) => c.topic === topic)), [topic])
-  const papers = useMemo(() => new Set([...cuttings.map((c) => c.paper), ...onlineReports.map((o) => o.outlet)]).size, [])
+  const outlets = useMemo(
+    () => [...new Set([...cuttings.map((c) => c.paper), ...onlineReports.map((o) => o.outlet), ...interviews.map((v) => v.channel)])],
+    [],
+  )
 
   // A link to /press#<slug> opens that cutting.
   useEffect(() => {
@@ -224,18 +300,18 @@ const Press = () => {
         title="In the news"
         lead="What the newspapers have reported — the cuttings as printed, with the paper and the date."
         aside={
-          <dl className="grid grid-cols-3 gap-3 text-white">
-            {[
-              [cuttings.length + onlineReports.length, 'Reports'],
-              [papers, 'Newspapers & sites'],
-              [interviews.length, 'Interviews & TV'],
-            ].map(([n, l]) => (
-              <div key={l} className="rounded-sm border border-white/10 bg-white/[0.04] p-4">
-                <dt className="text-xs text-white/60">{t(l)}</dt>
-                <dd className="mt-1 font-display text-3xl font-bold tabular-nums lining-nums text-brand-400">{n}</dd>
-              </div>
-            ))}
-          </dl>
+          // The papers and channels by name — not a tally. The office did not
+          // want the coverage reduced to a count.
+          <div>
+            <p className="font-sans text-micro uppercase text-white/60">{t('As reported in')}</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {outlets.map((o) => (
+                <li key={o} className="rounded-sm border border-white/15 bg-white/[0.05] px-3 py-1.5 text-sm font-semibold text-white">
+                  {t(o)}
+                </li>
+              ))}
+            </ul>
+          </div>
         }
       />
 
@@ -299,8 +375,7 @@ const Press = () => {
               <p className="text-ink-600">{t('Newest first. Tap a cutting to read it full size.')}</p>
               <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label={t('Filter by topic')}>
                 {TOPICS.map((tp) => {
-                  const n = tp.id === 'all' ? cuttings.length : cuttings.filter((c) => c.topic === tp.id).length
-                  if (!n) return null
+                  if (tp.id !== 'all' && !cuttings.some((c) => c.topic === tp.id)) return null
                   const active = topic === tp.id
                   return (
                     <button
@@ -312,7 +387,7 @@ const Press = () => {
                         active ? 'border-ink-900 bg-ink-900 text-white' : 'border-ink-200 bg-white text-ink-700 hover:border-ink-500'
                       }`}
                     >
-                      {t(tp.label)} <span className={active ? 'text-brand-400' : 'text-ink-400'}>{n}</span>
+                      {t(tp.label)}
                     </button>
                   )
                 })}

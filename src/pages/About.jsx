@@ -48,7 +48,7 @@ const About = () => {
         title="A life in public service"
         lead="Two offices, one commitment — to the traditions that shape Telugu life, and to the development that will carry it forward."
         photo={photos.bannerAbout}
-        focus="50% 16%"
+        focus="50% 0%"
         titleBelow
       />
 

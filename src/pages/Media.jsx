@@ -84,9 +84,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
       }}
     >
       <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <p className="font-sans text-micro uppercase text-brand-400">
-          {index + 1} / {items.length}
-        </p>
+        <p className="font-sans text-micro uppercase text-brand-400">{t(galleryGroups.find((g) => g.id === item.group)?.label || 'Photo gallery')}</p>
         <button
           type="button"
           onClick={dismiss}
@@ -273,7 +271,6 @@ const Media = () => {
                     }`}
                   >
                     {t(g.label)}
-                    <span className="ml-1.5 opacity-60">{count}</span>
                   </button>
                 )
               })}
