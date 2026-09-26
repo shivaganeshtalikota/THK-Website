@@ -2,6 +2,7 @@ import Link from '../components/LocaleLink'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
+import LegalSummary from '../components/LegalSummary'
 import { site, contact } from '../data/site'
 import { useT } from '../i18n/useT'
 
@@ -30,8 +31,16 @@ const Privacy = () => {
     />
 
     <section className="section bg-white">
-      <div className="container-custom">
-        <Reveal className="mx-auto max-w-prose space-y-9 text-ink-600">
+      <div className="container-custom grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <LegalSummary
+          points={[
+            'Your original photo never leaves your device; a poster you share is kept for 30 days.',
+            'What you send through the contact form is used only to reply to you.',
+            'No advertising or tracking cookies.',
+            'You can ask the office to see, correct or delete what it holds about you.',
+          ]}
+        />
+        <Reveal className="max-w-prose space-y-9 text-ink-600 lg:col-span-8">
           <Block title="Information we collect">
             <p>
               {t("This website collects personal information only when you choose to submit it through the contact form. That includes your name, email address, phone number, the subject of your enquiry, your location or constituency if you provide it, and the content of your message.")}

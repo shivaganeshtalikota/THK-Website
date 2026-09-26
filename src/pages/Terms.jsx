@@ -1,6 +1,7 @@
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
+import LegalSummary from '../components/LegalSummary'
 import { site, party } from '../data/site'
 import { useT } from '../i18n/useT'
 
@@ -25,8 +26,16 @@ const Terms = () => {
     />
 
     <section className="section bg-white">
-      <div className="container-custom">
-        <Reveal className="mx-auto max-w-prose space-y-9 text-ink-600">
+      <div className="container-custom grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <LegalSummary
+          points={[
+            'This is the official website of the office of Talikota Hari Krishna.',
+            'Views here are his and his office’s, published as political communication.',
+            'Party names, symbols and marks belong to the Telugu Desam Party.',
+            'Links to other websites are not under this office’s control.',
+          ]}
+        />
+        <Reveal className="max-w-prose space-y-9 text-ink-600 lg:col-span-8">
           <Block title="About this website">
             <p>
               {/* One t() over the whole sentence, with the values already

@@ -4,7 +4,7 @@ import Link, { LocaleNavLink as NavLink } from './LocaleLink'
 // fa6 renames the FA5 icons: FaTimes -> FaXmark.
 import { FaBars, FaXmark } from 'react-icons/fa6'
 import { nav, social, site } from '../data/site'
-import { useLang, useT } from '../i18n/useT'
+import { useT } from '../i18n/useT'
 import LanguageToggle from './LanguageToggle'
 import { socialGlyph } from './socialGlyph'
 
@@ -16,12 +16,12 @@ import { socialGlyph } from './socialGlyph'
  * than AnimatePresence. It is one line of CSS, needs no JS to settle, and
  * `aria-hidden` plus `inert` keep the collapsed panel out of the tab order.
  */
-const MobilePanel = ({ isOpen, onNavigate, wide }) => {
+const MobilePanel = ({ isOpen, onNavigate }) => {
   const t = useT()
   return (
   <div
     id="mobile-menu"
-    className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${wide ? 'xl:hidden' : 'lg:hidden'} ${
+    className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out xl:hidden ${
       isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
     }`}
     aria-hidden={!isOpen}
@@ -89,15 +89,15 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const t = useT()
   /*
-   * Telugu labels run about half as wide again as the English ones
-   * ("రాజకీయ నాయకత్వం" against "Political Leadership" at the same size), and
-   * at the English breakpoints they wrapped onto two lines inside a one-line
-   * bar. So in Telugu the full bar takes over one breakpoint later, the icons
-   * step aside while it needs the room (they are in the menu and the footer
-   * too) and come back on the widest screens, and no label is ever allowed to
-   * wrap.
+   * Eight links (News joined in September 2026) do not fit beside the
+   * wordmark, the language toggle and the button below 1280px in English,
+   * and Telugu labels run about half as wide again as English ones. So in
+   * both languages the full bar takes over at xl, with the menu button below
+   * that; the social icons step aside until the widest screens (they are in
+   * the menu and the footer too), and no label is ever allowed to wrap.
+   * Measured: at 1024px the English bar ran 70px past the edge and cut off
+   * the toggle and the button.
    */
-  const wide = useLang() === 'te'
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
 
@@ -148,7 +148,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop nav */}
-          <ul className={wide ? 'hidden items-center gap-5 xl:flex' : 'hidden items-center gap-7 lg:flex'}>
+          <ul className="hidden items-center gap-5 xl:flex 2xl:gap-7">
             {nav.map((link) => (
               <li key={link.path}>
                 <NavLink
@@ -172,7 +172,7 @@ const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <ul className={wide ? 'hidden items-center gap-0.5 md:flex xl:hidden 2xl:flex' : 'hidden items-center gap-0.5 md:flex'}>
+            <ul className="hidden items-center gap-0.5 md:flex xl:hidden 2xl:flex">
               {social.map((s) => {
                 const Glyph = socialGlyph(s.name)
                 return (
@@ -193,7 +193,7 @@ const Navbar = () => {
 
             {/* Desktop only — the phone gets it inside the menu panel, where
                 there is room for both scripts without crowding the wordmark. */}
-            <LanguageToggle className={wide ? 'hidden xl:inline-flex' : 'hidden lg:inline-flex'} />
+            <LanguageToggle className="hidden xl:inline-flex" />
 
             <Link
               to="/contact"
@@ -205,7 +205,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => setIsOpen((v) => !v)}
-              className={`tap-round grid h-11 w-11 place-items-center rounded-sm text-ink-900 hover:bg-ink-900/10 ${wide ? 'xl:hidden' : 'lg:hidden'}`}
+              className={`tap-round grid h-11 w-11 place-items-center rounded-sm text-ink-900 hover:bg-ink-900/10 xl:hidden`}
               aria-label={isOpen ? t('Close menu') : t('Open menu')}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
@@ -215,7 +215,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <MobilePanel isOpen={isOpen} onNavigate={() => setIsOpen(false)} wide={wide} />
+        <MobilePanel isOpen={isOpen} onNavigate={() => setIsOpen(false)} />
       </nav>
     </header>
   )

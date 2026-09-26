@@ -35,9 +35,25 @@ const PageHero = ({
   focus,
   compact = false,
   titleBelow = false,
+  aside = null,
   children,
 }) => {
   const t = useT()
+  /*
+   * `aside` fills the right-hand side of a band that would otherwise be half
+   * empty — the office's complaint about every text-only header was the black
+   * space beside the title. Facts, figures or links; on a phone it simply
+   * follows the copy.
+   */
+  const withAside = (copy) =>
+    aside ? (
+      <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-12">
+        <div className="lg:col-span-7">{copy}</div>
+        <div className="lg:col-span-5">{aside}</div>
+      </div>
+    ) : (
+      copy
+    )
   const Copy = (
     <div className="max-w-none">
       {eyebrow && (
@@ -88,7 +104,11 @@ const PageHero = ({
                 what the type needs: at 30vw the standing speaker's head was
                 clipped by the top edge in every crop, because a 3.3:1 letterbox
                 shows barely 40% of a 4:3 frame. */}
-            <div className="relative h-[42vh] min-h-[17rem] sm:h-[46vh] lg:h-[clamp(24rem,43vw,44rem)]">
+            {/* About 30% shorter than it was (43vw): at full height the
+                photograph filled the first screen and the heading under it
+                could not be seen without scrolling. `focus` keeps the face in
+                the frame the shorter band leaves. */}
+            <div className="relative h-[32vh] min-h-[14rem] sm:h-[36vh] lg:h-[clamp(18rem,30vw,31rem)]">
             <Picture
               photo={photo}
               rounded=""
@@ -112,7 +132,21 @@ const PageHero = ({
             />
           </div>
         </div>
-        <div className="on-dark container-custom pb-12 pt-7 sm:pb-16 sm:pt-10">{Copy}</div>
+        <div className="on-dark container-custom pb-10 pt-6 sm:pb-12 sm:pt-8">{withAside(Copy)}</div>
+      </section>
+    )
+  }
+
+  if (!photo) {
+    // No photograph: the band is exactly as tall as what is in it. Sized like
+    // a photo banner it was mostly empty black (the office's complaint).
+    return (
+      <section className="relative isolate overflow-hidden border-b-[6px] border-brand-500 bg-ink-950">
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_85%_20%,rgba(255,212,0,0.10),transparent_55%)]"
+          aria-hidden="true"
+        />
+        <div className="on-dark container-custom relative pb-10 pt-8 sm:pb-12 sm:pt-10">{withAside(Copy)}</div>
       </section>
     )
   }
@@ -122,7 +156,7 @@ const PageHero = ({
       className={`relative isolate flex items-start overflow-hidden border-b-[6px] border-brand-500 bg-ink-950 ${
         compact
           ? 'min-h-[34vh] lg:min-h-[38vh]'
-          : 'min-h-[78vh] sm:min-h-[70vh] lg:min-h-0 lg:h-[clamp(34rem,40vw,46rem)]'
+          : 'min-h-[70vh] sm:min-h-[62vh] lg:min-h-0 lg:h-[clamp(30rem,36vw,42rem)]'
       }`}
     >
       {photo && (

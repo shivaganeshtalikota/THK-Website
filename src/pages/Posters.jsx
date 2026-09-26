@@ -1,5 +1,5 @@
 import Link from '../components/LocaleLink'
-import { FaArrowRight } from 'react-icons/fa6'
+import { FaArrowRight, FaCircleCheck } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import PostersHero from '../components/PostersHero'
 import Reveal from '../components/Reveal'
@@ -65,24 +65,30 @@ const Posters = () => {
 
       <section id="campaigns" className="section scroll-mt-[var(--nav-h)] bg-white">
         <div className="container-custom">
-          <Reveal className="max-w-2xl">
-            <p className="eyebrow">{t('Current Campaigns')}</p>
-            <h2 className="mt-5 font-display text-display">{t('Choose a poster')}</h2>
-            <p className="mt-6 text-lead text-ink-600">
+          <Reveal className="grid gap-6 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-5">
+              <p className="eyebrow">{t('Current Campaigns')}</p>
+              <h2 className="mt-5 font-display text-display">{t('Choose a poster')}</h2>
+            </div>
+            <p className="text-lead text-ink-600 lg:col-span-7">
               {t(
                 'More will be added as campaigns run. Tap a poster to put your name on it.'
               )}
             </p>
           </Reveal>
 
-          <ul className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {/* One campaign: a wide card, poster beside its story. A single
+              third-width tile left two-thirds of the row empty. */}
+          <ul className={`mt-12 grid gap-8 ${posters.length === 1 ? '' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
             {posters.map((poster, i) => (
               <Reveal as="li" key={poster.slug} delay={Math.min(i, 5) * 0.06}>
                 <Link
                   to={`/posters/${poster.slug}`}
-                  className="tap-round group block overflow-hidden rounded-sm border hairline bg-white transition-colors hover:border-ink-900"
+                  className={`tap-round group block overflow-hidden rounded-sm border hairline bg-white transition-colors hover:border-ink-900 ${
+                    posters.length === 1 ? 'md:grid md:grid-cols-12' : ''
+                  }`}
                 >
-                  <div className="relative overflow-hidden bg-ink-100">
+                  <div className={`relative overflow-hidden bg-ink-100 ${posters.length === 1 ? 'md:col-span-5' : ''}`}>
                     <img
                       src={posterImage(poster)}
                       alt={t(`${poster.titleEn} — Telugu Desam Party campaign poster`)}
@@ -97,11 +103,17 @@ const Posters = () => {
                     </span>
                   </div>
 
-                  <div className="p-5">
-                    <p lang="te" className="font-display text-base font-semibold leading-snug text-ink-900">
+                  <div className={posters.length === 1 ? 'p-6 sm:p-10 md:col-span-7 md:self-center' : 'p-5'}>
+                    <p
+                      lang="te"
+                      className={`font-display font-semibold leading-snug text-ink-900 ${posters.length === 1 ? 'text-2xl sm:text-3xl' : 'text-base'}`}
+                    >
                       {poster.title}
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-600">
+                    {posters.length === 1 && poster.date && (
+                      <p className="mt-3 font-sans text-micro uppercase text-brand-800">{t(poster.date)}</p>
+                    )}
+                    <p className={`mt-3 leading-relaxed text-ink-600 ${posters.length === 1 ? 'text-lead' : 'text-sm'}`}>
                       {t(poster.summary)}
                     </p>
                     <span className="mt-5 inline-flex items-center gap-2 font-sans text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-brand-800">
@@ -126,8 +138,8 @@ const Posters = () => {
           (It said "Nothing is uploaded" until finished posters started being
           saved for shared links; the heading now says only what is true.) */}
       <section className="bg-ink-950 py-16 lg:py-20">
-        <div className="on-dark container-custom">
-          <Reveal className="max-w-3xl">
+        <div className="on-dark container-custom grid gap-10 lg:grid-cols-12 lg:items-center">
+          <Reveal className="lg:col-span-7">
             <p className="eyebrow">{t('Your photo')}</p>
             <h2 className="mt-5 font-display text-title text-white">
               {t('Your photo stays with you')}
@@ -137,6 +149,14 @@ const Posters = () => {
                 'The poster is built inside your own browser, and there is no account. Your photograph is never sent to this website or to anyone else. When you generate a poster, the finished poster is saved so the link you share can show it, and it is deleted after 30 days.'
               )}
             </p>
+          </Reveal>
+          <Reveal delay={0.1} as="ul" className="grid gap-3 lg:col-span-5">
+            {['No account, no sign-up', 'Your photo is processed on your phone', 'Shared posters are deleted after 30 days'].map((x) => (
+              <li key={x} className="flex items-center gap-3 rounded-sm border border-white/10 bg-white/[0.04] p-4 text-sm font-semibold text-white">
+                <FaCircleCheck className="shrink-0 text-brand-400" aria-hidden="true" />
+                {t(x)}
+              </li>
+            ))}
           </Reveal>
         </div>
       </section>
