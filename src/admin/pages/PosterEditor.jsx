@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { FaArrowLeft, FaUpload, FaUserLarge, FaImage, FaCircleInfo } from 'react-icons/fa6'
+import { FaArrowLeft, FaUpload, FaUserLarge, FaImage, FaCircleInfo, FaUpDownLeftRight, FaWandMagicSparkles, FaImages } from 'react-icons/fa6'
 import { api, uploadBlob } from '../api'
 import { useContent, SITE } from '../content'
 import { Button, Card, Field, LiveStatus, Notice, PageHeader, Progress, inputCls } from '../ui'
 import { readImageFile, silhouette } from '../imageTools'
+import LayoutOverlay from '../LayoutOverlay'
 import { loadImage, ensureFonts, renderPoster, renderShareCard, canvasToJpeg, canvasToJpegUnder } from '../../lib/renderPoster'
 import {
   BAR_Y,
@@ -49,6 +50,38 @@ const Choice = ({ value, current, onPick, children }) => (
 
 let hisCutout = null // his headshot, cut out once per session for previews
 
+/*
+ * Sample photos the layout is checked against before publishing: a close
+ * headshot, a speaker at a podium, and a two-person photo — the three shapes
+ * supporters' photos mostly come in. Cut out once per session.
+ */
+const SAMPLE_PHOTOS = [
+  { key: 'headshot', label: 'Headshot', src: '/photos/portrait-headshot.jpg' },
+  { key: 'podium', label: 'At a podium', src: '/photos/hero-addressing.jpg' },
+  { key: 'pair', label: 'Two people', src: '/photos/with-nara-lokesh.jpg' },
+]
+const sampleCutouts = {}
+
+/**
+ * The layout the panel suggests, as boxes the office can then drag: the
+ * photo standing on the bar on the side the artwork has room for, and the
+ * name across the bar beside the party mark. Mirrors what the renderer does
+ * when nothing has been placed by hand.
+ */
+function suggestedBoxes(g) {
+  const barY = g.bar.y
+  const w = Math.min(0.56, g.person.maxW)
+  const h = Math.min(g.person.h, barY - 0.04) + 0.012
+  const x = g.person.side === 'left' ? 0.02 : g.person.side === 'center' ? (1 - w) / 2 : 1 - 0.02 - w
+  const logoRight = 0.035 + g.logo.w + 0.03
+  const text =
+    g.logo.side === 'left'
+      ? { x: logoRight, y: barY, w: 0.965 - logoRight, h: 1 - barY }
+      : { x: 0.035, y: barY, w: 1 - logoRight - 0.035, h: 1 - barY }
+  const r = (b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, Math.round(v * 10000) / 10000]))
+  return { photo: r({ x, y: Math.max(0, barY + 0.012 - h), w, h }), text: r(text) }
+}
+
 const PosterEditor = () => {
   const { slug: editSlug } = useParams()
   const navigate = useNavigate()
@@ -73,6 +106,9 @@ const PosterEditor = () => {
   const [done, setDone] = useState(null)
   const [artChanged, setArtChanged] = useState(false)
   const [published, setPublished] = useState(false)
+  const [boxes, setBoxes] = useState({ photo: null, text: null }) // placed by hand, or null = automatic
+  const [adjusting, setAdjusting] = useState(false)
+  const [samples, setSamples] = useState(null) // null | 'loading' | [{key,label,url}]
   const previewRef = useRef(null)
   const fileRef = useRef(null)
   const photoRef = useRef(null)
@@ -110,6 +146,7 @@ const PosterEditor = () => {
         fit: existing.layout?.fit || 'auto',
         bar: existing.bar?.paint === false ? 'own' : 'auto',
       })
+      setBoxes({ photo: existing.photoBox || null, text: existing.textBox || null })
     }
     loadImage(`/posters/${existing.slug}-v${existing.version}.jpg`)
       .then((img) => {
@@ -141,9 +178,48 @@ const PosterEditor = () => {
     const side = design.side === 'auto' ? auto.side : design.side
     return {
       ...templateGeometry({ theme: design.theme, side, size: design.size, ownBar: useOwnBar ? ownBar : null }),
+      ...(boxes.photo ? { photoBox: boxes.photo } : {}),
+      ...(boxes.text ? { textBox: boxes.text } : {}),
       layout: { side, chosenBy: design.side === 'auto' ? 'auto' : 'office', fit: art.mode, ownBar: Boolean(useOwnBar) },
     }
-  }, [art, design, ownBar, useOwnBar])
+  }, [art, design, ownBar, useOwnBar, boxes])
+
+  const suggestion = useMemo(() => (geometry ? suggestedBoxes(geometry) : null), [geometry])
+  const shownBoxes = suggestion ? { photo: boxes.photo || suggestion.photo, text: boxes.text || suggestion.text } : null
+  const placedByHand = Boolean(boxes.photo || boxes.text)
+
+  // Any change to the layout makes the sample check stale.
+  useEffect(() => setSamples(null), [geometry])
+
+  /** Render the poster with each sample photo, small, side by side. */
+  const checkSamples = async () => {
+    if (!geometry || !fontsReady) return
+    setSamples('loading')
+    setError(null)
+    try {
+      const { removeBackground } = await import('../../lib/removeBackground')
+      const out = []
+      for (const s of SAMPLE_PHOTOS) {
+        if (!sampleCutouts[s.key]) sampleCutouts[s.key] = await removeBackground(await loadImage(s.src))
+        const c = document.createElement('canvas')
+        renderPoster({
+          canvas: c,
+          poster: { width: POSTER_W, height: POSTER_H, ...geometry },
+          artwork: art.canvas,
+          person: sampleCutouts[s.key],
+          name: sample.name,
+          designation: sample.designation,
+          logo,
+          scale: 0.25,
+        })
+        out.push({ key: s.key, label: s.label, url: c.toDataURL('image/jpeg', 0.85) })
+      }
+      setSamples(out)
+    } catch {
+      setSamples(null)
+      setError('The sample photos could not be prepared. The preview above is still accurate.')
+    }
+  }
 
   // Live preview, at half size — the same renderer supporters get.
   useEffect(() => {
@@ -279,9 +355,14 @@ const PosterEditor = () => {
         {/* ---- preview ---- */}
         <div className="lg:col-span-6 xl:col-span-5">
           <div className="lg:sticky lg:top-6">
-            <div className="overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm">
+            <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm">
               {art ? (
-                <canvas ref={previewRef} className="block h-auto w-full" aria-label="Poster preview" />
+                <>
+                  <canvas ref={previewRef} className="block h-auto w-full" aria-label="Poster preview" />
+                  {adjusting && shownBoxes && (
+                    <LayoutOverlay boxes={shownBoxes} onChange={(k, b) => setBoxes((x) => ({ ...x, [k]: b }))} />
+                  )}
+                </>
               ) : (
                 <button
                   type="button"
@@ -319,6 +400,47 @@ const PosterEditor = () => {
                     if (f) previewWith('file', f)
                   }}
                 />
+              </div>
+            )}
+            {art && (
+              <div className="mt-4 rounded-xl border border-ink-200 bg-white p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-ink-800">
+                    Layout: {placedByHand ? 'placed by hand' : 'suggested automatically'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant={adjusting ? 'primary' : 'ghost'} onClick={() => setAdjusting((a) => !a)}>
+                      <FaUpDownLeftRight aria-hidden="true" /> {adjusting ? 'Done adjusting' : 'Move or resize'}
+                    </Button>
+                    {placedByHand && (
+                      <Button variant="ghost" onClick={() => setBoxes({ photo: null, text: null })}>
+                        <FaWandMagicSparkles aria-hidden="true" /> Use the suggestion
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {adjusting && (
+                  <p className="mt-2 text-xs leading-relaxed text-ink-500">
+                    Drag the <strong>Photo</strong> box or the <strong>Name</strong> box to move it; drag its round corner to resize.
+                    Supporters’ photos are fitted inside the photo box, whole; the name and designation are centred in the name box.
+                  </p>
+                )}
+                <div className="mt-3">
+                  <Button variant="ghost" onClick={checkSamples} busy={samples === 'loading'} disabled={!fontsReady}>
+                    <FaImages aria-hidden="true" /> Check with sample photos
+                  </Button>
+                  {samples === 'loading' && <span className="ml-3 text-xs text-ink-500">Cutting out three sample photos…</span>}
+                </div>
+                {Array.isArray(samples) && (
+                  <ul className="mt-3 grid grid-cols-3 gap-2">
+                    {samples.map((s) => (
+                      <li key={s.key}>
+                        <img src={s.url} alt={`Poster with a sample photo: ${s.label}`} className="w-full rounded border border-ink-200" />
+                        <span className="mt-1 block text-center text-[0.7rem] text-ink-500">{s.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>

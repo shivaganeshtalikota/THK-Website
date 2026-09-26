@@ -25,6 +25,20 @@ const num = (v, lo, hi, label) => {
 const colour = (v, fallback) => (/^#[0-9A-Fa-f]{6}$/.test(String(v)) ? String(v).toUpperCase() : fallback)
 const pick = (v, allowed, fallback) => (allowed.includes(v) ? v : fallback)
 
+const isBox = (b) => b && typeof b === 'object' && ['x', 'y', 'w', 'h'].every((k) => Number.isFinite(Number(b[k])))
+
+/** A box of fractions, kept on the poster and at least `min` in each size. */
+function box(b, min, label) {
+  const w = num(b.w, min, 1, label)
+  const h = num(b.h, min, 1, label)
+  return {
+    x: num(b.x, 0, 1 - w, label),
+    y: num(b.y, 0, 1 - h, label),
+    w,
+    h,
+  }
+}
+
 export function sanitizeGeometry(g) {
   if (!g || typeof g !== 'object') throw new Invalid('The layout was missing. Reload the panel and try again.')
   if (Number(g.templateVersion) !== 3) throw new Invalid('This layout is from an older version of the panel. Reload it.')
@@ -59,6 +73,10 @@ export function sanitizeGeometry(g) {
       size: num(g.designation?.size, 0.012, 0.05, 'the designation size'),
       weight: 700,
     },
+    // Placed by hand in the panel (drag and resize). Optional: without them the
+    // renderer places the photo and the name itself.
+    ...(isBox(g.photoBox) ? { photoBox: box(g.photoBox, 0.08, 'the photo box') } : {}),
+    ...(isBox(g.textBox) ? { textBox: box(g.textBox, 0.04, 'the name box') } : {}),
     ...(g.layout && typeof g.layout === 'object'
       ? {
           layout: {

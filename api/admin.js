@@ -637,6 +637,12 @@ ops['poster-update'] = {
       const m = parsePosters(files[MANIFEST_PATH])
       const p = m.posters.find((x) => x.slug === slug)
       if (!p) fail(404, 'That poster no longer exists.')
+      if (geometry) {
+        // Hand-placed boxes are optional: going back to the automatic layout
+        // must remove them, not leave the old ones behind.
+        delete p.photoBox
+        delete p.textBox
+      }
       Object.assign(p, f, geometry || {}, { updatedAt: new Date().toISOString() })
       const out = []
       if (img) {
