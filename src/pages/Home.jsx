@@ -3,7 +3,7 @@ import { FaArrowRight } from 'react-icons/fa6'
 import Seo from '../components/Seo'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { site, party, focusAreas, temple, templeBoard, roles } from '../data/site'
+import { site, focusAreas, temple, templeBoard, roles } from '../data/site'
 import { photos, gallery } from '../data/photos'
 import { useT } from '../i18n/useT'
 import UpcomingEvents from '../components/UpcomingEvents'
@@ -46,7 +46,7 @@ const Home = () => {
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="on-dark lg:col-span-6 xl:col-span-5">
               <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
-                {t(party.telanganaUnit)}
+                {t('Board Member · Sri Kanaka Durga Temple, Vijayawada')}
               </Reveal>
 
               {/* Both names at the same size and weight — the surname is not a

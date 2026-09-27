@@ -5,7 +5,7 @@ import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { site, party, focusAreas, campaigns } from '../data/site'
+import { site, party, focusAreas, campaigns, partyPath } from '../data/site'
 import { photos, gallery } from '../data/photos'
 import { useT } from '../i18n/useT'
 
@@ -100,6 +100,58 @@ const Political = () => {
               </p>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ---- The path to State President ------------------------------------
+          The posts he held before iTDP Telangana State President, in order,
+          with photographs from his party work beside them. */}
+      <section className="section bg-ink-50">
+        <div className="container-custom">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <Reveal className="lg:col-span-5">
+              <p className="eyebrow">{t('In the party')}</p>
+              <h2 className="mt-5 font-display text-display">{t('The path to State President')}</h2>
+              <p className="mt-6 text-lead text-ink-600">
+                {t('Before leading the iTDP in Telangana, he served the party as TSNV State Organising Secretary and then as TSNV State General Secretary.')}
+              </p>
+            </Reveal>
+            <Reveal delay={0.1} as="ol" className="relative lg:col-span-7">
+              {partyPath.map((step, i) => (
+                <li key={step.title} className="relative flex gap-5 pb-8 last:pb-0">
+                  {i < partyPath.length - 1 && (
+                    <span className="absolute left-[1.1rem] top-10 h-[calc(100%-2.5rem)] w-px bg-ink-200" aria-hidden="true" />
+                  )}
+                  <span
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm font-bold lining-nums ${
+                      step.current ? 'bg-brand-500 text-ink-900' : 'border border-ink-300 bg-white text-ink-600'
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {i + 1}
+                  </span>
+                  <div className={`flex-1 rounded-sm border p-5 ${step.current ? 'border-ink-900 bg-white' : 'hairline bg-white'}`}>
+                    <p className="font-sans text-micro uppercase text-brand-800">
+                      {step.current ? t('Now') : i === 0 ? t('First') : t('Then')}
+                    </p>
+                    <p className="mt-1.5 font-display text-headline text-ink-900">{t(step.title)}</p>
+                    <p className="mt-1 text-sm text-ink-600">{t(step.org)}</p>
+                  </div>
+                </li>
+              ))}
+            </Reveal>
+          </div>
+          <ul className="mt-14 grid gap-4 sm:grid-cols-2">
+            {['itdp-telangana-emblem-event', 'with-party-colleagues']
+              .map((slug) => gallery.find((g) => g.slug === slug))
+              .filter(Boolean)
+              .map((g, i) => (
+                <Reveal as="li" key={g.slug} delay={i * 0.08}>
+                  <Picture photo={g} rounded="" aspect="16 / 10" sizes="(max-width: 640px) 92vw, 46vw" />
+                  <p className="mt-3 text-sm leading-snug text-ink-600">{t(g.caption)}</p>
+                </Reveal>
+              ))}
+          </ul>
         </div>
       </section>
 

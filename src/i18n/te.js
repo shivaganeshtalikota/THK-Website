@@ -1170,4 +1170,48 @@ export const te = {
     'ప్రచార పోస్టర్‌పై మీ ఫోటో, మీ పేరు — షేర్ చేయడానికి సిద్ధం',
   'His two offices and the work behind them':
     'ఆయన రెండు బాధ్యతలు, వాటి వెనుక ఉన్న పని',
+
+  // ---- added 2026-09-27 ----
+  'Earlier in the party':
+    'పార్టీలో గతంలో',
+  'Board Member · Sri Kanaka Durga Temple, Vijayawada':
+    'ధర్మకర్తల మండలి సభ్యుడు · శ్రీ కనకదుర్గ ఆలయం, విజయవాడ',
+  'In the party':
+    'పార్టీలో',
+  'The path to State President':
+    'రాష్ట్ర అధ్యక్ష పదవి వరకు',
+  'Before leading the iTDP in Telangana, he served the party as TSNV State Organising Secretary and then as TSNV State General Secretary.':
+    'తెలంగాణలో ఐటీడీపీకి నాయకత్వం వహించే ముందు, ఆయన పార్టీలో టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీగా, ఆ తర్వాత టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శిగా పనిచేశారు.',
+  'Now':
+    'ప్రస్తుతం',
+  'First':
+    'మొదట',
+  'Then':
+    'ఆ తర్వాత',
+  'e.g. Board Member, Sri Kanaka Durga Temple':
+    'ఉదా. ధర్మకర్తల మండలి సభ్యులు, శ్రీ కనకదుర్గ ఆలయం',
+  'Temple Board':
+    'ఆలయ మండలి',
+  'TSNV State Organising Secretary':
+    'టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీ',
+  'TSNV State General Secretary':
+    'టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శి',
+  'With Telugu Desam Party Telangana leaders and iTDP members, and the iTDP Telangana emblem':
+    'తెలుగుదేశం పార్టీ తెలంగాణ నాయకులు, ఐటీడీపీ సభ్యులతో — ఐటీడీపీ తెలంగాణ చిహ్నంతో',
+  'With party colleagues and supporters':
+    'పార్టీ సహచరులు, అభిమానులతో',
+  'What posts has Talikota Hari Krishna held in the Telugu Desam Party?':
+    'తెలుగుదేశం పార్టీలో తాళికోట హరికృష్ణ ఏ పదవులు నిర్వహించారు?',
+  'He served first as TSNV State Organising Secretary and then as TSNV State General Secretary, before becoming the iTDP Telangana State President, the post he holds now.':
+    'ఆయన మొదట టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీగా, ఆ తర్వాత టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శిగా పనిచేశారు; అనంతరం ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులయ్యారు — ప్రస్తుతం ఆ పదవిలో ఉన్నారు.',
+  'Talikota Hari Krishna serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada — one of 16 members appointed by the Andhra Pradesh government in September 2025. A political leader and community servant from Hyderabad, he has given his public life to the interests of the Telugu people: development, good governance and Telugu cultural pride.':
+    'తాళికోట హరికృష్ణ శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — విజయవాడ ఇంద్రకీలాద్రిపై ఉన్న శ్రీ కనకదుర్గ ఆలయం — ధర్మకర్తల మండలి సభ్యులు; 2025 సెప్టెంబరులో ఆంధ్రప్రదేశ్ ప్రభుత్వం నియమించిన 16 మంది సభ్యులలో ఒకరు. హైదరాబాద్‌కు చెందిన రాజకీయ నాయకుడు, ప్రజా సేవకుడిగా ఆయన తన ప్రజా జీవితాన్ని తెలుగు ప్రజల ప్రయోజనాలకు — అభివృద్ధి, సుపరిపాలన, తెలుగు సాంస్కృతిక గౌరవానికి — అంకితం చేశారు.',
+  'The Kanaka Durga Temple is one of the most visited Devi temples in South India, receiving millions of pilgrims a year. It is administered by its trust board under the Andhra Pradesh Endowments Department, and the board’s work covers governance, financial oversight and devotee services. He is a member of the board, not its chairman.':
+    'కనకదుర్గ ఆలయం దక్షిణ భారతదేశంలో అత్యధికంగా భక్తులు దర్శించుకునే దేవీ ఆలయాలలో ఒకటి; ఏటా లక్షలాది మంది భక్తులు వస్తారు. ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ పరిధిలో ధర్మకర్తల మండలి దీనిని నిర్వహిస్తుంది; మండలి బాధ్యతలలో పాలన, ఆర్థిక పర్యవేక్షణ, భక్తుల సేవలు ఉంటాయి. ఆయన మండలి సభ్యులు — ఛైర్మన్ కాదు.',
+  'In the Telugu Desam Party he served as TSNV State Organising Secretary and then TSNV State General Secretary, and is the iTDP Telangana State President. His political work follows the principles set out by the party’s founder N.T. Rama Rao — Telugu pride, regional development and good governance — creating economic opportunity, improving infrastructure, and making sure the voices of Telangana’s citizens are heard at every level of government.':
+    'తెలుగుదేశం పార్టీలో ఆయన టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీగా, ఆ తర్వాత టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శిగా పనిచేశారు; ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులు. పార్టీ వ్యవస్థాపకుడు ఎన్.టి. రామారావు నిర్దేశించిన సూత్రాలను — తెలుగు ఆత్మగౌరవం, ప్రాంతీయ అభివృద్ధి, సుపరిపాలన — ఆయన రాజకీయ కృషి అనుసరిస్తుంది: ఆర్థిక అవకాశాలు కల్పించడం, మౌలిక వసతులు మెరుగుపరచడం, తెలంగాణ ప్రజల గొంతు ప్రతి స్థాయిలో వినిపించేలా చూడడం.',
+  'Talikota Hari Krishna is a member of the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple at Indrakeeladri, Vijayawada — appointed by the Andhra Pradesh government in 2025. A Telugu Desam Party leader based in Hyderabad, Telangana, he is also the party’s iTDP Telangana State President. He is also known as Talikota Harikrishna.':
+    'తాళికోట హరికృష్ణ శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — విజయవాడ ఇంద్రకీలాద్రిపై శ్రీ కనకదుర్గ ఆలయం — ధర్మకర్తల మండలి సభ్యులు; 2025లో ఆంధ్రప్రదేశ్ ప్రభుత్వం నియమించింది. హైదరాబాద్‌కు చెందిన తెలుగుదేశం పార్టీ నాయకుడు; పార్టీ ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులు కూడా. ఆయనను తాళికోట హరికృష్ణ (Talikota Harikrishna) అని కూడా పిలుస్తారు.',
+  'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. In the party he has served as TSNV State Organising Secretary, TSNV State General Secretary and iTDP Telangana State President.':
+    'ఆయన తెలుగుదేశం పార్టీ (టీడీపీ)కి చెందినవారు — 1982లో ఎన్.టి. రామారావు స్థాపించిన ఈ పార్టీకి జాతీయ అధ్యక్షులు ఎన్. చంద్రబాబు నాయుడు, జాతీయ వర్కింగ్ ప్రెసిడెంట్ నారా లోకేష్. పార్టీలో ఆయన టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీగా, టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శిగా, ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులుగా పనిచేశారు.',
 }

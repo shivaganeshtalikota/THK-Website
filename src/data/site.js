@@ -65,6 +65,17 @@ export const site = {
  * Stated exactly as held: Board Member, one of several trustees — not
  * chairman, and not an executive officer of the temple.
  */
+/**
+ * The posts he held in the party before iTDP Telangana State President, in
+ * order, as the office gave them (September 2026). No years are shown: none
+ * were supplied, and a guessed date is worse than none.
+ */
+export const partyPath = [
+  { title: 'TSNV State Organising Secretary', org: 'Telugu Desam Party' },
+  { title: 'TSNV State General Secretary', org: 'Telugu Desam Party' },
+  { title: 'iTDP Telangana State President', org: 'Telugu Desam Party', current: true },
+]
+
 export const roles = [
   {
     title: 'Board Member',
@@ -201,11 +212,11 @@ export const party = {
 
 export const biography = {
   intro:
-    'Talikota Hari Krishna is a dedicated political leader and community servant who has committed his life to advancing the interests of the Telugu people. As the iTDP Telangana State President, he leads the Telugu Desam Party’s efforts in Telangana, working to promote development, good governance, and Telugu cultural pride.',
+    'Talikota Hari Krishna serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada — one of 16 members appointed by the Andhra Pradesh government in September 2025. A political leader and community servant from Hyderabad, he has given his public life to the interests of the Telugu people: development, good governance and Telugu cultural pride.',
   journey:
-    'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles, set out by its founder N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.',
+    'In the Telugu Desam Party he served as TSNV State Organising Secretary and then TSNV State General Secretary, and is the iTDP Telangana State President. His political work follows the principles set out by the party’s founder N.T. Rama Rao — Telugu pride, regional development and good governance — creating economic opportunity, improving infrastructure, and making sure the voices of Telangana’s citizens are heard at every level of government.',
   community:
-    'He serves on the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — the Sri Kanaka Durga Temple, one of the most visited Devi temples in South India, which receives millions of pilgrims a year. The Devasthanam is administered by a trust board under the Andhra Pradesh Endowments Department; the role covers governance, financial oversight and devotee services. He is one of several board members, not the chairman.',
+    'The Kanaka Durga Temple is one of the most visited Devi temples in South India, receiving millions of pilgrims a year. It is administered by its trust board under the Andhra Pradesh Endowments Department, and the board’s work covers governance, financial oversight and devotee services. He is a member of the board, not its chairman.',
   vision:
     'Hari Krishna envisions a Telangana that honours its rich Telugu heritage while embracing modern development. His focus is on creating economic opportunities for youth, improving infrastructure, ensuring good governance, and preserving the cultural identity that makes Telangana unique.',
 }
@@ -436,11 +447,11 @@ export const updates = []
 export const faqs = [
   {
     q: 'Who is Talikota Hari Krishna?',
-    a: 'Talikota Hari Krishna is an Indian politician who serves as the iTDP Telangana State President of the Telugu Desam Party (TDP). He is also a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada. He is based in Hyderabad, Telangana, and is also known as Talikota Harikrishna.',
+    a: 'Talikota Hari Krishna is a member of the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple at Indrakeeladri, Vijayawada — appointed by the Andhra Pradesh government in 2025. A Telugu Desam Party leader based in Hyderabad, Telangana, he is also the party’s iTDP Telangana State President. He is also known as Talikota Harikrishna.',
   },
   {
     q: 'Which political party does Talikota Hari Krishna belong to?',
-    a: 'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. Talikota Hari Krishna serves as the party’s iTDP Telangana State President.',
+    a: 'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. In the party he has served as TSNV State Organising Secretary, TSNV State General Secretary and iTDP Telangana State President.',
   },
   {
     q: 'What is his role at the Sri Kanaka Durga temple?',
@@ -449,6 +460,10 @@ export const faqs = [
   {
     q: 'What are Talikota Hari Krishna’s political focus areas?',
     a: 'His stated focus areas are economic development and employment for youth, infrastructure development, social welfare including education and healthcare, good governance and transparency, Telugu cultural preservation, and direct community engagement across Telangana.',
+  },
+  {
+    q: 'What posts has Talikota Hari Krishna held in the Telugu Desam Party?',
+    a: 'He served first as TSNV State Organising Secretary and then as TSNV State General Secretary, before becoming the iTDP Telangana State President, the post he holds now.',
   },
   {
     q: 'What local issues has Talikota Hari Krishna taken up?',
@@ -607,8 +622,8 @@ export const subjectOptions = [
 export const nav = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
+  { name: 'Temple Board', path: '/community' },
   { name: 'Political Leadership', path: '/political' },
-  { name: 'Community Service', path: '/community' },
   { name: 'Media', path: '/media' },
   { name: 'News', path: '/press' },
   { name: 'Posters', path: '/posters' },

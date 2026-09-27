@@ -1,4 +1,4 @@
-# Official website of Talikota Hari Krishna — iTDP Telangana State President
+# Official website of Talikota Hari Krishna — Board Member, Sri Kanaka Durga Temple, Vijayawada
 # https://www.robotstxt.org/robotstxt.html
 
 User-agent: *

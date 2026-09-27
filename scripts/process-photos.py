@@ -204,6 +204,20 @@ PHOTOS = [
         "Talikota Hari Krishna with Narasaraopet MLA Chadalavada Aravind Babu at the CSR Summit, Hyderabad",
         None,
     ),
+    (
+        "itdp-telangana-emblem-event",
+        "itdp-telangana-emblem-event.jpg",
+        "gallery",
+        "Telugu Desam Party Telangana leaders and iTDP members with the iTDP Telangana emblem",
+        None,
+    ),
+    (
+        "with-party-colleagues",
+        "with-party-colleagues.jpg",
+        "gallery",
+        "Talikota Hari Krishna with party colleagues and supporters",
+        None,
+    ),
 ]
 
 # Deliberately NOT published. Do not move these into PHOTOS without reading why.

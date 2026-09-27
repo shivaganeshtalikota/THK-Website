@@ -17,8 +17,8 @@ const Footer = () => {
       links: [
         { name: 'Home', path: '/' },
         { name: 'About', path: '/about' },
+        { name: 'Temple Board', path: '/community' },
         { name: 'Political Leadership', path: '/political' },
-        { name: 'Community Service', path: '/community' },
       ],
     },
     {

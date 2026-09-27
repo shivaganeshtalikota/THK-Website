@@ -33,7 +33,7 @@ import {
  * less going on, so a face never lands on the headline — and can be overridden.
  */
 
-const SAMPLE = { name: 'తాళికోట హరికృష్ణ', designation: 'ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులు' }
+const SAMPLE = { name: 'తాళికోట హరికృష్ణ', designation: 'శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు' }
 const MAX_ART = 30 * 1024 * 1024
 
 const Choice = ({ value, current, onPick, children }) => (

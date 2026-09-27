@@ -5,7 +5,7 @@ import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { site, party, biography, values, responsibilities, roles, faqs } from '../data/site'
+import { site, party, biography, values, responsibilities, roles, faqs, partyPath } from '../data/site'
 import { photos } from '../data/photos'
 import { useT } from '../i18n/useT'
 
@@ -78,6 +78,13 @@ const About = () => {
                 <dl className="mt-8 divide-y hairline border-y hairline">
                   {[
                     ...roles.map((r) => [t(r.title), t(r.org)]),
+                    [
+                      t('Earlier in the party'),
+                      partyPath
+                        .filter((p) => !p.current)
+                        .map((p) => t(p.title))
+                        .join(' → '),
+                    ],
                     [t('Party'), t(`${party.name} (${party.abbr})`)],
                     [t('Based in'), t(`${site.location.locality}, ${site.location.region}`)],
                   ].map(([term, desc]) => (

@@ -23,6 +23,8 @@ const W = {
   'addressing-itdp-telangana': [480, 768, 1200, 1800, 2048],
   'with-chandrababu-naidu': [480, 768, 1200, 1800, 2048],
   'with-nara-lokesh': [480, 768, 1200, 1290],
+  'itdp-telangana-emblem-event': [480, 768, 1200, 1280],
+  'with-party-colleagues': [480, 768, 1200, 1800, 2000],
   'with-chandrababu-naidu-portrait': [480, 768, 1200, 1800, 2048],
   'greeting-chandrababu-naidu': [480, 768, 1200, 1776],
   'with-party-leadership': [480, 768, 1200, 1729],
@@ -64,6 +66,8 @@ const FOCUS = {
   'with-chandrababu-naidu': '50% 30%',
   'with-chandrababu-naidu-portrait': '52% 32%',
   'with-nara-lokesh': '52% 28%',
+  'itdp-telangana-emblem-event': '50% 40%',
+  'with-party-colleagues': '52% 38%',
   'with-nandamuri-balakrishna': '58% 28%',
   'with-party-leadership': '62% 40%',
   'addressing-itdp-telangana': '56% 30%',
@@ -143,7 +147,7 @@ export const photos = {
     'portrait-headshot',
     621,
     828,
-    'Talikota Hari Krishna, iTDP Telangana State President'
+    'Talikota Hari Krishna, Board Member of the Sri Kanaka Durga Temple trust board'
   ),
   // Portrait, used inside the biography column (not as a banner).
   about: photo(
@@ -246,6 +250,21 @@ export const gallery = [
     ),
     group: 'party',
     caption: 'With TDP National Working President Nara Lokesh',
+  },
+  {
+    ...photo(
+      'itdp-telangana-emblem-event',
+      1280,
+      960,
+      'Telugu Desam Party Telangana leaders and iTDP members with the framed iTDP Telangana emblem'
+    ),
+    group: 'party',
+    caption: 'With Telugu Desam Party Telangana leaders and iTDP members, and the iTDP Telangana emblem',
+  },
+  {
+    ...photo('with-party-colleagues', 2000, 1126, 'Talikota Hari Krishna with party colleagues and supporters'),
+    group: 'party',
+    caption: 'With party colleagues and supporters',
   },
   {
     ...photo(

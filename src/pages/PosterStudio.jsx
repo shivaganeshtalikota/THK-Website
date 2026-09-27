@@ -488,7 +488,7 @@ const PosterStudio = () => {
                           setDesignation(e.target.value)
                           invalidate()
                         }}
-                        placeholder={t('e.g. iTDP Telangana State President')}
+                        placeholder={t('e.g. Board Member, Sri Kanaka Durga Temple')}
                         className="mt-3 w-full rounded-sm border border-ink-200 bg-white px-4 py-3.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/15"
                       />
                       <p className="mt-2 text-xs text-ink-500">{t('A long designation goes onto two lines by itself.')}</p>
