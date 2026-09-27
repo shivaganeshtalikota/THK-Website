@@ -81,7 +81,7 @@ const routes = [
   { path: '/', priority: '1.0', changefreq: 'weekly', file: 'index.html' },
   { path: '/about', priority: '0.9', changefreq: 'monthly', file: 'about/index.html' },
   { path: '/political', priority: '0.9', changefreq: 'weekly', file: 'political/index.html' },
-  { path: '/community', priority: '0.8', changefreq: 'monthly', file: 'community/index.html' },
+  { path: '/kanaka-durga-temple-board', priority: '0.9', changefreq: 'monthly', file: 'kanaka-durga-temple-board/index.html' },
   { path: '/media', priority: '0.8', changefreq: 'weekly', file: 'media/index.html' },
   { path: '/press', priority: '0.8', changefreq: 'weekly', file: 'press/index.html' },
   { path: '/contact', priority: '0.7', changefreq: 'monthly', file: 'contact/index.html' },

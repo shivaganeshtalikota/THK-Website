@@ -23,6 +23,16 @@
       ],
       "destination": "https://www.talikotaharikrishna.com/$1",
       "permanent": true
+    },
+    {
+      "source": "/community",
+      "destination": "/kanaka-durga-temple-board",
+      "permanent": true
+    },
+    {
+      "source": "/te/community",
+      "destination": "/te/kanaka-durga-temple-board",
+      "permanent": true
     }
   ],
   "rewrites": [

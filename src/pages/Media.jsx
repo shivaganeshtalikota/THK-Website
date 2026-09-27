@@ -217,8 +217,8 @@ const Media = () => {
   return (
     <>
       <Seo
-        title="Photo Gallery & Updates"
-        description="Photographs and video from Talikota Hari Krishna’s political and temple service work across Telangana and Andhra Pradesh."
+        title="Photos & Videos"
+        description="Photos and video of Talikota Hari Krishna: Sri Kanaka Durga Temple service in Vijayawada, festivals and culture, and Telugu Desam Party work in Telangana."
         schema={schema}
         preloadPhoto={{ ...photos.bannerMedia, sizes: '100vw' }}
       />

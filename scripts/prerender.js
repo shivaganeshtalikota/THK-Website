@@ -60,7 +60,7 @@ const EN_ROUTES = [
   '/',
   '/about',
   '/political',
-  '/community',
+  '/kanaka-durga-temple-board',
   '/media',
   '/press',
   '/contact',

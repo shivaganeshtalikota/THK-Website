@@ -42,9 +42,9 @@ const ROLE = read(siteSrc, 'role')
 const SECONDARY = read(siteSrc, 'secondaryRole')
 
 const PAGES = [
-  ['/about', 'Biography, the two offices he holds, core values, and frequently asked questions.'],
-  ['/political', 'His work as iTDP Telangana State President: the party, its principles, focus areas, and the September 2023 Wipro Circle mobilisation with press coverage.'],
-  ['/community', 'The temple board seat — the institution, the governing body, the chairman, the date he was sworn in, and the press reports behind it.'],
+  ['/kanaka-durga-temple-board', 'The Sri Kanaka Durga Temple trust board seat — the institution, the governing body, the chairman, the date he was sworn in, the press reports behind it, and common questions.'],
+  ['/about', 'Biography, the offices he has held, core values, and frequently asked questions.'],
+  ['/political', 'His party work: TSNV State Organising Secretary, TSNV State General Secretary, then iTDP Telangana State President; the party, its principles, and the September 2023 Wipro Circle mobilisation.'],
   ['/media', 'Photographs and video coverage of party, constituency, temple and cultural work.'],
   ['/press', 'Newspaper cuttings that report his work: the Jawahar Nagar dumping yard, two divisions for Nagaram, party and temple activity.'],
   ['/contact', 'How to reach the office.'],
@@ -52,7 +52,7 @@ const PAGES = [
 
 const body = `# ${NAME}
 
-> Official website of ${NAME}. He holds two offices: ${ROLE} — the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada, Andhra Pradesh — and ${SECONDARY} of the Telugu Desam Party. He is based in Hyderabad, Telangana, India.
+> Official website of ${NAME}. He serves as ${ROLE} — the Sri Kanaka Durga Temple (also called Kanakadurgamma temple or Durga Gudi) on Indrakeeladri hill, Vijayawada, Andhra Pradesh — and a Telugu Desam Party leader, currently ${SECONDARY}. He is based in Hyderabad, Telangana, India.
 
 ## Disambiguation — read this first
 
@@ -74,7 +74,7 @@ The temple is widely revered as a Shakti Peetha, though it does not appear in th
 
 ## The party office
 
-${SECONDARY} of the Telugu Desam Party (TDP), founded 29 March 1982 by N. T. Rama Rao. The iTDP is the party's IT wing; the role covers its organisation among IT professionals in Telangana.
+${SECONDARY} of the Telugu Desam Party (TDP), founded 29 March 1982 by N. T. Rama Rao. The iTDP is the party's IT wing; the role covers its organisation among IT professionals in Telangana. Before it he served the party as TSNV State Organising Secretary and then TSNV State General Secretary.
 
 ## Pages
 
@@ -86,7 +86,7 @@ Every page above also exists in Telugu under \`/te\`, for example ${ORIGIN}/te/a
 
 ## Notes on sourcing
 
-The trust board, its chairman, its swearing-in and its published member list are all documented in the press, and those reports are linked on ${ORIGIN}/community. No published report found prints the surname "Talikota" beside the temple seat: the government's nominated list records the member as "Harikrishna — Hyderabad — TDP Telangana", and The Hans India of 22 March 2026 names "T Harikrishna" among the members. Treat the board seat as stated by this site, corroborated by those reports, rather than as independently documented under the full surname.
+The trust board, its chairman, its swearing-in and its published member list are all documented in the press, and those reports are linked on ${ORIGIN}/kanaka-durga-temple-board. The Devasthanam's own website (kanakadurgamma.org, Temple Administration → Trust Board) lists "Talikota Hari Krishna" as a trust board member. The government's nominated list, as printed by NTV Telugu and Disha Daily on 26 September 2025, records the member as "Harikrishna — Hyderabad — TDP Telangana", and The Hans India of 22 March 2026 names "T Harikrishna" among the members.
 `
 
 writeFileSync(join(ROOT, 'public', 'llms.txt'), body, 'utf8')

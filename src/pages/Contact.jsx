@@ -83,8 +83,8 @@ const Contact = () => {
   return (
     <>
       <Seo
-        title="Contact"
-        description="Contact Talikota Hari Krishna for political inquiries, media requests, constituent services, or to get involved with TDP Telangana."
+        title="Contact the Office"
+        description="Contact the office of Talikota Hari Krishna, Kanaka Durga Temple trust board member and TDP leader in Hyderabad — media, invitations and public requests."
         schema={schema}
       />
 

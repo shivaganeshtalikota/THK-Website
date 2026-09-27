@@ -82,7 +82,7 @@ const Home = () => {
               </Reveal>
 
               <Reveal delay={0.32} className="mt-10 flex flex-wrap gap-3">
-                <Link to="/community" className="btn-brand">
+                <Link to="/kanaka-durga-temple-board" className="btn-brand">
                   {t('Temple Service')} <FaArrowRight aria-hidden="true" />
                 </Link>
                 <Link to="/political" className="btn-ghost-light">
@@ -148,7 +148,7 @@ const Home = () => {
             <p className="eyebrow">{t('At a glance')}</p>
             <ul className="mt-6 divide-y divide-ink-100 border-y hairline">
               {[
-                ['/community', t('Trust Board Member'), t('Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada — since 11 October 2025')],
+                ['/kanaka-durga-temple-board', t('Trust Board Member'), t('Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada — since 11 October 2025')],
                 ['/political', t('iTDP Telangana State President'), t('Telugu Desam Party')],
                 ['/press', t('In the news'), t('Newspaper cuttings, online reports and TV interviews')],
                 ['/posters', t('Campaign posters'), t('Put your own photo and name on the campaign')],
@@ -200,7 +200,7 @@ const Home = () => {
                 )}
               </p>
               <Link
-                to="/community"
+                to="/kanaka-durga-temple-board"
                 className="group mt-9 inline-flex items-center gap-3 py-1.5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-brand-400 transition-colors hover:text-brand-300"
               >
                 {t('The board’s work')}

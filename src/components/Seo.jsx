@@ -16,13 +16,18 @@ import { useT } from '../i18n/useT'
  * relative paths silently produce a preview with no image.
  */
 
-/** The site-wide card. Every route used this and only this, which is why a
- *  shared poster link previewed as a portrait of Hari Krishna. */
+/**
+ * The site-wide card, one per language (scripts/make-og-cards.mjs). A page
+ * with a card of its own passes `image`; every other page shows this.
+ *
+ * A Telugu page gets the Telugu card: a Telugu link shared in a Telugu chat
+ * should not preview in English.
+ */
+const DEFAULT_ALT =
+  'Talikota Hari Krishna — Trust Board Member, Sri Kanaka Durga Temple (Sri Durga Malleswara Swamy Varla Devasthanam), Indrakeeladri, Vijayawada'
 const DEFAULT_OG = {
-  url: `${site.url}/og-image.jpg`,
-  width: 1200,
-  height: 630,
-  type: 'image/jpeg',
+  en: { url: `${site.url}/og/talikota-hari-krishna.jpg`, width: 1200, height: 630, type: 'image/jpeg', alt: DEFAULT_ALT },
+  te: { url: `${site.url}/og/talikota-hari-krishna-te.jpg`, width: 1200, height: 630, type: 'image/jpeg', alt: DEFAULT_ALT },
 }
 
 /**
@@ -36,19 +41,21 @@ const DEFAULT_OG = {
  * crawler that trusts those tags — WhatsApp reserves the space before the image
  * arrives — lays out the card wrongly and then crops to fit.
  */
-function normaliseImage(image) {
-  if (!image) return DEFAULT_OG
+function normaliseImage(image, lang) {
+  const card = DEFAULT_OG[lang] ?? DEFAULT_OG.en
+  if (!image) return card
   if (typeof image === 'string') {
     return {
-      ...DEFAULT_OG,
+      ...card,
       url: image,
       type: image.endsWith('.png') ? 'image/png' : 'image/jpeg',
+      alt: undefined,
     }
   }
   return {
     url: image.url,
-    width: image.width ?? DEFAULT_OG.width,
-    height: image.height ?? DEFAULT_OG.height,
+    width: image.width ?? card.width,
+    height: image.height ?? card.height,
     type: image.type ?? (String(image.url).endsWith('.png') ? 'image/png' : 'image/jpeg'),
     alt: image.alt,
   }
@@ -130,9 +137,9 @@ const Seo = ({
      */
     const fullTitle = title
       ? `${t(title)} | ${t(site.name)}`
-      : `${t(site.name)} · ${t('Kanaka Durga Temple Board Member')}`
+      : `${t(site.name)} · ${t('Kanaka Durga Temple Board Member, Vijayawada')}`
 
-    const og = normaliseImage(image)
+    const og = normaliseImage(image, lang)
     const alt = og.alt ? t(og.alt) : `${site.name} — ${site.role}`
 
     const tags = [

@@ -37,8 +37,8 @@ const About = () => {
   return (
     <>
       <Seo
-        title="Biography & Public Service"
-        description="Biography of Talikota Hari Krishna — Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, and iTDP Telangana State President, TDP."
+        title="Biography — Kanaka Durga Temple Board Member"
+        description="Biography of Talikota Hari Krishna — Sri Kanaka Durga Temple trust board member, Vijayawada, and Telugu Desam Party leader from Hyderabad: TSNV, iTDP, public service."
         schema={schema}
         preloadPhoto={{ ...photos.bannerAbout, sizes: '100vw' }}
       />

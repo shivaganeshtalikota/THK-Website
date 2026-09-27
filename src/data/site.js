@@ -37,7 +37,7 @@ export const site = {
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Talikota Hari Krishna — Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri, Vijayawada, and iTDP Telangana State President, Telugu Desam Party.',
+    'Talikota Hari Krishna, Trust Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam — Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada. TDP leader, Hyderabad.',
 
   mission:
     'Working on regional development, good governance and Telugu cultural preservation in Telangana and Andhra Pradesh, through party organisation and temple service.',
@@ -54,6 +54,17 @@ export const site = {
 }
 
 /**
+ * The posts he held in the party before iTDP Telangana State President, in
+ * order, as the office gave them (September 2026). No years are shown: none
+ * were supplied, and a guessed date is worse than none.
+ */
+export const partyPath = [
+  { title: 'TSNV State Organising Secretary', org: 'Telugu Desam Party' },
+  { title: 'TSNV State General Secretary', org: 'Telugu Desam Party' },
+  { title: 'iTDP Telangana State President', org: 'Telugu Desam Party', current: true },
+]
+
+/**
  * The two offices he holds, in the order the site presents them.
  *
  * The Devasthanam seat leads. It is the more widely recognised of the two —
@@ -65,22 +76,11 @@ export const site = {
  * Stated exactly as held: Board Member, one of several trustees — not
  * chairman, and not an executive officer of the temple.
  */
-/**
- * The posts he held in the party before iTDP Telangana State President, in
- * order, as the office gave them (September 2026). No years are shown: none
- * were supplied, and a guessed date is worse than none.
- */
-export const partyPath = [
-  { title: 'TSNV State Organising Secretary', org: 'Telugu Desam Party' },
-  { title: 'TSNV State General Secretary', org: 'Telugu Desam Party' },
-  { title: 'iTDP Telangana State President', org: 'Telugu Desam Party', current: true },
-]
-
 export const roles = [
   {
     title: 'Board Member',
     org: 'Sri Durga Malleswara Swamy Varla Devasthanam (Sri Kanaka Durga Temple), Indrakeeladri, Vijayawada',
-    href: '/community',
+    href: '/kanaka-durga-temple-board',
   },
   {
     title: 'iTDP Telangana State President',
@@ -354,6 +354,20 @@ export const focusAreas = [
 export const temple = {
   officialName: 'Sri Durga Malleswara Swamy Varla Devasthanam',
   popularName: 'Sri Kanaka Durga Temple',
+  // Every name people search the temple by. The official name is what the
+  // Endowments Department and the board use; nobody types it. Devotees and the
+  // Telugu press say Kanaka Durga temple, Kanakadurgamma, Durga Gudi or
+  // Indrakeeladri, and Bezawada is the city's older name, still in daily use.
+  otherNames: [
+    'Sri Kanaka Durga Temple',
+    'Kanakadurgamma Temple',
+    'Durga Gudi',
+    'Indrakeeladri Temple',
+    'Vijayawada Durga Temple',
+    'Bezawada Kanaka Durgamma',
+  ],
+  teluguNames: ['శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం', 'శ్రీ కనకదుర్గ ఆలయం', 'కనకదుర్గమ్మ గుడి', 'దుర్గ గుడి', 'ఇంద్రకీలాద్రి'],
+  website: 'https://kanakadurgamma.org',
   deity: 'Goddess Kanaka Durga',
   location: 'Indrakeeladri Hill, Vijayawada, Andhra Pradesh',
   river: 'Krishna River',
@@ -455,7 +469,7 @@ export const faqs = [
   },
   {
     q: 'What is his role at the Sri Kanaka Durga temple?',
-    a: 'He serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam — popularly the Sri Kanaka Durga Temple — on Indrakeeladri Hill in Vijayawada, Andhra Pradesh. The role covers temple administration, financial stewardship, devotee services and the preservation of temple tradition.',
+    a: 'He is one of the 16 members of the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple, also called Durga Gudi, on Indrakeeladri hill in Vijayawada, Andhra Pradesh — appointed by the Andhra Pradesh government in September 2025 and sworn in on 11 October 2025. He is a member, not the chairman. The role covers temple administration, financial stewardship, devotee services and the preservation of temple tradition.',
   },
   {
     q: 'What are Talikota Hari Krishna’s political focus areas?',
@@ -476,6 +490,38 @@ export const faqs = [
   {
     q: 'How can I contact Talikota Hari Krishna?',
     a: 'You can reach the office through the contact page on this website, or follow the official social media accounts — Instagram (@hari_krishna_talikota), Facebook (Talikota Harikrishna) and X (@THK_iTDP). The Team Haranna YouTube channel carries video coverage but is run by supporters, not by the office.',
+  },
+]
+
+/**
+ * Questions about the temple board, answered on the temple board page and
+ * marked up there as an FAQPage.
+ *
+ * These are the questions people actually type — "Kanaka Durga temple board
+ * members", "Durga Gudi trust board", "is he the chairman" — answered in the
+ * words they type them in. Every answer comes from templeBoard below and its
+ * sources; nothing here that the page does not already show.
+ */
+export const templeFaqs = [
+  {
+    q: 'Who is on the Kanaka Durga temple trust board in Vijayawada?',
+    a: 'The Andhra Pradesh government constituted the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam in September 2025: chairman Borra Radhakrishna (Gandhi) and 16 appointed members, sworn in on 11 October 2025 before the Rajagopuram on Indrakeeladri. Talikota Hari Krishna of Hyderabad is one of the 16 members.',
+  },
+  {
+    q: 'Is Talikota Hari Krishna the chairman of the Kanaka Durga temple board?',
+    a: 'No. He is a member of the trust board. The chairman is Borra Radhakrishna (Gandhi).',
+  },
+  {
+    q: 'What is the official name of the Kanaka Durga temple in Vijayawada?',
+    a: 'Sri Durga Malleswara Swamy Varla Devasthanam. It is popularly called the Sri Kanaka Durga Temple, Kanakadurgamma temple or Durga Gudi, and stands on Indrakeeladri hill on the banks of the Krishna River in Vijayawada, Andhra Pradesh.',
+  },
+  {
+    q: 'Who runs the Kanaka Durga temple at Indrakeeladri?',
+    a: 'A non-hereditary trust board under the Andhra Pradesh Endowments Department. The board’s work covers temple administration, financial oversight and devotee services such as darshan, Annadanam and accommodation for pilgrims.',
+  },
+  {
+    q: 'Where can the trust board members be checked?',
+    a: 'The Devasthanam’s official website, kanakadurgamma.org, lists the trust board, including Talikota Hari Krishna. The appointments were reported by NTV Telugu and Disha Daily on 26 September 2025, and the swearing-in by Deccan Chronicle on 11 October 2025; the links are on this page.',
   },
 ]
 
@@ -622,7 +668,7 @@ export const subjectOptions = [
 export const nav = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
-  { name: 'Temple Board', path: '/community' },
+  { name: 'Temple Board', path: '/kanaka-durga-temple-board' },
   { name: 'Political Leadership', path: '/political' },
   { name: 'Media', path: '/media' },
   { name: 'News', path: '/press' },

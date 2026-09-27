@@ -45,7 +45,7 @@ const PAGES = [
   { path: '/', element: <Home /> },
   { path: '/about', element: <About /> },
   { path: '/political', element: <Political /> },
-  { path: '/community', element: <Community /> },
+  { path: '/kanaka-durga-temple-board', element: <Community /> },
   { path: '/media', element: <Media /> },
   { path: '/press', element: <Press /> },
   { path: '/contact', element: <Contact /> },

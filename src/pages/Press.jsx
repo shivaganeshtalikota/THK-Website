@@ -291,8 +291,8 @@ const Press = () => {
   return (
     <>
       <Seo
-        title="In the news"
-        description={`Newspaper coverage of ${site.name}: the Jawahar Nagar dumping yard, two divisions for Nagaram, party and temple work — the cuttings as printed.`}
+        title="In the News — Press Coverage"
+        description={`Newspaper and TV coverage of ${site.name}: the Kanaka Durga temple trust board, the Jawahar Nagar dumping yard, Nagaram divisions and party work.`}
         schema={schema}
       />
       <PageHero
@@ -510,7 +510,7 @@ const Press = () => {
               <a href={officialRecord.url} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-900 underline underline-offset-4">
                 {t('Temple website — Trust Board')} <FaUpRightFromSquare className="text-xs" aria-hidden="true" />
               </a>
-              <Link to="/community" className="group mt-6 flex items-center gap-3 border-t hairline pt-5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900">
+              <Link to="/kanaka-durga-temple-board" className="group mt-6 flex items-center gap-3 border-t hairline pt-5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.1em] text-ink-900">
                 {t('The board’s work')}
                 <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1.5" aria-hidden="true" />
               </Link>

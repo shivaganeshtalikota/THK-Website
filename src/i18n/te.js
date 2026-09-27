@@ -1214,4 +1214,74 @@ export const te = {
     'తాళికోట హరికృష్ణ శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — విజయవాడ ఇంద్రకీలాద్రిపై శ్రీ కనకదుర్గ ఆలయం — ధర్మకర్తల మండలి సభ్యులు; 2025లో ఆంధ్రప్రదేశ్ ప్రభుత్వం నియమించింది. హైదరాబాద్‌కు చెందిన తెలుగుదేశం పార్టీ నాయకుడు; పార్టీ ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులు కూడా. ఆయనను తాళికోట హరికృష్ణ (Talikota Harikrishna) అని కూడా పిలుస్తారు.',
   'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. In the party he has served as TSNV State Organising Secretary, TSNV State General Secretary and iTDP Telangana State President.':
     'ఆయన తెలుగుదేశం పార్టీ (టీడీపీ)కి చెందినవారు — 1982లో ఎన్.టి. రామారావు స్థాపించిన ఈ పార్టీకి జాతీయ అధ్యక్షులు ఎన్. చంద్రబాబు నాయుడు, జాతీయ వర్కింగ్ ప్రెసిడెంట్ నారా లోకేష్. పార్టీలో ఆయన టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీగా, టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శిగా, ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులుగా పనిచేశారు.',
+
+  // ---- added 2026-09-27 ----
+  'Kanaka Durga Temple Board Member, Vijayawada':
+    'కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు, విజయవాడ',
+  'Talikota Hari Krishna, Trust Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam — Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada. TDP leader, Hyderabad.':
+    'తాళికోట హరికృష్ణ — శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం (శ్రీ కనకదుర్గ ఆలయం, దుర్గ గుడి), ఇంద్రకీలాద్రి, విజయవాడ ధర్మకర్తల మండలి సభ్యులు. హైదరాబాద్‌కు చెందిన టీడీపీ నాయకులు.',
+  'Talikota Hari Krishna — Trust Board Member, Sri Kanaka Durga Temple (Sri Durga Malleswara Swamy Varla Devasthanam), Indrakeeladri, Vijayawada':
+    'తాళికోట హరికృష్ణ — ధర్మకర్తల మండలి సభ్యులు, శ్రీ కనకదుర్గ ఆలయం (శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం), ఇంద్రకీలాద్రి, విజయవాడ',
+  'Kanaka Durga Temple trust board, Indrakeeladri, Vijayawada — Talikota Hari Krishna, Board Member':
+    'కనకదుర్గ ఆలయ ధర్మకర్తల మండలి, ఇంద్రకీలాద్రి, విజయవాడ — తాళికోట హరికృష్ణ, సభ్యులు',
+  'Sri Kanaka Durga Temple Trust Board Member':
+    'శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు',
+  'Biography — Kanaka Durga Temple Board Member':
+    'జీవిత విశేషాలు — కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు',
+  'Telugu Desam Party Leadership, Telangana':
+    'తెలుగుదేశం పార్టీ నాయకత్వం, తెలంగాణ',
+  'Photos & Videos':
+    'ఫోటోలు & వీడియోలు',
+  'In the News — Press Coverage':
+    'వార్తల్లో — పత్రికా కథనాలు',
+  'Contact the Office':
+    'కార్యాలయాన్ని సంప్రదించండి',
+  'Talikota Hari Krishna, one of 16 trust board members of the Sri Kanaka Durga Temple (Durga Gudi), Indrakeeladri, Vijayawada — the appointment and its sources.':
+    'విజయవాడ ఇంద్రకీలాద్రిపై శ్రీ కనకదుర్గ ఆలయం (దుర్గ గుడి) ధర్మకర్తల మండలిలోని 16 మంది సభ్యులలో ఒకరు తాళికోట హరికృష్ణ — నియామకం, దాని ఆధారాలు.',
+  'Biography of Talikota Hari Krishna — Sri Kanaka Durga Temple trust board member, Vijayawada, and Telugu Desam Party leader from Hyderabad: TSNV, iTDP, public service.':
+    'తాళికోట హరికృష్ణ జీవిత విశేషాలు — విజయవాడ శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు, హైదరాబాద్‌కు చెందిన తెలుగుదేశం పార్టీ నాయకులు: టీఎస్‌ఎన్‌వీ, ఐటీడీపీ, ప్రజా సేవ.',
+  'Talikota Hari Krishna in the Telugu Desam Party: TSNV State Organising Secretary, TSNV State General Secretary, then iTDP Telangana State President.':
+    'తెలుగుదేశం పార్టీలో తాళికోట హరికృష్ణ: టీఎస్‌ఎన్‌వీ రాష్ట్ర ఆర్గనైజింగ్ సెక్రటరీ, టీఎస్‌ఎన్‌వీ రాష్ట్ర ప్రధాన కార్యదర్శి, ఆ తర్వాత ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులు.',
+  'Photos and video of Talikota Hari Krishna: Sri Kanaka Durga Temple service in Vijayawada, festivals and culture, and Telugu Desam Party work in Telangana.':
+    'తాళికోట హరికృష్ణ ఫోటోలు, వీడియోలు: విజయవాడ శ్రీ కనకదుర్గ ఆలయ సేవ, పండుగలు, సంస్కృతి, తెలంగాణలో తెలుగుదేశం పార్టీ కార్యక్రమాలు.',
+  'Newspaper and TV coverage of Talikota Hari Krishna: the Kanaka Durga temple trust board, the Jawahar Nagar dumping yard, Nagaram divisions and party work.':
+    'తాళికోట హరికృష్ణపై పత్రికలు, టీవీ కథనాలు: కనకదుర్గ ఆలయ ధర్మకర్తల మండలి, జవహర్ నగర్ డంపింగ్ యార్డు, నాగారం డివిజన్లు, పార్టీ కార్యక్రమాలు.',
+  'Contact the office of Talikota Hari Krishna, Kanaka Durga Temple trust board member and TDP leader in Hyderabad — media, invitations and public requests.':
+    'కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు, హైదరాబాద్ టీడీపీ నాయకులు తాళికోట హరికృష్ణ కార్యాలయాన్ని సంప్రదించండి — మీడియా, ఆహ్వానాలు, ప్రజల విజ్ఞప్తులు.',
+  'About the temple board':
+    'ఆలయ ధర్మకర్తల మండలి గురించి',
+  'Straight answers about the trust board and his seat on it.':
+    'ధర్మకర్తల మండలి, అందులో ఆయన స్థానం గురించి సూటి సమాధానాలు.',
+  'Who is on the Kanaka Durga temple trust board in Vijayawada?':
+    'విజయవాడ కనకదుర్గ ఆలయ ధర్మకర్తల మండలిలో ఎవరెవరు ఉన్నారు?',
+  'The Andhra Pradesh government constituted the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam in September 2025: chairman Borra Radhakrishna (Gandhi) and 16 appointed members, sworn in on 11 October 2025 before the Rajagopuram on Indrakeeladri. Talikota Hari Krishna of Hyderabad is one of the 16 members.':
+    'ఆంధ్రప్రదేశ్ ప్రభుత్వం 2025 సెప్టెంబరులో శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం ధర్మకర్తల మండలిని ఏర్పాటు చేసింది: ఛైర్మన్ బొర్రా రాధాకృష్ణ (గాంధీ), నియమిత సభ్యులు 16 మంది. వారు 2025 అక్టోబరు 11న ఇంద్రకీలాద్రిపై రాజగోపురం ఎదుట ప్రమాణ స్వీకారం చేశారు. హైదరాబాద్‌కు చెందిన తాళికోట హరికృష్ణ ఆ 16 మంది సభ్యులలో ఒకరు.',
+  'Is Talikota Hari Krishna the chairman of the Kanaka Durga temple board?':
+    'తాళికోట హరికృష్ణ కనకదుర్గ ఆలయ మండలి ఛైర్మనా?',
+  'No. He is a member of the trust board. The chairman is Borra Radhakrishna (Gandhi).':
+    'కాదు. ఆయన ధర్మకర్తల మండలి సభ్యులు. మండలి ఛైర్మన్ బొర్రా రాధాకృష్ణ (గాంధీ).',
+  'What is the official name of the Kanaka Durga temple in Vijayawada?':
+    'విజయవాడ కనకదుర్గ ఆలయం అధికారిక పేరు ఏమిటి?',
+  'Sri Durga Malleswara Swamy Varla Devasthanam. It is popularly called the Sri Kanaka Durga Temple, Kanakadurgamma temple or Durga Gudi, and stands on Indrakeeladri hill on the banks of the Krishna River in Vijayawada, Andhra Pradesh.':
+    'శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం. దీనిని శ్రీ కనకదుర్గ ఆలయం, కనకదుర్గమ్మ గుడి, దుర్గ గుడి అని పిలుస్తారు; ఇది ఆంధ్రప్రదేశ్‌లోని విజయవాడలో కృష్ణా నది ఒడ్డున ఇంద్రకీలాద్రి కొండపై ఉంది.',
+  'Who runs the Kanaka Durga temple at Indrakeeladri?':
+    'ఇంద్రకీలాద్రి కనకదుర్గ ఆలయాన్ని ఎవరు నిర్వహిస్తారు?',
+  'A non-hereditary trust board under the Andhra Pradesh Endowments Department. The board’s work covers temple administration, financial oversight and devotee services such as darshan, Annadanam and accommodation for pilgrims.':
+    'ఆంధ్రప్రదేశ్ దేవాదాయ శాఖ పరిధిలోని వంశపారంపర్యేతర ధర్మకర్తల మండలి. ఆలయ పరిపాలన, ఆర్థిక పర్యవేక్షణ, దర్శనం, అన్నదానం, యాత్రికుల వసతి వంటి భక్తుల సేవలు మండలి బాధ్యతలు.',
+  'Where can the trust board members be checked?':
+    'ధర్మకర్తల మండలి సభ్యుల వివరాలు ఎక్కడ చూడవచ్చు?',
+  'The Devasthanam’s official website, kanakadurgamma.org, lists the trust board, including Talikota Hari Krishna. The appointments were reported by NTV Telugu and Disha Daily on 26 September 2025, and the swearing-in by Deccan Chronicle on 11 October 2025; the links are on this page.':
+    'దేవస్థానం అధికారిక వెబ్‌సైట్ kanakadurgamma.org ధర్మకర్తల మండలి సభ్యుల జాబితాను — తాళికోట హరికృష్ణతో సహా — ప్రచురించింది. నియామకాలను ఎన్టీవీ తెలుగు, దిశ దినపత్రిక 2025 సెప్టెంబరు 26న, ప్రమాణ స్వీకారాన్ని డెక్కన్ క్రానికల్ 2025 అక్టోబరు 11న ప్రచురించాయి; ఆ లింకులు ఈ పేజీలోనే ఉన్నాయి.',
+  'He is one of the 16 members of the trust board of the Sri Durga Malleswara Swamy Varla Devasthanam — the Sri Kanaka Durga Temple, also called Durga Gudi, on Indrakeeladri hill in Vijayawada, Andhra Pradesh — appointed by the Andhra Pradesh government in September 2025 and sworn in on 11 October 2025. He is a member, not the chairman. The role covers temple administration, financial stewardship, devotee services and the preservation of temple tradition.':
+    'ఆయన శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — ఆంధ్రప్రదేశ్‌లోని విజయవాడ ఇంద్రకీలాద్రి కొండపై ఉన్న శ్రీ కనకదుర్గ ఆలయం (దుర్గ గుడి) — ధర్మకర్తల మండలిలోని 16 మంది సభ్యులలో ఒకరు; 2025 సెప్టెంబరులో ఆంధ్రప్రదేశ్ ప్రభుత్వం నియమించగా 2025 అక్టోబరు 11న ప్రమాణ స్వీకారం చేశారు. ఆయన సభ్యులు, ఛైర్మన్ కాదు. ఆలయ పరిపాలన, ఆర్థిక నిర్వహణ, భక్తుల సేవలు, ఆలయ సంప్రదాయాల పరిరక్షణ ఈ బాధ్యతలో భాగం.',
+  'Sri Kanaka Durga Temple · Kanakadurgamma Temple · Durga Gudi · Indrakeeladri Temple · Vijayawada Durga Temple · Bezawada Kanaka Durgamma':
+    'శ్రీ కనకదుర్గ ఆలయం · కనకదుర్గమ్మ గుడి · దుర్గ గుడి · ఇంద్రకీలాద్రి ఆలయం · విజయవాడ దుర్గ గుడి · బెజవాడ కనకదుర్గమ్మ',
+  'Talikota Hari Krishna is a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — the temple widely known as the Sri Kanaka Durga Temple — and a Telugu Desam Party leader from Hyderabad. He is also the party’s iTDP Telangana State President.':
+    'తాళికోట హరికృష్ణ విజయవాడ ఇంద్రకీలాద్రిపై ఉన్న శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం — శ్రీ కనకదుర్గ ఆలయంగా ప్రసిద్ధి చెందిన ఆలయం — ధర్మకర్తల మండలి సభ్యులు; హైదరాబాద్‌కు చెందిన తెలుగుదేశం పార్టీ నాయకులు. పార్టీ ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షులు కూడా.',
+
+  // ---- added 2026-09-27 ----
+  'Published by the office of Talikota Hari Krishna, Board Member, Sri Kanaka Durga Devasthanam, Telugu Desam Party.':
+    'శ్రీ కనకదుర్గ దేవస్థానం ధర్మకర్తల మండలి సభ్యులు, తెలుగుదేశం పార్టీ నాయకులు తాళికోట హరికృష్ణ కార్యాలయం ప్రచురించినది.',
+  '26 September 2025':
+    '2025 సెప్టెంబరు 26',
 }

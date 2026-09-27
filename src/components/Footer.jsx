@@ -17,7 +17,7 @@ const Footer = () => {
       links: [
         { name: 'Home', path: '/' },
         { name: 'About', path: '/about' },
-        { name: 'Temple Board', path: '/community' },
+        { name: 'Temple Board', path: '/kanaka-durga-temple-board' },
         { name: 'Political Leadership', path: '/political' },
       ],
     },

@@ -4,12 +4,21 @@ import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import Picture from '../components/Picture'
-import { site, temple, templeBoard } from '../data/site'
+import { site, temple, templeBoard, templeFaqs } from '../data/site'
 import { photos, gallery } from '../data/photos'
-import { useT } from '../i18n/useT'
+import { useT, useLang } from '../i18n/useT'
+
+/** This page's own link-preview card (scripts/make-og-cards.mjs). */
+const TEMPLE_CARD_ALT =
+  'Kanaka Durga Temple trust board, Indrakeeladri, Vijayawada — Talikota Hari Krishna, Board Member'
+const TEMPLE_CARD = {
+  en: { url: `${site.url}/og/kanaka-durga-temple-board-member.jpg`, width: 1200, height: 630, alt: TEMPLE_CARD_ALT },
+  te: { url: `${site.url}/og/kanaka-durga-temple-board-member-te.jpg`, width: 1200, height: 630, alt: TEMPLE_CARD_ALT },
+}
 
 const Community = () => {
   const t = useT()
+  const lang = useLang()
   /**
    * The Devasthanam gets its own @id here rather than being buried in the page
    * description. It is a well-known entity in its own right, and naming it as a
@@ -22,9 +31,9 @@ const Community = () => {
     '@graph': [
       {
         '@type': 'WebPage',
-        '@id': `${site.url}/community#webpage`,
+        '@id': `${site.url}/kanaka-durga-temple-board#webpage`,
         name: 'Trust Board Member, Sri Durga Malleswara Swamy Varla Devasthanam',
-        url: `${site.url}/community`,
+        url: `${site.url}/kanaka-durga-temple-board`,
         about: { '@id': `${site.url}/#devasthanam` },
         isPartOf: { '@id': `${site.url}/#website` },
         /*
@@ -46,7 +55,7 @@ const Community = () => {
         })),
       },
       {
-        '@type': ['PlaceOfWorship', 'Organization'],
+        '@type': ['Organization', 'HinduTemple'],
         '@id': `${site.url}/#devasthanam`,
         name: temple.officialName,
         description: temple.significance,
@@ -59,7 +68,8 @@ const Community = () => {
         },
         // The chairman is named so a reader -- or a model -- cannot infer that
         // he chairs the board. He does not.
-        alternateName: [temple.popularName, 'Kanaka Durga Temple', 'Indrakeeladri Temple'],
+        alternateName: [...temple.otherNames, ...temple.teluguNames],
+        url: temple.website,
         member: {
           '@type': 'OrganizationRole',
           '@id': `${site.url}/#devasthanam-board-role`,
@@ -68,6 +78,15 @@ const Community = () => {
           startDate: '2025-10-11',
           member: { '@id': `${site.url}/#person` },
         },
+      },
+      {
+        '@type': 'FAQPage',
+        '@id': `${site.url}/kanaka-durga-temple-board#faq`,
+        mainEntity: templeFaqs.map((f) => ({
+          '@type': 'Question',
+          name: t(f.q),
+          acceptedAnswer: { '@type': 'Answer', text: t(f.a) },
+        })),
       },
     ],
   }
@@ -87,8 +106,9 @@ const Community = () => {
   return (
     <>
       <Seo
-        title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
-        description="Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri — governance and devotee services."
+        title="Sri Kanaka Durga Temple Trust Board Member"
+        description="Talikota Hari Krishna, one of 16 trust board members of the Sri Kanaka Durga Temple (Durga Gudi), Indrakeeladri, Vijayawada — the appointment and its sources."
+        image={TEMPLE_CARD[lang] ?? TEMPLE_CARD.en}
         schema={schema}
         preloadPhoto={{ ...photos.bannerCommunity, sizes: '100vw' }}
       />
@@ -118,7 +138,7 @@ const Community = () => {
                 <p>{t(temple.history)}</p>
               </div>
               <p lang="te" className="mt-7 border-l-2 border-brand-500 pl-5 text-ink-700">
-                శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం, ఇంద్రకీలాద్రి, విజయవాడ
+                {temple.teluguNames.join(' · ')}, విజయవాడ
               </p>
             </Reveal>
 
@@ -126,7 +146,7 @@ const Community = () => {
               <dl className="divide-y hairline border-y hairline">
                 {[
                   ['Official name', temple.officialName],
-                  ['Also known as', temple.popularName],
+                  ['Also known as', temple.otherNames.join(' · ')],
                   ['Deity', temple.deity],
                   ['Location', temple.location],
                   ['River', temple.river],
@@ -306,6 +326,33 @@ const Community = () => {
                 <p className="mt-3 leading-relaxed text-ink-600">{t(f.note)}</p>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Questions ------------------------------------------------------
+          The questions people search for about this board, answered from the
+          record above. Marked up as an FAQPage in the schema. */}
+      <section id="faq" className="section scroll-mt-24 bg-ink-50">
+        <div className="container-custom">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-4">
+              <p className="eyebrow">{t('Frequently Asked')}</p>
+              <h2 className="mt-5 font-display text-title">{t('About the temple board')}</h2>
+              <p className="mt-6 text-ink-600">
+                {t('Straight answers about the trust board and his seat on it.')}
+              </p>
+            </Reveal>
+            <Reveal delay={0.1} className="lg:col-span-8">
+              <dl className="divide-y hairline border-y hairline">
+                {templeFaqs.map((f) => (
+                  <div key={f.q} className="py-7">
+                    <dt className="font-display text-headline text-ink-900">{t(f.q)}</dt>
+                    <dd className="mt-3 leading-relaxed text-ink-600">{t(f.a)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
           </div>
         </div>
       </section>

@@ -269,6 +269,8 @@ def make_icons():
 
 if __name__ == "__main__":
     print("Generating branded assets into public/ …")
-    make_og()
+    # The link-preview cards are built by scripts/make-og-cards.mjs now (it
+    # sets Telugu correctly, which Pillow here cannot). make_og() is kept
+    # only as the fallback design.
     make_icons()
     print("Done.")

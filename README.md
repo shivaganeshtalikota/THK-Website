@@ -9,7 +9,8 @@ React 18 · Vite · Tailwind · React Router · Framer Motion · react-helmet-as
 npm install
 npm run dev      # dev server (port 3000, or $PORT)
 npm run build    # regenerates sitemap.xml, then builds to dist/
-npm run assets   # regenerates og-image + favicons (needs Python + Pillow)
+npm run assets   # regenerates favicons (needs Python + Pillow)
+node scripts/make-og-cards.mjs   # link-preview cards in public/og (needs Chrome)
 ```
 
 ---
@@ -90,7 +91,7 @@ The site is political-only. No construction/business content remains in `src/`.
 ## Structure
 
 ```
-public/            og-image.png, favicons, robots.txt, sitemap.xml (generated)
+public/            og/ (link-preview cards), favicons, robots.txt, sitemap.xml (generated)
   images/          ← real photographs go here
 scripts/
   generate-assets.py    og card + favicon set

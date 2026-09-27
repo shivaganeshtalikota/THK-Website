@@ -22,7 +22,7 @@ const youtube = social.find((s) => s.name === 'YouTube')
 export const QUESTIONS = [
   {
     q: 'Who is Talikota Hari Krishna?',
-    a: `${site.name} is an Indian politician from Telangana. He serves as a Board Member of the ${temple.officialName} at Indrakeeladri, Vijayawada — the temple widely known as ${temple.popularName} — and as ${site.secondaryRole} of the ${party.name}.`,
+    a: `${site.name} is a Board Member of the ${temple.officialName} at Indrakeeladri, Vijayawada — the temple widely known as the ${temple.popularName} — and a ${party.name} leader from Hyderabad. He is also the party’s ${site.secondaryRole}.`,
     links: [{ to: '/about', label: 'Read his biography' }],
   },
   {
@@ -33,7 +33,7 @@ export const QUESTIONS = [
   {
     q: 'What does he do at the temple?',
     a: `He is one of the Board Members of the ${temple.officialName} at ${temple.location}. The role covers temple administration, financial stewardship, devotee services and the upkeep of tradition. He is a board member, not the chairman.`,
-    links: [{ to: '/community', label: 'Temple service in detail' }],
+    links: [{ to: '/kanaka-durga-temple-board', label: 'Temple service in detail' }],
   },
   {
     q: 'What is the iTDP, and what is his role in it?',
