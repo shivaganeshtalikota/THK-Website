@@ -8,6 +8,68 @@
 export default {
   "posters": [
     {
+      "slug": "godavari-water",
+      "title": "గోదావరి వరద నీటిలో భారీగా నీరు సముద్రంలో కలుస్తూనే ఉంది",
+      "titleEn": "GODAVARI WATER",
+      "summary": "",
+      "issue": "Campaign",
+      "date": "",
+      "version": 1,
+      "width": 2048,
+      "height": 2560,
+      "publishedAt": "2026-09-28T09:27:51.584Z",
+      "templateVersion": 3,
+      "theme": "classic",
+      "size": "large",
+      "bar": {
+        "y": 0.9219,
+        "color": "#FFF0F1",
+        "paint": false,
+        "rule": null
+      },
+      "logo": {
+        "side": "left",
+        "w": 0.16,
+        "show": false
+      },
+      "person": {
+        "side": "right",
+        "h": 0.47,
+        "maxW": 0.6,
+        "top": 0.1,
+        "shadow": true,
+        "layer": "front"
+      },
+      "name": {
+        "color": "#D0021B",
+        "size": 0.058,
+        "weight": 800
+      },
+      "designation": {
+        "color": "#0B7A3B",
+        "size": 0.03,
+        "weight": 700
+      },
+      "photoBox": {
+        "x": 0.633,
+        "y": 0.6807,
+        "w": 0.367,
+        "h": 0.3193
+      },
+      "textBox": {
+        "x": 0.0034,
+        "y": 0.9233,
+        "w": 0.6182,
+        "h": 0.0767
+      },
+      "layout": {
+        "side": "right",
+        "chosenBy": "auto",
+        "fit": "full",
+        "ownBar": true
+      }
+    },
+    {
       "slug": "the-racket-involving-spurious-fertilizers-must-b",
       "title": "నకిలీ ఎరువులకు సంబంధించిన దందాను అరికట్టాలి",
       "titleEn": "The racket involving spurious fertilizers must be curbed",
