@@ -125,6 +125,8 @@ const Overview = () => {
               <ul className="space-y-2.5">
                 <Check ok={data.health.github}>Publishing to the website</Check>
                 <Check ok={data.health.storage}>Storage for posters and uploads</Check>
+                <Check ok={data.health.itdpGithub}>Publishing to itdptelangana.com</Check>
+                <Check ok={data.health.itdpMedia}>Photo storage for iTDP programmes</Check>
                 <Check ok={data.health.recoveryCodesLeft >= 3}>
                   {data.health.recoveryCodesLeft} recovery codes left
                   {data.health.recoveryCodesLeft < 3 && (

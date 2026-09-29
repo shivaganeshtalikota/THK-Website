@@ -28,7 +28,18 @@ export const ADMIN_HOST = 'admin.talikotaharikrishna.com'
 
 /** The panel's own pages. Everything else on the admin host is refused. */
 const ADMIN_ROUTES =
-  /^\/(?:|signin|posters|posters\/new|posters\/[a-z0-9][a-z0-9-]{0,47}|gallery|updates|press|events|announcement|contact|text|activity|security)\/?$/
+  /^\/(?:|signin|posters|posters\/new|posters\/[a-z0-9][a-z0-9-]{0,47}|itdp\/programs|itdp\/programs\/new|itdp\/programs\/[a-z0-9][a-z0-9-]{0,79}|gallery|updates|press|events|announcement|contact|text|activity|security)\/?$/
+
+/**
+ * The poster maker's pages, which moved to iTDP Telangana in September 2026.
+ * Redirected only once POSTERS_MOVED_TO is set (the same switch that makes
+ * the admin panel publish posters there — see api/admin.js).
+ *
+ * /posters/<slug>/view is NOT redirected: it opens posters people shared
+ * before the move, whose images are stored for this site and expire after
+ * thirty days. Artwork files (/posters/<slug>-vN.jpg) are left alone too.
+ */
+const MOVED_POSTER_PAGES = /^\/(?:te\/)?posters(\/[a-z0-9][a-z0-9-]{0,47})?\/?$/
 
 /** Files the panel needs: its bundle, fonts, the cut-out runtime, and the
  *  images it shows (gallery photos, poster artwork, the party mark). */
@@ -97,6 +108,12 @@ export default async function middleware(request) {
 
   if (path === '/admin' || path === '/admin.html' || path.startsWith('/admin/') || path.startsWith('/api/admin')) {
     return publicNotFound(request)
+  }
+
+  const movedTo = process.env.POSTERS_MOVED_TO
+  const m = movedTo ? MOVED_POSTER_PAGES.exec(path) : null
+  if (m && /^https:\/\/[a-z0-9.-]+$/i.test(movedTo)) {
+    return Response.redirect(`${movedTo}/posters${m[1] || ''}${url.search}`, 308)
   }
   return next()
 }

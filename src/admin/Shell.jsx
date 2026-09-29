@@ -16,6 +16,7 @@ import {
   FaArrowUpRightFromSquare,
   FaRightFromBracket,
   FaPlus,
+  FaPeopleGroup,
 } from 'react-icons/fa6'
 import { api } from './api'
 import { ContentContext, SITE } from './content'
@@ -31,12 +32,17 @@ import PageText from './pages/PageText'
 import Activity from './pages/Activity'
 import Security from './pages/Security'
 import PressCoverage from './pages/PressCoverage'
+import ItdpPrograms from './pages/ItdpPrograms'
+import ItdpProgramEditor from './pages/ItdpProgramEditor'
 
 
 const NAV = [
   { group: 'Campaigns' },
   { to: '/', label: 'Overview', icon: FaGaugeHigh, end: true },
   { to: '/posters', label: 'Posters', icon: FaWandMagicSparkles },
+  // itdptelangana.com — published to its own repository (api/admin.js).
+  { group: 'iTDP Telangana' },
+  { to: '/itdp/programs', label: 'Programmes', icon: FaPeopleGroup },
   { group: 'Website' },
   { to: '/gallery', label: 'Photo gallery', icon: FaImages },
   { to: '/updates', label: 'News & updates', icon: FaNewspaper },
@@ -194,6 +200,9 @@ const Shell = ({ onSignedOut }) => {
               <Route path="/posters" element={<Posters />} />
               <Route path="/posters/new" element={<PosterEditor />} />
               <Route path="/posters/:slug" element={<PosterEditor />} />
+              <Route path="/itdp/programs" element={<ItdpPrograms />} />
+              <Route path="/itdp/programs/new" element={<ItdpProgramEditor />} />
+              <Route path="/itdp/programs/:slug" element={<ItdpProgramEditor />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/updates" element={<Updates />} />
               <Route path="/press" element={<PressCoverage />} />

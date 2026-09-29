@@ -24,10 +24,11 @@ export class ApiError extends Error {
   }
 }
 
-export async function api(op, body, { method = body === undefined ? 'GET' : 'POST' } = {}) {
+export async function api(op, body, { method = body === undefined ? 'GET' : 'POST', query } = {}) {
   let res
+  const qs = query ? `&${new URLSearchParams(query)}` : ''
   try {
-    res = await fetch(`/api/admin?op=${encodeURIComponent(op)}`, {
+    res = await fetch(`/api/admin?op=${encodeURIComponent(op)}${qs}`, {
       method,
       credentials: 'same-origin',
       cache: 'no-store',
@@ -125,6 +126,56 @@ export async function uploadBlob(blob, onProgress) {
   return { id, parts, sha256 }
 }
 
+/**
+ * Upload one iTDP programme photo — its thumbnail and display copy in one
+ * request (a 4-byte thumbnail length, the thumbnail, the display copy), each
+ * already sized in the browser so the pair is well under Vercel's 4.5 MB
+ * request limit. Retried twice. Resolves to the stored photo {k, w, h, b}.
+ */
+export async function uploadItdpPhoto({ slug, id, thumb, display, onProgress }) {
+  const head = new ArrayBuffer(4)
+  new DataView(head).setUint32(0, thumb.size)
+  const body = new Blob([head, thumb, display], { type: 'application/octet-stream' })
+  const url = `/api/admin?op=itdp-photo&slug=${encodeURIComponent(slug)}&id=${encodeURIComponent(id)}`
+  let attempt = 0
+  for (;;) {
+    try {
+      return await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('POST', url)
+        xhr.withCredentials = true
+        xhr.setRequestHeader('X-THK-Admin', '1')
+        xhr.setRequestHeader('Content-Type', 'application/octet-stream')
+        xhr.responseType = 'json'
+        xhr.timeout = 120_000
+        xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(e.loaded / e.total)
+        xhr.onload = () => {
+          if (xhr.status === 200) resolve(xhr.response)
+          else {
+            if (xhr.status === 401) signedOut()
+            reject(new ApiError(xhr.response?.error || `Upload failed (${xhr.status}).`, xhr.status))
+          }
+        }
+        xhr.onerror = () => reject(new ApiError('The connection dropped during the upload.', 0))
+        xhr.ontimeout = () => reject(new ApiError('The upload timed out.', 0))
+        xhr.send(body)
+      })
+    } catch (err) {
+      attempt += 1
+      if (attempt > 2 || [400, 401, 413, 415, 503].includes(err.status)) throw err
+      await new Promise((r) => setTimeout(r, 800 * attempt))
+    }
+  }
+}
+
+/** A photo in the iTDP bucket, through the API (the panel's own previews). */
+export const itdpMediaSrc = (key) => `/api/admin?op=itdp-media&key=${encodeURIComponent(key)}`
+export const itdpThumbSrc = (key) => itdpMediaSrc(String(key).replace(/\.(jpe?g|png)$/i, '-t.jpg'))
+
+/** A poster's artwork, from whichever site it is published on. */
+export const posterArtSrc = (p, { card = false } = {}) =>
+  `/api/admin?op=poster-artwork&slug=${encodeURIComponent(p.slug)}&v=${p.version}${card ? '&card=1' : ''}`
+
 /* ------------------------------------------------------------ live check */
 
 /**
@@ -138,11 +189,13 @@ export async function uploadBlob(blob, onProgress) {
  * Local test commits ("local-…") count as live at once.
  * Resolves true when live, false after `timeoutMs`.
  */
-export async function waitForLive(commit, { timeoutMs = 6 * 60_000, onTick } = {}) {
+export async function waitForLive(commit, { timeoutMs = 6 * 60_000, onTick, site = 'thk' } = {}) {
   if (!commit) return false
   if (String(commit).startsWith('local-')) return true
   const started = Date.now()
+  // iTDP Telangana is another origin; the API reads its version.json for us.
   const readVersion = async () => {
+    if (site === 'itdp') return api('itdp-version')
     const r = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' })
     return r.ok ? r.json() : null
   }

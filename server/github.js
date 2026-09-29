@@ -10,6 +10,12 @@
  * history, where it can be reviewed and reverted. Vercel redeploys on every
  * commit to main.
  *
+ * TWO REPOSITORIES
+ * The panel publishes to this site's repository and, since September 2026, to
+ * iTDP Telangana's (itdptelangana.com) — programmes and campaign posters. Both
+ * sites are prerendered the same way, so both use the same machinery; `thk`
+ * and `itdp` below are the two clients.
+ *
  * ONE COMMIT PER ACTION
  * Every change here — an image and the manifest that references it — lands as
  * one commit through the git data API, so the site rebuilds once and can never
@@ -23,183 +29,231 @@
  * person's work.
  *
  * Environment (Vercel > Settings > Environment Variables):
- *   GITHUB_TOKEN    fine-grained PAT, Contents: read and write, this repo only
- *   GITHUB_REPO     optional, defaults to shivaganeshtalikota/THK-Website
- *   GITHUB_BRANCH   optional, defaults to main
+ *   GITHUB_TOKEN        fine-grained PAT, Contents: read and write, on BOTH
+ *                       repositories (or ITDP_GITHUB_TOKEN for the second)
+ *   GITHUB_REPO         optional, defaults to shivaganeshtalikota/THK-Website
+ *   GITHUB_BRANCH       optional, defaults to main
+ *   ITDP_GITHUB_REPO    optional, defaults to shivaganeshtalikota/itdp-telangana
+ *   ITDP_GITHUB_BRANCH  optional, defaults to main
+ *   ITDP_GITHUB_TOKEN   optional, a separate token for the iTDP repository
  *
- * GITHUB_LOCAL_DIR (testing only, never on Vercel) points every read and write
- * at a folder instead, so the whole panel can be exercised without a token.
+ * GITHUB_LOCAL_DIR / ITDP_GITHUB_LOCAL_DIR (testing only, never on Vercel)
+ * point every read and write at a folder instead, so the whole panel can be
+ * exercised without a token.
  */
 import { promises as fs } from 'node:fs'
 import { dirname, resolve, sep } from 'node:path'
 
-const REPO = process.env.GITHUB_REPO || 'shivaganeshtalikota/THK-Website'
-const BRANCH = process.env.GITHUB_BRANCH || 'main'
-const LOCAL = process.env.GITHUB_LOCAL_DIR ? resolve(process.env.GITHUB_LOCAL_DIR) : null
-
 /** A repository path must be relative, forward-slashed and stay inside the repo. */
 const SAFE_PATH = /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9._\-/]+$/
 
-export const githubReady = () => Boolean(LOCAL || process.env.GITHUB_TOKEN)
-
 class ConflictError extends Error {}
 
-async function api(path, init = {}) {
-  const res = await fetch(`https://api.github.com${path}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'thk-website-admin',
-      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
-    },
-  })
-  if (res.status === 422 && init.method === 'PATCH') throw new ConflictError('branch moved')
-  if (!res.ok) {
-    // GitHub's message can carry repository detail; it goes to the log, never
-    // to the browser.
-    throw new Error(`GitHub ${init.method || 'GET'} ${path} -> ${res.status}: ${(await res.text()).slice(0, 300)}`)
-  }
-  return res.status === 204 ? null : res.json()
-}
-
-function localPath(path) {
-  if (!SAFE_PATH.test(path)) throw new Error(`Unsafe repository path: ${path}`)
-  const p = resolve(LOCAL, ...path.split('/'))
-  if (!p.startsWith(LOCAL + sep)) throw new Error(`Unsafe repository path: ${path}`)
-  return p
-}
-
-/** The commit the branch points at right now. */
-async function head() {
-  if (LOCAL) return 'local'
-  const ref = await api(`/repos/${REPO}/git/ref/heads/${BRANCH}`)
-  return ref.object.sha
-}
-
 /**
- * A text file at a given commit, or null if it does not exist there.
- *
- * Read at a pinned commit rather than "the branch", so a manifest and the
- * commit it will be written on top of always agree.
+ * A client for one repository.
+ * @param {{repo: string, branch: string, token: () => string|undefined, localDir?: string, agent: string}} cfg
  */
-async function readAt(path, sha) {
-  if (!SAFE_PATH.test(path)) throw new Error(`Unsafe repository path: ${path}`)
-  if (LOCAL) {
-    try {
-      return await fs.readFile(localPath(path), 'utf8')
-    } catch (e) {
-      if (e.code === 'ENOENT') return null
-      throw e
-    }
-  }
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${sha}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-        // raw: the file's bytes directly, with no 1MB ceiling on content
-        Accept: 'application/vnd.github.raw+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'thk-website-admin',
-      },
-    },
-  )
-  if (res.status === 404) return null
-  if (!res.ok) throw new Error(`GitHub read ${path} -> ${res.status}`)
-  return res.text()
-}
+function repoClient(cfg) {
+  const LOCAL = cfg.localDir ? resolve(cfg.localDir) : null
+  const REPO = cfg.repo
+  const BRANCH = cfg.branch
 
-/** Read the current version of several text files at once. */
-export async function readFiles(paths) {
-  const sha = await head()
-  const out = {}
-  await Promise.all(
-    paths.map(async (p) => {
-      out[p] = await readAt(p, sha)
-    }),
-  )
-  return { sha, files: out }
-}
-
-/**
- * Write files as one commit on top of `parent`.
- *
- * @param {Array<{path:string, content:string|Buffer}>} files
- *        a string is committed as UTF-8 text; a Buffer as binary
- */
-async function commitOn(parent, files, message) {
-  for (const f of files) {
-    if (!SAFE_PATH.test(f.path)) throw new Error(`Unsafe repository path: ${f.path}`)
-  }
-
-  if (LOCAL) {
-    for (const f of files) {
-      const p = localPath(f.path)
-      await fs.mkdir(dirname(p), { recursive: true })
-      await fs.writeFile(p, f.content)
-    }
-    return `local-${Date.now().toString(36)}`
-  }
-
-  const parentCommit = await api(`/repos/${REPO}/git/commits/${parent}`)
-  const tree = []
-  for (const f of files) {
-    if (Buffer.isBuffer(f.content)) {
-      const blob = await api(`/repos/${REPO}/git/blobs`, {
-        method: 'POST',
-        body: JSON.stringify({ content: f.content.toString('base64'), encoding: 'base64' }),
-      })
-      tree.push({ path: f.path, mode: '100644', type: 'blob', sha: blob.sha })
-    } else {
-      tree.push({ path: f.path, mode: '100644', type: 'blob', content: String(f.content) })
-    }
-  }
-  const newTree = await api(`/repos/${REPO}/git/trees`, {
-    method: 'POST',
-    body: JSON.stringify({ base_tree: parentCommit.tree.sha, tree }),
+  const headers = (extra = {}) => ({
+    Authorization: `Bearer ${cfg.token()}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': cfg.agent,
+    ...extra,
   })
-  const commit = await api(`/repos/${REPO}/git/commits`, {
-    method: 'POST',
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [parent] }),
-  })
-  // force:false — refuses unless this is a fast-forward, which is exactly the
-  // check that stops a stale read overwriting somebody else's publish.
-  await api(`/repos/${REPO}/git/refs/heads/${BRANCH}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ sha: commit.sha, force: false }),
-  })
-  return commit.sha
-}
 
-/**
- * Read some files, let `change` decide what to write, commit — and if the
- * branch moved underneath, do it all again against the new state.
- *
- * `change(files)` receives { path: text|null } and returns
- * { files: [{path, content}], message, result } or null to write nothing.
- * It must be safe to call more than once.
- */
-export async function mutateFiles(paths, change, { attempts = 3 } = {}) {
-  let lastErr
-  for (let i = 0; i < attempts; i += 1) {
+  async function api(path, init = {}) {
+    const res = await fetch(`https://api.github.com${path}`, {
+      ...init,
+      headers: headers(init.body ? { 'Content-Type': 'application/json' } : {}),
+    })
+    if (res.status === 422 && init.method === 'PATCH') throw new ConflictError('branch moved')
+    if (!res.ok) {
+      // GitHub's message can carry repository detail; it goes to the log,
+      // never to the browser.
+      throw new Error(`GitHub ${init.method || 'GET'} ${path} -> ${res.status}: ${(await res.text()).slice(0, 300)}`)
+    }
+    return res.status === 204 ? null : res.json()
+  }
+
+  function localPath(path) {
+    if (!SAFE_PATH.test(path)) throw new Error(`Unsafe repository path: ${path}`)
+    const p = resolve(LOCAL, ...path.split('/'))
+    if (!p.startsWith(LOCAL + sep)) throw new Error(`Unsafe repository path: ${path}`)
+    return p
+  }
+
+  /** The commit the branch points at right now. */
+  async function head() {
+    if (LOCAL) return 'local'
+    const ref = await api(`/repos/${REPO}/git/ref/heads/${BRANCH}`)
+    return ref.object.sha
+  }
+
+  /**
+   * A file at a given commit, or null if it does not exist there — as text,
+   * or as a Buffer with { binary: true }.
+   *
+   * Read at a pinned commit rather than "the branch", so a manifest and the
+   * commit it will be written on top of always agree.
+   */
+  async function readAt(path, sha, { binary = false } = {}) {
+    if (!SAFE_PATH.test(path)) throw new Error(`Unsafe repository path: ${path}`)
+    if (LOCAL) {
+      try {
+        return await fs.readFile(localPath(path), binary ? undefined : 'utf8')
+      } catch (e) {
+        if (e.code === 'ENOENT') return null
+        throw e
+      }
+    }
+    const res = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${sha}`,
+      // raw: the file's bytes directly, with no 1MB ceiling on content
+      { headers: headers({ Accept: 'application/vnd.github.raw+json' }) },
+    )
+    if (res.status === 404) return null
+    if (!res.ok) throw new Error(`GitHub read ${path} -> ${res.status}`)
+    return binary ? Buffer.from(await res.arrayBuffer()) : res.text()
+  }
+
+  /** Read the current version of several text files at once. */
+  async function readFiles(paths) {
     const sha = await head()
-    const current = {}
+    const out = {}
     await Promise.all(
       paths.map(async (p) => {
-        current[p] = await readAt(p, sha)
+        out[p] = await readAt(p, sha)
       }),
     )
-    const plan = await change(current)
-    if (!plan) return { commit: null, result: undefined }
-    try {
-      const commit = await commitOn(sha, plan.files, plan.message)
-      return { commit, result: plan.result }
-    } catch (err) {
-      if (!(err instanceof ConflictError)) throw err
-      lastErr = err
-    }
+    return { sha, files: out }
   }
-  throw lastErr || new Error('Could not commit after several attempts')
+
+  /** One file's current bytes, or null. */
+  async function readBinary(path) {
+    return readAt(path, await head(), { binary: true })
+  }
+
+  /**
+   * Write files as one commit on top of `parent`.
+   *
+   * @param {Array<{path:string, content?:string|Buffer, delete?:boolean}>} files
+   *        a string is committed as UTF-8 text, a Buffer as binary, and
+   *        { delete: true } removes the file
+   */
+  async function commitOn(parent, files, message) {
+    for (const f of files) {
+      if (!SAFE_PATH.test(f.path)) throw new Error(`Unsafe repository path: ${f.path}`)
+    }
+
+    if (LOCAL) {
+      for (const f of files) {
+        const p = localPath(f.path)
+        if (f.delete) {
+          await fs.rm(p, { force: true })
+          continue
+        }
+        await fs.mkdir(dirname(p), { recursive: true })
+        await fs.writeFile(p, f.content)
+      }
+      return `local-${Date.now().toString(36)}`
+    }
+
+    const parentCommit = await api(`/repos/${REPO}/git/commits/${parent}`)
+    const tree = []
+    for (const f of files) {
+      if (f.delete) {
+        tree.push({ path: f.path, mode: '100644', type: 'blob', sha: null })
+      } else if (Buffer.isBuffer(f.content)) {
+        const blob = await api(`/repos/${REPO}/git/blobs`, {
+          method: 'POST',
+          body: JSON.stringify({ content: f.content.toString('base64'), encoding: 'base64' }),
+        })
+        tree.push({ path: f.path, mode: '100644', type: 'blob', sha: blob.sha })
+      } else {
+        tree.push({ path: f.path, mode: '100644', type: 'blob', content: String(f.content) })
+      }
+    }
+    const newTree = await api(`/repos/${REPO}/git/trees`, {
+      method: 'POST',
+      body: JSON.stringify({ base_tree: parentCommit.tree.sha, tree }),
+    })
+    const commit = await api(`/repos/${REPO}/git/commits`, {
+      method: 'POST',
+      body: JSON.stringify({ message, tree: newTree.sha, parents: [parent] }),
+    })
+    // force:false — refuses unless this is a fast-forward, which is exactly the
+    // check that stops a stale read overwriting somebody else's publish.
+    await api(`/repos/${REPO}/git/refs/heads/${BRANCH}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ sha: commit.sha, force: false }),
+    })
+    return commit.sha
+  }
+
+  /**
+   * Read some files, let `change` decide what to write, commit — and if the
+   * branch moved underneath, do it all again against the new state.
+   *
+   * `change(files)` receives { path: text|null } and returns
+   * { files: [{path, content}|{path, delete: true}], message, result } or null
+   * to write nothing. It must be safe to call more than once.
+   */
+  async function mutateFiles(paths, change, { attempts = 3 } = {}) {
+    let lastErr
+    for (let i = 0; i < attempts; i += 1) {
+      const sha = await head()
+      const current = {}
+      await Promise.all(
+        paths.map(async (p) => {
+          current[p] = await readAt(p, sha)
+        }),
+      )
+      const plan = await change(current)
+      if (!plan) return { commit: null, result: undefined }
+      try {
+        const commit = await commitOn(sha, plan.files, plan.message)
+        return { commit, result: plan.result }
+      } catch (err) {
+        if (!(err instanceof ConflictError)) throw err
+        lastErr = err
+      }
+    }
+    throw lastErr || new Error('Could not commit after several attempts')
+  }
+
+  return {
+    repo: REPO,
+    ready: () => Boolean(LOCAL || cfg.token()),
+    readFiles,
+    readBinary,
+    mutateFiles,
+  }
 }
+
+/** This site: talikotaharikrishna.com. */
+export const thk = repoClient({
+  repo: process.env.GITHUB_REPO || 'shivaganeshtalikota/THK-Website',
+  branch: process.env.GITHUB_BRANCH || 'main',
+  token: () => process.env.GITHUB_TOKEN,
+  localDir: process.env.GITHUB_LOCAL_DIR,
+  agent: 'thk-website-admin',
+})
+
+/** iTDP Telangana: itdptelangana.com. */
+export const itdp = repoClient({
+  repo: process.env.ITDP_GITHUB_REPO || 'shivaganeshtalikota/itdp-telangana',
+  branch: process.env.ITDP_GITHUB_BRANCH || 'main',
+  token: () => process.env.ITDP_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
+  localDir: process.env.ITDP_GITHUB_LOCAL_DIR,
+  agent: 'thk-website-admin (itdp)',
+})
+
+// The names every existing caller uses, bound to this site's repository.
+export const githubReady = thk.ready
+export const readFiles = thk.readFiles
+export const mutateFiles = thk.mutateFiles

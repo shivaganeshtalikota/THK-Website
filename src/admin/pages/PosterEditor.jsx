@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft, FaUpload, FaUserLarge, FaImage, FaCircleInfo, FaUpDownLeftRight, FaWandMagicSparkles, FaImages } from 'react-icons/fa6'
-import { api, uploadBlob } from '../api'
-import { useContent, SITE } from '../content'
+import { api, posterArtSrc, uploadBlob } from '../api'
+import { useContent, posterSite } from '../content'
 import { Button, Card, Field, LiveStatus, Notice, PageHeader, Progress, inputCls } from '../ui'
 import { readImageFile, silhouette } from '../imageTools'
 import LayoutOverlay from '../LayoutOverlay'
@@ -89,6 +89,9 @@ const PosterEditor = () => {
   const { slug: editSlug } = useParams()
   const navigate = useNavigate()
   const { content, reload } = useContent()
+  // talikotaharikrishna.com, or itdptelangana.com once posters have moved.
+  const SITE = posterSite(content)
+  const liveSite = content?.postersSite === 'itdp' ? 'itdp' : 'thk'
   const existing = editSlug ? content?.posters?.find((p) => p.slug === editSlug) : null
   const editing = Boolean(editSlug)
 
@@ -153,7 +156,7 @@ const PosterEditor = () => {
       })
       setBoxes({ photo: existing.photoBox || null, text: existing.textBox || null })
     }
-    loadImage(`/posters/${existing.slug}-v${existing.version}.jpg`)
+    loadImage(posterArtSrc(existing))
       .then((img) => {
         const c = document.createElement('canvas')
         c.width = POSTER_W
@@ -645,7 +648,7 @@ const PosterEditor = () => {
               )}
             </div>
           )}
-          {done && <LiveStatus commit={done.commit} message={editing ? 'Changes saved.' : 'Poster published.'} link={`${SITE}/posters/${done.slug}`} />}
+          {done && <LiveStatus site={liveSite} commit={done.commit} message={editing ? 'Changes saved.' : 'Poster published.'} link={`${SITE}/posters/${done.slug}`} />}
 
           <div className="flex flex-wrap gap-3">
             {published ? (
