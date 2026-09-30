@@ -22,6 +22,7 @@ const BLANK = {
   titleTe: '',
   date: new Date().toISOString().slice(0, 10),
   datePrecision: 'day',
+  time: '',
   venue: '',
   description: '',
   descriptionTe: '',
@@ -134,6 +135,7 @@ const ItdpProgramEditor = () => {
           titleTe: p.titleTe || '',
           date: p.date,
           datePrecision: p.datePrecision || 'day',
+          time: p.time || '',
           venue: p.venue || '',
           description: p.description || '',
           descriptionTe: p.descriptionTe || '',
@@ -337,8 +339,11 @@ const ItdpProgramEditor = () => {
             <Field label="Title (Telugu)">
               <input lang="te" className={inputCls} value={form.titleTe} onChange={set('titleTe')} maxLength={140} />
             </Field>
-            <Field label="Date *" hint="Programmes are sorted by this date, newest first.">
+            <Field label="Date *" hint="Programmes are sorted by this date, newest first. A date today or later shows the programme as Upcoming on the site — on the homepage, with “Add to calendar” and a WhatsApp invite.">
               <input type="date" className={inputCls} value={form.date} onChange={set('date')} />
+            </Field>
+            <Field label="Start time" hint="Optional. Shown on an upcoming programme and used for “Add to calendar”. Leave blank if not fixed.">
+              <input type="time" className={inputCls} value={form.time} onChange={set('time')} disabled={form.datePrecision !== 'day'} />
             </Field>
             <Field label="Show the date as" hint="Choose “month” or “year” only when the exact day is not known.">
               <select className={inputCls} value={form.datePrecision} onChange={set('datePrecision')}>

@@ -31,6 +31,8 @@ export const PROGRAMS_HEADER = `/**
  * date           YYYY-MM-DD; with datePrecision "month" or "year" only that
  *                much of it is shown, and it is used for sorting
  * dateConfirmed  false for dates inferred when importing the old site
+ * time           optional start time, HH:MM (India); a programme dated today
+ *                or later is shown as Upcoming, with its time
  * cover.k        object key in the media bucket, served at /media/<k>
  */`
 
@@ -111,6 +113,10 @@ export function sanitizeProgram(body, existing) {
   const date = str(body?.date, 10, 'The date')
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`))) throw new Invalid('Choose the date of the programme.')
   const datePrecision = ['day', 'month', 'year'].includes(body?.datePrecision) ? body.datePrecision : 'day'
+  // Optional start time, 24-hour HH:MM, India time. Only meaningful with an
+  // exact day, so dropped otherwise.
+  const time = str(body?.time, 5, 'The time')
+  if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) throw new Invalid('Give the time as hours and minutes, e.g. 18:30.')
 
   const photos = (Array.isArray(body?.photos) ? body.photos : []).map((p, i) => photo(p, slug, `Photo ${i + 1}`))
   if (photos.length > MAX_PHOTOS) throw new Invalid(`Keep an album to ${MAX_PHOTOS} photos or fewer.`)
@@ -128,6 +134,7 @@ export function sanitizeProgram(body, existing) {
       titleTe: str(body?.titleTe, 140, 'The Telugu title'),
       date,
       datePrecision,
+      ...(time && datePrecision === 'day' ? { time } : {}),
       // Saving from the panel is somebody in the office standing behind the
       // date, unless they have said otherwise.
       dateConfirmed: body?.dateConfirmed !== false,
