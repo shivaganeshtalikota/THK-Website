@@ -8,6 +8,84 @@
 export default {
   "posters": [
     {
+      "slug": "tributes-on-157th-gandhi-jayanti",
+      "title": "నేడు జాతిపిత మహాత్మా గాంధీ 157వ జయంతి",
+      "titleEn": "Tributes on 157th Gandhi Jayanti",
+      "summary": "A commemorative Telugu Desam Party poster paying tribute to Mahatma Gandhi on his birth anniversary, honouring his principles of truth and non-violence in winning India's independence.",
+      "issue": "Gandhi Jayanti",
+      "date": "",
+      "version": 1,
+      "width": 2048,
+      "height": 2458,
+      "publishedAt": "2026-10-02T06:22:59.947Z",
+      "templateVersion": 3,
+      "theme": "classic",
+      "size": "large",
+      "bar": {
+        "y": 0.9153,
+        "color": "#AE0405",
+        "paint": false,
+        "mode": "artwork",
+        "rule": null,
+        "x0": 0.1914,
+        "x1": 1
+      },
+      "logo": {
+        "side": "left",
+        "w": 0.16,
+        "show": false
+      },
+      "person": {
+        "side": "right",
+        "h": 0.47,
+        "maxW": 0.6,
+        "top": 0.1,
+        "shadow": true,
+        "layer": "behind"
+      },
+      "name": {
+        "color": "#FFFFFF",
+        "size": 0.0604,
+        "weight": 800,
+        "font": {
+          "te": "noto-serif",
+          "en": "archivo-black"
+        }
+      },
+      "designation": {
+        "color": "#FFD400",
+        "size": 0.0312,
+        "weight": 700
+      },
+      "style": {
+        "name": {
+          "te": "noto-serif",
+          "en": "archivo-black",
+          "scale": 1,
+          "color": null
+        },
+        "designation": {
+          "te": "anek",
+          "en": "same",
+          "scale": 1,
+          "color": null
+        },
+        "align": "center"
+      },
+      "photoBox": {
+        "x": 0.6278,
+        "y": 0.5357,
+        "w": 0.3722,
+        "h": 0.37
+      },
+      "layout": {
+        "side": "right",
+        "chosenBy": "auto",
+        "fit": "full",
+        "ownBar": true
+      }
+    },
+    {
       "slug": "performance-of-officials-in-telangana-state",
       "title": "తెలంగాణ రాష్ట్రంలో అధికారుల పనితీరు",
       "titleEn": "Performance of officials in Telangana state",
