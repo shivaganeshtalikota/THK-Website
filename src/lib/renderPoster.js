@@ -10,6 +10,8 @@
  * or a blob:/canvas made from the visitor's own upload, so toBlob() stays legal.
  */
 
+import { DEFAULT_TELUGU, fontById } from './posterFonts'
+
 /** Load an <img> and resolve only once it has actually decoded. */
 export function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -42,7 +44,61 @@ export async function ensureFonts() {
   await document.fonts.ready
 }
 
-const font = (weight, px) => `${weight} ${Math.round(px)}px ${POSTER_FACE}`
+const font = (weight, px, stack = POSTER_FACE) => `${weight} ${Math.round(px)}px ${stack}`
+
+/* ------------------------------------------------------------ fonts */
+
+const registered = new Map()
+
+/**
+ * Register one of the poster fonts (src/lib/posterFonts.js) and wait for it.
+ *
+ * Every weight is mapped onto the one file ('1 1000'), so asking for 800 of a
+ * face that only comes in 400 draws that face as designed instead of a smeared
+ * synthetic bold.
+ */
+export function loadPosterFont(id) {
+  const f = fontById(id)
+  if (!f || !f.files.length || typeof document === 'undefined' || typeof FontFace === 'undefined') return Promise.resolve()
+  if (!registered.has(id)) {
+    registered.set(
+      id,
+      Promise.all(
+        f.files.map((file) => {
+          const face = new FontFace(f.family, `url(${file.src}) format("woff2")`, { weight: '1 1000', unicodeRange: file.range })
+          document.fonts.add(face)
+          return face.load()
+        }),
+      ).catch(() => {}),
+    )
+  }
+  return registered.get(id)
+}
+
+/** Every font a poster's name and designation ask for, loaded. */
+export async function ensurePosterFonts(poster) {
+  const ids = new Set()
+  for (const k of ['name', 'designation']) {
+    const f = poster?.[k]?.font
+    if (f?.te) ids.add(f.te)
+    if (f?.en && f.en !== 'same') ids.add(f.en)
+  }
+  await Promise.all([...ids].map(loadPosterFont))
+}
+
+/**
+ * The font stack for a line: the chosen English face first (Latin only, so
+ * the Telugu falls through it), then the chosen Telugu face, then the
+ * defaults. A poster published before fonts could be chosen has no `font` and
+ * keeps exactly the face it always had.
+ */
+function stackFor(spec) {
+  const f = spec?.font
+  if (!f) return POSTER_FACE
+  const te = fontById(f.te) || fontById(DEFAULT_TELUGU)
+  const en = f.en && f.en !== 'same' ? fontById(f.en) : null
+  return [en && `"${en.family}"`, `"${te.family}"`, POSTER_FACE].filter(Boolean).join(', ')
+}
 
 /* ------------------------------------------------------------- text */
 
@@ -448,25 +504,32 @@ function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
     barH = g.textBox.h * H
   }
   const regionW = x1 - x0
-  const cx = (x0 + x1) / 2
+  // Left, centre or right in the region, as the office chose; centre unless
+  // they did.
+  const align = ['left', 'right'].includes(g.textAlign) ? g.textAlign : 'center'
+  const cx = align === 'left' ? x0 : align === 'right' ? x1 : (x0 + x1) / 2
 
   let nameSize = g.name.size * H
   let desSize = g.designation.size * H
+  const nameStack = stackFor(g.name)
+  const desStack = stackFor(g.designation)
+  const nf = (px) => font(g.name.weight, px, nameStack)
+  const df = (px) => font(g.designation.weight, px, desStack)
 
   // Name: shrink to fit, down to half size; only then truncate.
-  ctx.font = font(g.name.weight, nameSize)
+  ctx.font = nf(nameSize)
   while (name && ctx.measureText(name).width > regionW && nameSize > g.name.size * H * 0.5) {
     nameSize -= 2
-    ctx.font = font(g.name.weight, nameSize)
+    ctx.font = nf(nameSize)
   }
   const nameText = name ? fitWithEllipsis(ctx, name, regionW) : ''
 
   // Designation: two balanced lines before any shrinking.
-  ctx.font = font(g.designation.weight, desSize)
+  ctx.font = df(desSize)
   let lines = designation ? balancedLines(ctx, designation, regionW) : []
   while (lines.some((l) => ctx.measureText(l).width > regionW) && desSize > g.designation.size * H * 0.6) {
     desSize -= 2
-    ctx.font = font(g.designation.weight, desSize)
+    ctx.font = df(desSize)
     lines = balancedLines(ctx, designation, regionW)
   }
   lines = lines.map((l) => fitWithEllipsis(ctx, l, regionW))
@@ -475,11 +538,11 @@ function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
   const measure = () => {
     const items = []
     if (nameText) {
-      ctx.font = font(g.name.weight, nameSize)
-      items.push({ text: nameText, f: font(g.name.weight, nameSize), color: g.name.color, ...extents(ctx, nameText), gapAfter: desSize * 0.34 })
+      ctx.font = nf(nameSize)
+      items.push({ text: nameText, f: nf(nameSize), color: g.name.color, ...extents(ctx, nameText), gapAfter: desSize * 0.34 })
     }
-    ctx.font = font(g.designation.weight, desSize)
-    lines.forEach((l) => items.push({ text: l, f: font(g.designation.weight, desSize), color: g.designation.color, ...extents(ctx, l), gapAfter: desSize * 0.22 }))
+    ctx.font = df(desSize)
+    lines.forEach((l) => items.push({ text: l, f: df(desSize), color: g.designation.color, ...extents(ctx, l), gapAfter: desSize * 0.22 }))
     // Use a consistent line box for Telugu and Latin alike so two posters with
     // different scripts sit at the same height.
     items.forEach((it) => {
@@ -515,7 +578,7 @@ function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
   // colour: a soft shadow in the opposite tone keeps every letter legible.
   const onArtwork = g.bar.mode === 'none'
   ctx.save()
-  ctx.textAlign = 'center'
+  ctx.textAlign = align
   ctx.textBaseline = 'alphabetic'
   items.forEach((it) => {
     ctx.font = it.f

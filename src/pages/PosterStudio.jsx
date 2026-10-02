@@ -23,6 +23,7 @@ import { posterBySlug, posterImage, posterCard } from '../data/posters'
 import {
   loadImage,
   ensureFonts,
+  ensurePosterFonts,
   renderPoster,
   renderShareCard,
   canvasToJpeg,
@@ -114,6 +115,8 @@ const PosterStudio = () => {
           loadImage(posterImage(poster)),
           needsMark ? loadImage('/tdp-logo.png') : Promise.resolve(null),
           ensureFonts(),
+          // The faces the office chose for this campaign's name and designation.
+          ensurePosterFonts(poster),
         ])
         if (!alive) return
         artworkRef.current = art

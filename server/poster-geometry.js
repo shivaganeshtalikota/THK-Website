@@ -10,6 +10,11 @@
  * build.
  */
 
+import { POSTER_FONTS } from '../src/lib/posterFonts.js'
+
+const TE_FONTS = POSTER_FONTS.filter((f) => f.script === 'te').map((f) => f.id)
+const EN_FONTS = POSTER_FONTS.filter((f) => f.script === 'en').map((f) => f.id)
+
 class Invalid extends Error {
   constructor(message) {
     super(message)
@@ -37,6 +42,24 @@ function box(b, min, label) {
     w,
     h,
   }
+}
+
+/** The fonts chosen for a line of text: only faces the site ships. */
+function fontFrom(f) {
+  if (!f || typeof f !== 'object') return null
+  return { te: pick(f.te, TE_FONTS, 'anek'), en: pick(f.en, ['same', ...EN_FONTS], 'same') }
+}
+
+/** What the panel needs to show the text-style choices again when editing. */
+function styleFrom(s) {
+  if (!s || typeof s !== 'object') return null
+  const line = (l = {}) => ({
+    te: pick(l.te, TE_FONTS, 'anek'),
+    en: pick(l.en, ['same', ...EN_FONTS], 'same'),
+    scale: num(l.scale ?? 1, 0.5, 1.6, 'the text size'),
+    color: l.color ? colour(l.color, null) : null,
+  })
+  return { name: line(s.name), designation: line(s.designation), align: pick(s.align, ['left', 'center', 'right'], 'center') }
 }
 
 /**
@@ -87,14 +110,18 @@ export function sanitizeGeometry(g) {
     },
     name: {
       color: colour(g.name?.color, '#D0021B'),
-      size: num(g.name?.size, 0.02, 0.09, 'the name size'),
+      size: num(g.name?.size, 0.02, 0.12, 'the name size'),
       weight: 800,
+      ...(fontFrom(g.name?.font) ? { font: fontFrom(g.name.font) } : {}),
     },
     designation: {
       color: colour(g.designation?.color, '#0B7A3B'),
-      size: num(g.designation?.size, 0.012, 0.05, 'the designation size'),
+      size: num(g.designation?.size, 0.012, 0.07, 'the designation size'),
       weight: 700,
+      ...(fontFrom(g.designation?.font) ? { font: fontFrom(g.designation.font) } : {}),
     },
+    ...(['left', 'right'].includes(g.textAlign) ? { textAlign: g.textAlign } : {}),
+    ...(styleFrom(g.style) ? { style: styleFrom(g.style) } : {}),
     // Placed by hand in the panel (drag and resize). Optional: without them the
     // renderer places the photo and the name itself.
     ...(isBox(g.photoBox) ? { photoBox: box(g.photoBox, 0.08, 'the photo box') } : {}),

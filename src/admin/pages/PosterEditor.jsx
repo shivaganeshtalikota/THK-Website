@@ -8,7 +8,9 @@ import { readImageFile, silhouette } from '../imageTools'
 import LayoutOverlay from '../LayoutOverlay'
 import { aiRead } from '../ai'
 import { AiAction, TranslateButton } from '../AiTools'
-import { loadImage, ensureFonts, renderPoster, renderShareCard, canvasToJpeg, canvasToJpegUnder } from '../../lib/renderPoster'
+import { loadImage, ensureFonts, ensurePosterFonts, renderPoster, renderShareCard, canvasToJpeg, canvasToJpegUnder } from '../../lib/renderPoster'
+import { TELUGU_FONTS, ENGLISH_FONTS } from '../../lib/posterFonts'
+import FontPicker from '../FontPicker'
 import {
   PERSON_SIZES,
   SHAPES,
@@ -36,6 +38,26 @@ import {
  */
 
 const SAMPLE = { name: 'తాళికోట హరికృష్ణ', designation: 'శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులు' }
+
+/**
+ * Text style: a font for the Telugu and one for the English of each line, a
+ * size against the template's, and a colour (null = the bar theme's). The
+ * default is exactly what posters had before any of this could be chosen.
+ */
+const LINE_STYLE = { te: 'anek', en: 'same', scale: 1, color: null }
+const DEFAULT_STYLE = { name: LINE_STYLE, designation: LINE_STYLE, align: 'center' }
+const SWATCHES = ['#FFFFFF', '#FFD400', '#D0021B', '#0B7A3B', '#141413', '#7A0019', '#1D4ED8', '#F97316']
+const isDefaultLine = (l) => l.te === 'anek' && l.en === 'same' && l.scale === 1 && !l.color
+
+/** Fold the chosen style into a line of the template geometry. */
+function styledLine(base, l) {
+  return {
+    ...base,
+    size: Math.round(base.size * l.scale * 10000) / 10000,
+    color: l.color || base.color,
+    ...(l.te !== 'anek' || l.en !== 'same' ? { font: { te: l.te, en: l.en } } : {}),
+  }
+}
 const MAX_ART = 30 * 1024 * 1024
 
 const Choice = ({ value, current, onPick, children }) => (
@@ -107,6 +129,9 @@ const PosterEditor = () => {
   // mark on its own bar.
   const [design, setDesign] = useState({ theme: 'classic', side: 'auto', size: 'large', fit: 'auto', bar: 'auto', layer: 'behind', logo: 'auto', shape: 'artwork' })
   const [sample, setSample] = useState(SAMPLE)
+  const [style, setStyle] = useState(DEFAULT_STYLE)
+  const [styleTab, setStyleTab] = useState('name')
+  const setLine = (k, patch) => setStyle((st) => ({ ...st, [k]: { ...st[k], ...patch } }))
   const [person, setPerson] = useState(() => silhouette())
   const [personKind, setPersonKind] = useState('silhouette')
   const [logo, setLogo] = useState(null)
@@ -161,6 +186,7 @@ const PosterEditor = () => {
         shape: 'artwork',
       })
       setBoxes({ photo: existing.photoBox || null, text: existing.textBox || null })
+      setStyle(existing.style ? { ...DEFAULT_STYLE, ...existing.style } : DEFAULT_STYLE)
     }
     loadImage(`/posters/${existing.slug}-v${existing.version}.jpg`)
       .then((img) => {
@@ -201,7 +227,7 @@ const PosterEditor = () => {
     const barY = barMode === 'artwork' ? ownBar.y : defaultBarY(frame)
     const auto = chooseSide(art.canvas, barY)
     const side = design.side === 'auto' ? auto.side : design.side
-    return {
+    const g = {
       ...templateGeometry({
         theme: design.theme,
         side,
@@ -218,9 +244,21 @@ const PosterEditor = () => {
       ...(boxes.text ? { textBox: boxes.text } : {}),
       layout: { side, chosenBy: design.side === 'auto' ? 'auto' : 'office', fit: art.mode, ownBar: barMode === 'artwork' },
     }
+    // The text style, folded into the lines the renderer reads, and kept as
+    // chosen so editing the poster later shows the same choices.
+    const plain = isDefaultLine(style.name) && isDefaultLine(style.designation) && style.align === 'center'
+    return plain
+      ? g
+      : {
+          ...g,
+          name: styledLine(g.name, style.name),
+          designation: styledLine(g.designation, style.designation),
+          ...(style.align !== 'center' ? { textAlign: style.align } : {}),
+          style,
+        }
     // frame is derived from art
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [art, design, ownBar, barMode, boxes, logoMode])
+  }, [art, design, ownBar, barMode, boxes, logoMode, style])
 
   const suggestion = useMemo(() => (geometry ? suggestedBoxes(geometry) : null), [geometry])
   const shownBoxes = suggestion ? { photo: boxes.photo || suggestion.photo, text: boxes.text || suggestion.text } : null
@@ -236,6 +274,7 @@ const PosterEditor = () => {
     setError(null)
     try {
       const { removeBackground } = await import('../../lib/removeBackground')
+      await ensurePosterFonts(geometry)
       const out = []
       for (const s of SAMPLE_PHOTOS) {
         if (!sampleCutouts[s.key]) sampleCutouts[s.key] = await removeBackground(await loadImage(s.src))
@@ -262,16 +301,23 @@ const PosterEditor = () => {
   // Live preview, at half size — the same renderer supporters get.
   useEffect(() => {
     if (!geometry || !previewRef.current || !fontsReady) return
-    renderPoster({
-      canvas: previewRef.current,
-      poster: { width: art.canvas.width, height: art.canvas.height, ...geometry },
-      artwork: art.canvas,
-      person,
-      name: sample.name,
-      designation: sample.designation,
-      logo,
-      scale: 0.5,
+    let alive = true
+    ensurePosterFonts(geometry).then(() => {
+      if (!alive || !previewRef.current) return
+      renderPoster({
+        canvas: previewRef.current,
+        poster: { width: art.canvas.width, height: art.canvas.height, ...geometry },
+        artwork: art.canvas,
+        person,
+        name: sample.name,
+        designation: sample.designation,
+        logo,
+        scale: 0.5,
+      })
     })
+    return () => {
+      alive = false
+    }
   }, [geometry, art, person, sample, logo, fontsReady])
 
   const pickArtwork = async (file) => {
@@ -635,7 +681,105 @@ const PosterEditor = () => {
             )}
           </Card>
 
-          <Card title="3. The person" subtitle="Supporters' photos stand on the bar, cut out automatically.">
+          <Card title="3. Text style" subtitle="Fonts, size and colour for the name and the designation — Telugu and English each in their own font.">
+            <div className="flex flex-wrap items-center gap-2">
+              <Choice value="name" current={styleTab} onPick={setStyleTab}>
+                Name
+              </Choice>
+              <Choice value="designation" current={styleTab} onPick={setStyleTab}>
+                Designation
+              </Choice>
+              {!(isDefaultLine(style.name) && isDefaultLine(style.designation) && style.align === 'center') && (
+                <button type="button" onClick={() => setStyle(DEFAULT_STYLE)} className="ml-auto text-xs font-semibold text-ink-600 underline-offset-2 hover:underline">
+                  Back to the standard style
+                </button>
+              )}
+            </div>
+            <p className="mt-5 text-[0.8rem] font-semibold text-ink-700">Telugu font</p>
+            <div className="mt-2">
+              <FontPicker
+                fonts={TELUGU_FONTS}
+                value={style[styleTab].te}
+                onChange={(v) => setLine(styleTab, { te: v })}
+                sample={/[\u0C00-\u0C7F]/.test(sample[styleTab]) ? sample[styleTab].slice(0, 28) : 'తాళికోట హరికృష్ణ'}
+              />
+            </div>
+            <p className="mt-5 text-[0.8rem] font-semibold text-ink-700">English font</p>
+            <p className="text-xs text-ink-500">For names and designations typed in English.</p>
+            <div className="mt-2">
+              <FontPicker
+                fonts={ENGLISH_FONTS}
+                value={style[styleTab].en}
+                onChange={(v) => setLine(styleTab, { en: v })}
+                sample="Talikota Hari Krishna"
+                sameOption="Same as the Telugu font"
+              />
+            </div>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <div>
+                <p className="text-[0.8rem] font-semibold text-ink-700">
+                  Size <span className="font-normal text-ink-500">{Math.round(style[styleTab].scale * 100)}%</span>
+                </p>
+                <input
+                  type="range"
+                  min="0.6"
+                  max="1.5"
+                  step="0.05"
+                  value={style[styleTab].scale}
+                  onChange={(e) => setLine(styleTab, { scale: Number(e.target.value) })}
+                  className="mt-3 w-full accent-ink-900"
+                  aria-label={`${styleTab} size`}
+                />
+                <p className="mt-1 text-xs text-ink-500">A long name still shrinks to fit its space.</p>
+              </div>
+              <div>
+                <p className="text-[0.8rem] font-semibold text-ink-700">Colour</p>
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setLine(styleTab, { color: null })}
+                    className={`rounded-md border px-2 py-1 text-xs font-semibold ${!style[styleTab].color ? 'border-ink-900 bg-ink-900 text-white' : 'border-ink-200 text-ink-700'}`}
+                  >
+                    Automatic
+                  </button>
+                  {SWATCHES.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setLine(styleTab, { color: c })}
+                      className={`h-7 w-7 rounded-full border ${style[styleTab].color === c ? 'ring-2 ring-ink-900 ring-offset-2' : 'border-ink-300'}`}
+                      style={{ background: c }}
+                      aria-label={`Colour ${c}`}
+                    />
+                  ))}
+                  <label className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full border border-ink-300" title="Any colour">
+                    <span className="absolute inset-0" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} aria-hidden="true" />
+                    <input
+                      type="color"
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      value={style[styleTab].color || '#D0021B'}
+                      onChange={(e) => setLine(styleTab, { color: e.target.value.toUpperCase() })}
+                      aria-label="Any colour"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+            <p className="mt-5 text-[0.8rem] font-semibold text-ink-700">Alignment (name and designation)</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {[
+                ['left', 'Left'],
+                ['center', 'Centre'],
+                ['right', 'Right'],
+              ].map(([v, l]) => (
+                <Choice key={v} value={v} current={style.align} onPick={(x) => setStyle((st) => ({ ...st, align: x }))}>
+                  {l}
+                </Choice>
+              ))}
+            </div>
+          </Card>
+
+          <Card title="4. The person" subtitle="Supporters' photos stand on the bar, cut out automatically.">
             <p className="text-[0.8rem] font-semibold text-ink-700">Side</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {[
@@ -687,7 +831,7 @@ const PosterEditor = () => {
             </div>
           </Card>
 
-          <Card title="4. Details" subtitle="Shown on the posters page and in link previews.">
+          <Card title="5. Details" subtitle="Shown on the posters page and in link previews.">
             {art && (
               <div className="mb-5">
                 <AiAction
