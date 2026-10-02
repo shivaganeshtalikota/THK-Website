@@ -1,6 +1,10 @@
 import { createContext, useContext } from 'react'
 
 export const SITE = 'https://www.talikotaharikrishna.com'
+export const ITDP_SITE = 'https://itdptelangana.com'
+
+/** Where campaign posters are published — iTDP once they have moved. */
+export const posterSite = (content) => (content?.postersSite === 'itdp' ? ITDP_SITE : SITE)
 
 /**
  * Everything published, as the repository has it RIGHT NOW — read from the

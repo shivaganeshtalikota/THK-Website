@@ -137,16 +137,16 @@ export function Progress({ value, label }) {
  * "Published — live on the site in a minute or two", which then turns into
  * "Live now" when the deployment carrying this commit is being served.
  */
-export function LiveStatus({ commit, message, link }) {
+export function LiveStatus({ commit, message, link, site = 'thk' }) {
   const [state, setState] = useState('waiting')
   useEffect(() => {
     let alive = true
     setState('waiting')
-    waitForLive(commit).then((ok) => alive && setState(ok ? 'live' : 'slow'))
+    waitForLive(commit, { site }).then((ok) => alive && setState(ok ? 'live' : 'slow'))
     return () => {
       alive = false
     }
-  }, [commit])
+  }, [commit, site])
 
   if (state === 'live') {
     return (

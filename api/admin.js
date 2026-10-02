@@ -31,7 +31,21 @@ import {
   renameDevice,
 } from '../server/security.js'
 import { r2Config, r2Delete, r2Get, r2Put } from '../server/r2.js'
-import { githubReady, mutateFiles, readFiles } from '../server/github.js'
+import { githubReady, itdp, mutateFiles, readFiles, thk } from '../server/github.js'
+import { mediaGet as itdpMediaGet, mediaPut as itdpMediaPut, storageReady as itdpStorageReady, PRIMARY_BUDGET } from '../server/itdp-media.js'
+import {
+  PHOTO_ID,
+  PROGRAMS_PATH,
+  PROGRAM_SLUG,
+  albumPath,
+  parseAlbum,
+  parsePrograms,
+  sanitizeProgram,
+  serializeAlbum,
+  serializePrograms,
+  sortPrograms,
+  storedBytes,
+} from '../server/itdp-content.js'
 import { imageSize, isJpeg } from '../server/image.js'
 import { MANIFEST_PATH, parseManifest, serializeManifest } from '../server/campaign-manifest.js'
 import { parseDataModule } from '../server/data-module.js'
@@ -212,6 +226,17 @@ const USED_CODE = 'That code has just been used. Wait for the next one — the a
 
 const PUBLISHED_NOTE = 'Saved. The site rebuilds automatically — it is live in a minute or two.'
 
+/*
+ * WHERE CAMPAIGN POSTERS LIVE
+ * The poster maker moved to iTDP Telangana (September 2026). Setting
+ * POSTERS_MOVED_TO=https://itdptelangana.com in Vercel is the switch: posters
+ * are then published to, and listed from, the iTDP repository, and
+ * middleware.js sends this site's /posters pages there. Until it is set,
+ * nothing changes. Same manifest path and artwork folder in both repositories.
+ */
+const postersMoved = () => Boolean(process.env.POSTERS_MOVED_TO)
+const posterRepo = () => (postersMoved() ? itdp : thk)
+
 /* ---------------------------------------------------------- operations */
 
 const ops = {}
@@ -334,13 +359,14 @@ ops.overview = {
   method: 'GET',
   auth: 'full',
   async run({ session }) {
-    const [{ sha, files }, activity, state] = await Promise.all([
-      readFiles([UPLOADS_PATH, MANIFEST_PATH, SITE_CONTENT_PATH]),
+    const [{ sha, files }, posterFiles, activity, state] = await Promise.all([
+      readFiles([UPLOADS_PATH, SITE_CONTENT_PATH]),
+      posterRepo().readFiles([MANIFEST_PATH]),
       readAudit(15),
       loadState(),
     ])
     const uploads = parseUploads(files[UPLOADS_PATH])
-    const posters = parsePosters(files[MANIFEST_PATH])
+    const posters = parsePosters(posterFiles.files[MANIFEST_PATH])
     const site = parseSite(files[SITE_CONTENT_PATH])
     const today = new Date().toISOString().slice(0, 10)
     return {
@@ -355,6 +381,8 @@ ops.overview = {
       activity,
       health: {
         github: githubReady(),
+        itdpGithub: itdp.ready(),
+        itdpMedia: itdpStorageReady(),
         storage: Boolean(r2Config()),
         captions: Boolean(process.env.GEMINI_API_KEY),
         strongSessionKey: strongSecretConfigured(),
@@ -369,11 +397,16 @@ ops.content = {
   method: 'GET',
   auth: 'full',
   async run() {
-    const { sha, files } = await readFiles([UPLOADS_PATH, MANIFEST_PATH, SITE_CONTENT_PATH])
+    const [{ sha, files }, posterFiles] = await Promise.all([
+      readFiles([UPLOADS_PATH, SITE_CONTENT_PATH]),
+      posterRepo().readFiles([MANIFEST_PATH]),
+    ])
     return {
       sha,
       uploads: parseUploads(files[UPLOADS_PATH]),
-      posters: parsePosters(files[MANIFEST_PATH]).posters,
+      posters: parsePosters(posterFiles.files[MANIFEST_PATH]).posters,
+      // Where the posters are published, so the panel links to the right site.
+      postersSite: postersMoved() ? 'itdp' : 'thk',
       site: parseSite(files[SITE_CONTENT_PATH]),
     }
   },
@@ -626,7 +659,7 @@ ops['poster-publish'] = {
     const geometry = sanitizeGeometry(body.geometry)
     const img = await posterImages(session, body, true)
 
-    const { commit } = await mutateFiles([MANIFEST_PATH], (files) => {
+    const { commit } = await posterRepo().mutateFiles([MANIFEST_PATH], (files) => {
       const m = parsePosters(files[MANIFEST_PATH])
       if (m.posters.some((p) => p.slug === slug)) fail(409, 'A poster already uses that web address.')
       m.posters.unshift({
@@ -664,7 +697,7 @@ ops['poster-update'] = {
     const geometry = body.geometry ? sanitizeGeometry(body.geometry) : null
     const img = await posterImages(session, body, false)
 
-    const { commit } = await mutateFiles([MANIFEST_PATH], (files) => {
+    const { commit } = await posterRepo().mutateFiles([MANIFEST_PATH], (files) => {
       const m = parsePosters(files[MANIFEST_PATH])
       const p = m.posters.find((x) => x.slug === slug)
       if (!p) fail(404, 'That poster no longer exists.')
@@ -706,7 +739,7 @@ ops['poster-delete'] = {
   async run({ req, body }) {
     const slug = String(body.slug || '').trim()
     if (!SLUG.test(slug)) fail(400, 'Which poster?')
-    const { commit, result } = await mutateFiles([MANIFEST_PATH], (files) => {
+    const { commit, result } = await posterRepo().mutateFiles([MANIFEST_PATH], (files) => {
       const m = parsePosters(files[MANIFEST_PATH])
       const p = m.posters.find((x) => x.slug === slug)
       if (!p) fail(404, 'No poster with that address.')
@@ -749,6 +782,201 @@ ops['site-save'] = {
     }[section]
     await audit(req, 'update site', true, what)
     return { ok: true, commit, value, message: PUBLISHED_NOTE }
+  },
+}
+
+/* ------------------------------------------------- iTDP Telangana */
+
+/*
+ * Programmes on itdptelangana.com. The index and each album are data files in
+ * the iTDP repository (server/itdp-content.js); the photographs are in the
+ * iTDP media bucket (server/itdp-media.js). A programme is saved in two
+ * steps: each photo is uploaded on its own (itdp-photo), then one commit
+ * writes the programme with its list of photos (itdp-program-save). So an
+ * album of hundreds of photos never has to fit in one request.
+ */
+
+const ITDP_SITE = () => process.env.ITDP_SITE_URL || process.env.POSTERS_MOVED_TO || 'https://itdptelangana.com'
+
+function itdpReady() {
+  if (!itdp.ready()) fail(503, 'The iTDP website is not connected yet: GITHUB_TOKEN needs access to the itdp-telangana repository.')
+}
+
+/**
+ * Is the primary bucket past its size budget? Worked out from the programme
+ * index, and remembered for five minutes so an album of two hundred photos
+ * does not re-read the index two hundred times.
+ */
+let budget = { at: 0, over: false }
+async function overBudget() {
+  if (Date.now() - budget.at < 5 * 60 * 1000) return budget.over
+  const { files } = await itdp.readFiles([PROGRAMS_PATH])
+  budget = { at: Date.now(), over: storedBytes(parsePrograms(files[PROGRAMS_PATH]).programs) > PRIMARY_BUDGET }
+  return budget.over
+}
+
+ops['itdp-content'] = {
+  method: 'GET',
+  auth: 'full',
+  async run() {
+    itdpReady()
+    const { sha, files } = await itdp.readFiles([PROGRAMS_PATH])
+    const { programs } = parsePrograms(files[PROGRAMS_PATH])
+    return {
+      sha,
+      site: ITDP_SITE(),
+      programs,
+      storage: { ready: itdpStorageReady(), bytes: storedBytes(programs), budget: PRIMARY_BUDGET },
+    }
+  },
+}
+
+ops['itdp-album'] = {
+  method: 'GET',
+  auth: 'full',
+  async run({ req }) {
+    itdpReady()
+    const slug = String(req.query.slug || '')
+    if (!PROGRAM_SLUG.test(slug)) fail(400, 'Which programme?')
+    const { files } = await itdp.readFiles([albumPath(slug)])
+    return { photos: parseAlbum(files[albumPath(slug)]).photos }
+  },
+}
+
+/**
+ * One photograph, as the panel prepared it in the browser: a 4-byte thumbnail
+ * length, the 480px thumbnail, then the display copy (up to 2000px). Stored
+ * under programs/<slug>/<id>.jpg and <id>-t.jpg.
+ */
+ops['itdp-photo'] = {
+  method: 'POST',
+  auth: 'full',
+  raw: true,
+  async run({ req, raw }) {
+    itdpReady()
+    const slug = String(req.query.slug || '')
+    const id = String(req.query.id || '')
+    if (!PROGRAM_SLUG.test(slug) || !PHOTO_ID.test(id)) fail(400, 'Bad photo name.')
+    if (!itdpStorageReady()) fail(503, 'Photo storage for the iTDP website is not set up yet (ITDP_R2_BUCKET).')
+    if (raw.length < 8) fail(400, 'That photo was empty.')
+    const thumbLen = raw.readUInt32BE(0)
+    if (thumbLen < 100 || thumbLen > raw.length - 4 - 100) fail(400, 'That photo did not arrive whole. Try again.')
+    const thumb = raw.subarray(4, 4 + thumbLen)
+    const display = raw.subarray(4 + thumbLen)
+    if (!isJpeg(thumb) || !isJpeg(display)) fail(415, 'Photos must be sent as JPEGs.')
+    const size = imageSize(display)
+    const tsize = imageSize(thumb)
+    if (!size || Math.max(size.w, size.h) > 2600) fail(400, 'That photo was not prepared by the panel. Reload and try again.')
+    if (!tsize || tsize.w > 640) fail(400, 'The thumbnail was not prepared by the panel. Reload and try again.')
+
+    const preferFallback = await overBudget()
+    const k = `programs/${slug}/${id}.jpg`
+    const store = await itdpMediaPut(k, display, 'image/jpeg', { preferFallback })
+    await itdpMediaPut(`programs/${slug}/${id}-t.jpg`, thumb, 'image/jpeg', { preferFallback: store !== 'ITDP_R2' })
+    return { k, w: size.w, h: size.h, b: display.length, store }
+  },
+}
+
+ops['itdp-program-save'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, body }) {
+    itdpReady()
+    const editing = body.editing ? String(body.editing) : null
+    const slug = editing || String(body.slug || '')
+    if (!PROGRAM_SLUG.test(slug)) fail(400, 'The web address must be lowercase letters, numbers and hyphens.')
+
+    const { commit, result } = await itdp.mutateFiles([PROGRAMS_PATH], (files) => {
+      const index = parsePrograms(files[PROGRAMS_PATH])
+      const existing = index.programs.find((p) => p.slug === slug) || null
+      if (editing && !existing) fail(404, 'That programme no longer exists.')
+      if (!editing && existing) fail(409, 'A programme already uses that web address. Change the title or the address.')
+      const { entry, photos } = sanitizeProgram({ ...body, slug }, existing)
+      index.programs = sortPrograms([...index.programs.filter((p) => p.slug !== slug), entry])
+      return {
+        files: [
+          { path: albumPath(slug), content: serializeAlbum(slug, photos) },
+          { path: PROGRAMS_PATH, content: serializePrograms(index) },
+        ],
+        message: `${editing ? 'Edit' : 'Publish'} iTDP programme: ${entry.title} (${photos.length} photos)\n\nFrom the admin panel.`,
+        result: entry,
+      }
+    })
+    await audit(req, editing ? 'edit iTDP programme' : 'publish iTDP programme', true, `${result.title} (${result.photoCount} photos)`)
+    return { ok: true, slug, commit, url: `${ITDP_SITE()}/programs/${slug}`, message: PUBLISHED_NOTE }
+  },
+}
+
+ops['itdp-program-delete'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ req, body }) {
+    itdpReady()
+    const slug = String(body.slug || '')
+    if (!PROGRAM_SLUG.test(slug)) fail(400, 'Which programme?')
+    const { commit, result } = await itdp.mutateFiles([PROGRAMS_PATH], (files) => {
+      const index = parsePrograms(files[PROGRAMS_PATH])
+      const p = index.programs.find((x) => x.slug === slug)
+      if (!p) fail(404, 'That programme no longer exists.')
+      index.programs = index.programs.filter((x) => x.slug !== slug)
+      // The photographs stay in the bucket: removing the programme takes it
+      // off the site, and a mistaken removal can be undone from git history.
+      return {
+        files: [
+          { path: albumPath(slug), delete: true },
+          { path: PROGRAMS_PATH, content: serializePrograms(index) },
+        ],
+        message: `Remove iTDP programme: ${p.title}\n\nFrom the admin panel.`,
+        result: p.title,
+      }
+    })
+    await audit(req, 'remove iTDP programme', true, result)
+    return { ok: true, commit, message: PUBLISHED_NOTE }
+  },
+}
+
+/**
+ * A photo from the iTDP bucket, for the panel's own previews. Read through
+ * here rather than from itdptelangana.com so previews work before that site
+ * is live, and stay same-origin for the panel's CSP.
+ */
+ops['itdp-media'] = {
+  method: 'GET',
+  auth: 'full',
+  async run({ req }) {
+    const key = String(req.query.key || '')
+    if (!/^(programs|downloads)\/[a-z0-9][a-z0-9-]{0,80}\/[a-z0-9][a-z0-9-]{0,60}\.(jpg|png)$/.test(key)) fail(404, 'Not found')
+    const buf = await itdpMediaGet(key)
+    if (!buf) fail(404, 'Not found')
+    return { binary: buf, type: key.endsWith('.png') ? 'image/png' : 'image/jpeg' }
+  },
+}
+
+/** A poster's artwork or card, from wherever posters are published. */
+ops['poster-artwork'] = {
+  method: 'GET',
+  auth: 'full',
+  async run({ req }) {
+    const slug = String(req.query.slug || '')
+    const v = Number(req.query.v)
+    if (!SLUG.test(slug) || !Number.isInteger(v) || v < 1 || v > 999) fail(404, 'Not found')
+    const buf = await posterRepo().readBinary(`${POSTER_DIR}/${slug}${req.query.card ? '-card' : ''}-v${v}.jpg`)
+    if (!buf) fail(404, 'Not found')
+    return { binary: buf, type: 'image/jpeg' }
+  },
+}
+
+/** Which commit itdptelangana.com is serving — read here to avoid CORS. */
+ops['itdp-version'] = {
+  method: 'GET',
+  auth: 'full',
+  async run() {
+    try {
+      const r = await fetch(`${ITDP_SITE()}/version.json?t=${Date.now()}`, { cache: 'no-store' })
+      return r.ok ? await r.json() : { sha: null }
+    } catch {
+      return { sha: null }
+    }
   },
 }
 
@@ -921,6 +1149,12 @@ export default async function handler(req, res) {
     else body = await readJson(req)
 
     const out = await op.run({ req, res, body, raw, session })
+    if (out?.binary) {
+      // Images the panel previews. Private: they are behind the sign-in.
+      res.setHeader('Content-Type', out.type)
+      res.setHeader('Cache-Control', 'private, max-age=3600')
+      return res.status(200).send(out.binary)
+    }
     return res.status(200).json(out ?? { ok: true })
   } catch (err) {
     if (err instanceof HttpError || (err?.status && err.status < 500)) {
