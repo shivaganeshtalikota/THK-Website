@@ -5,6 +5,8 @@ import { useContent } from '../content'
 import { Button, Card, Empty, Field, LiveStatus, Notice, PageHeader, Progress, inputCls } from '../ui'
 import { fmtBytes, fmtDate } from '../format'
 import { MAX_PHOTO_BYTES, preparePhoto } from '../imageTools'
+import { aiRead, aiTranslate } from '../ai'
+import { AiAction } from '../AiTools'
 
 /**
  * The gallery and the news page share one editor: a title, some text, a
@@ -96,6 +98,8 @@ const EntryEditor = ({ kind }) => {
   const [done, setDone] = useState(null)
   const [aiText, setAiText] = useState('')
   const [aiOpen, setAiOpen] = useState(false)
+  const [aiNote, setAiNote] = useState('') // who or what is in a photo, to help Gemini
+  const [aiLang, setAiLang] = useState('en')
   const fileRef = useRef(null)
   const formRef = useRef(null)
 
@@ -142,6 +146,7 @@ const EntryEditor = ({ kind }) => {
     setPhoto(null)
     setAiText('')
     setAiOpen(false)
+    setAiNote('')
   }
 
   const draft = async () => {
@@ -156,6 +161,40 @@ const EntryEditor = ({ kind }) => {
     } finally {
       setBusy(null)
     }
+  }
+
+  /** Gemini reads the chosen photo or cutting and fills the form in. */
+  const readWithGemini = async () => {
+    if (isPress) {
+      const g = await aiRead('cutting', photo.display)
+      setForm((f) => ({
+        ...f,
+        paper: g.paper || f.paper,
+        date: g.date || f.date,
+        page: g.page || f.page,
+        title: g.headline || f.title,
+        description: g.summary || f.description,
+        category: g.topic || f.category,
+      }))
+      return g.date ? 'Read the cutting. Check every field against it before publishing.' : 'Read the cutting. No date was printed on it — add the date it was published.'
+    }
+    const g = await aiRead('photo', photo.display, { note: aiNote, lang: aiLang })
+    setForm((f) => ({
+      ...f,
+      title: g.title || f.title,
+      description: g.caption || f.description,
+      category: g.category || f.category,
+    }))
+    return 'Described the photo. Correct any names before publishing — Gemini does not guess who people are.'
+  }
+
+  /** Add a translation of the caption/summary under it (English <-> Telugu). */
+  const addTranslation = async () => {
+    const text = form.description.trim()
+    const telugu = /[\u0C00-\u0C7F]/.test(text)
+    const out = await aiTranslate(text, telugu ? 'en' : 'te')
+    setForm((f) => ({ ...f, description: `${f.description.trim()}\n\n${out}` }))
+    return telugu ? 'Added the English below the Telugu.' : 'Added the Telugu below the English.'
   }
 
   const save = async () => {
@@ -248,6 +287,39 @@ const EntryEditor = ({ kind }) => {
                     {photo.width}×{photo.height}px · {fmtBytes(photo.size)} — original kept at full quality
                   </p>
                 )}
+                {photo && (
+                  <div className="mt-3 space-y-2 rounded-lg border border-ink-200 bg-ink-50/60 p-3">
+                    {isPhoto && (
+                      <>
+                        <input
+                          className={`${inputCls} !mt-0`}
+                          value={aiNote}
+                          onChange={(e) => setAiNote(e.target.value)}
+                          maxLength={300}
+                          placeholder="Optional: who or what is in it, e.g. with Nara Lokesh at Mahanadu"
+                        />
+                        <div className="flex gap-2 text-xs">
+                          {[
+                            ['en', 'English'],
+                            ['te', 'తెలుగు'],
+                          ].map(([k, l]) => (
+                            <button
+                              key={k}
+                              type="button"
+                              onClick={() => setAiLang(k)}
+                              className={`rounded border px-2 py-1 font-semibold ${aiLang === k ? 'border-ink-900 bg-ink-900 text-white' : 'border-ink-200 bg-white text-ink-700'}`}
+                            >
+                              {l}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    <AiAction onRun={readWithGemini} busyText={isPress ? 'Reading the cutting…' : 'Looking at the photo…'}>
+                      {isPress ? 'Read the cutting with Gemini' : 'Describe this photo with Gemini'}
+                    </AiAction>
+                  </div>
+                )}
               </div>
             )}
             <div className={`space-y-4 ${hasImage ? 'md:col-span-3' : 'md:col-span-5'}`}>
@@ -270,6 +342,14 @@ const EntryEditor = ({ kind }) => {
               <Field label={isPhoto ? 'Caption' : 'Summary'} hint={isPress ? 'What the report says about him, in a sentence or two. Telugu or English.' : 'Telugu or English.'}>
                 <textarea className={`${inputCls} min-h-[6rem]`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} maxLength={4000} />
               </Field>
+              {/* Offered while the caption is in one language only; once it has
+                  both, translating again would only repeat it. */}
+              {form.description.trim().length > 3 &&
+                !(/[\u0C00-\u0C7F]/.test(form.description) && /[A-Za-z]{3}/.test(form.description)) && (
+                  <AiAction onRun={addTranslation} busyText="Translating…">
+                    {/[\u0C00-\u0C7F]/.test(form.description) ? 'Add the English translation below' : 'Add the Telugu translation below'}
+                  </AiAction>
+                )}
               <div>
                 <button type="button" onClick={() => setAiOpen((v) => !v)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-700 hover:underline">
                   <FaWandMagicSparkles className="text-brand-700" aria-hidden="true" /> Draft it from a news article

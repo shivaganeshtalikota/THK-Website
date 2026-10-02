@@ -1,4 +1,5 @@
 import { Button, Card, Field, LiveStatus, Notice, PageHeader, Toggle, inputCls } from '../ui'
+import { TranslateButton } from '../AiTools'
 import { useSection } from '../useSection'
 
 const EMPTY = { enabled: false, en: '', te: '', link: '', linkEn: '', linkTe: '', tone: 'brand', until: '' }
@@ -39,9 +40,11 @@ const Announcement = () => {
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="English">
                   <input className={inputCls} value={draft.en} onChange={set('en')} maxLength={220} placeholder="Public meeting at Nizamabad, Sunday 5 PM" />
+                  <TranslateButton from={draft.te} to="en" kind="title" onDone={(v) => setDraft((d) => ({ ...d, en: v.slice(0, 220) }))} />
                 </Field>
                 <Field label="Telugu">
                   <input lang="te" className={inputCls} value={draft.te} onChange={set('te')} maxLength={220} />
+                  <TranslateButton from={draft.en} to="te" kind="title" onDone={(v) => setDraft((d) => ({ ...d, te: v.slice(0, 220) }))} />
                 </Field>
                 <Field label="Link (optional)" hint="A full https:// address, or a page on this site like /contact.">
                   <input className={inputCls} value={draft.link} onChange={set('link')} placeholder="https://… or /posters" />
@@ -54,6 +57,7 @@ const Announcement = () => {
                 </Field>
                 <Field label="Link text (Telugu)">
                   <input lang="te" className={inputCls} value={draft.linkTe} onChange={set('linkTe')} maxLength={40} placeholder="వివరాలు" />
+                  <TranslateButton from={draft.linkEn} to="te" kind="title" onDone={(v) => setDraft((d) => ({ ...d, linkTe: v.slice(0, 40) }))} />
                 </Field>
               </div>
               <div>

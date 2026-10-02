@@ -43,6 +43,7 @@ import {
 } from '../server/site-content.js'
 import { sanitizeGeometry } from '../server/poster-geometry.js'
 import { summarize } from '../server/summarize.js'
+import { readImage, translate } from '../server/ai.js'
 import { te } from '../src/i18n/te.js'
 
 /**
@@ -357,6 +358,7 @@ ops.overview = {
         github: githubReady(),
         storage: Boolean(r2Config()),
         captions: Boolean(process.env.GEMINI_API_KEY),
+        gemini: Boolean(process.env.GEMINI_API_KEY),
         strongSessionKey: strongSecretConfigured(),
         recoveryCodesLeft: (state.totp?.recovery || []).filter((r) => !r.used).length,
       },
@@ -760,6 +762,46 @@ ops.summarize = {
   },
 }
 
+/*
+ * Gemini fill-ins (server/ai.js). The image comes up through the same staged
+ * upload as everything else — far past the JSON limit — is read once, and is
+ * deleted straight after. Nothing is written: the answer goes into the form.
+ */
+const AI_TASKS = ['poster', 'photo', 'cutting', 'event']
+
+ops['ai-read'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ body, session }) {
+    const task = String(body.task || '')
+    if (!AI_TASKS.includes(task)) fail(400, 'Unknown task.')
+    let buf = null
+    try {
+      if (body.image) {
+        buf = await readUpload(session, body.image)
+        if (!buf) fail(400, 'The image did not arrive. Try again.')
+        if (buf.length > 8 * 1024 * 1024) fail(413, 'That image is too large to read.')
+      }
+      const fields = await readImage(task, buf, {
+        note: typeof body.note === 'string' ? body.note : '',
+        lang: body.lang === 'te' ? 'te' : 'en',
+        text: typeof body.text === 'string' ? body.text : '',
+      })
+      return { fields }
+    } finally {
+      if (body.image) await dropUpload(session, body.image)
+    }
+  },
+}
+
+ops['ai-translate'] = {
+  method: 'POST',
+  auth: 'full',
+  async run({ body }) {
+    return { text: await translate(body.text, body.to === 'te' ? 'te' : 'en', body.kind === 'title' ? 'title' : 'text') }
+  },
+}
+
 /* ------------------------------------------------------------ security */
 
 async function requireFreshCode(req, code) {
@@ -926,7 +968,7 @@ export default async function handler(req, res) {
     if (err instanceof HttpError || (err?.status && err.status < 500)) {
       return res.status(err.status).json({ error: err.message })
     }
-    if (err?.status === 503) return res.status(503).json({ error: err.message })
+    if (err?.status === 503 || err?.expose) return res.status(err.status || 500).json({ error: err.message })
     console.error(`admin op ${name} failed:`, err)
     return res.status(500).json({ error: 'That did not work, and nothing was changed. Try again in a moment.' })
   }

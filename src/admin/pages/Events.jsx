@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { FaPlus, FaPen, FaTrash, FaCalendarDays } from 'react-icons/fa6'
 import { Button, Card, Empty, Field, LiveStatus, Notice, PageHeader, inputCls } from '../ui'
 import { useSection } from '../useSection'
+import { aiRead } from '../ai'
+import { AiAction, TranslateButton } from '../AiTools'
 
 const BLANK = { id: '', titleEn: '', titleTe: '', date: '', time: '', venueEn: '', venueTe: '', descriptionEn: '', descriptionTe: '', link: '' }
 const today = () => new Date().toISOString().slice(0, 10)
@@ -15,6 +17,19 @@ const Events = () => {
   const { draft: events, save, saving, error, done, ready } = useSection('events', NO_EVENTS)
   const [edit, setEdit] = useState(null) // event being edited, or null
   const [localError, setLocalError] = useState(null)
+  const inviteRef = useRef(null)
+  const [invite, setInvite] = useState(null) // an invitation image to read
+
+  /** Gemini reads an invitation and fills in both languages. */
+  const readInvite = async () => {
+    const g = await aiRead('event', invite)
+    setEdit((d) => {
+      const next = { ...d }
+      for (const k of ['titleEn', 'titleTe', 'date', 'time', 'venueEn', 'venueTe', 'descriptionEn', 'descriptionTe']) if (g[k]) next[k] = g[k]
+      return next
+    })
+    return g.date ? 'Filled in from the invitation. Check the date and time against it.' : 'Filled in. No date was printed — choose the date below.'
+  }
 
   const commit = async (next) => {
     const ok = await save(next)
@@ -48,12 +63,34 @@ const Events = () => {
 
       {edit && (
         <Card title={edit.id ? 'Edit event' : 'New event'} className="mb-6">
+          <div className="mb-5 flex flex-wrap items-start gap-3 rounded-lg border border-ink-200 bg-ink-50/60 p-3">
+            <input
+              ref={inviteRef}
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => {
+                setInvite(e.target.files?.[0] || null)
+                e.target.value = ''
+              }}
+            />
+            <Button variant="ghost" onClick={() => inviteRef.current?.click()}>
+              {invite ? 'Change the invitation' : 'Have an invitation? Choose the image'}
+            </Button>
+            {invite && (
+              <AiAction onRun={readInvite} busyText="Reading the invitation…" hint={invite.name}>
+                Fill in from the invitation
+              </AiAction>
+            )}
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Title (English)">
               <input className={inputCls} value={edit.titleEn} onChange={set('titleEn')} maxLength={140} />
+              <TranslateButton from={edit.titleTe} to="en" kind="title" onDone={(v) => setEdit((d) => ({ ...d, titleEn: v }))} />
             </Field>
             <Field label="Title (Telugu)">
               <input lang="te" className={inputCls} value={edit.titleTe} onChange={set('titleTe')} maxLength={140} />
+              <TranslateButton from={edit.titleEn} to="te" kind="title" onDone={(v) => setEdit((d) => ({ ...d, titleTe: v }))} />
             </Field>
             <Field label="Date *">
               <input type="date" className={inputCls} value={edit.date} onChange={set('date')} />
@@ -63,15 +100,19 @@ const Events = () => {
             </Field>
             <Field label="Venue (English)">
               <input className={inputCls} value={edit.venueEn} onChange={set('venueEn')} maxLength={140} />
+              <TranslateButton from={edit.venueTe} to="en" kind="title" onDone={(v) => setEdit((d) => ({ ...d, venueEn: v }))} />
             </Field>
             <Field label="Venue (Telugu)">
               <input lang="te" className={inputCls} value={edit.venueTe} onChange={set('venueTe')} maxLength={140} />
+              <TranslateButton from={edit.venueEn} to="te" kind="title" onDone={(v) => setEdit((d) => ({ ...d, venueTe: v }))} />
             </Field>
             <Field label="Description (English)">
               <textarea className={`${inputCls} min-h-[5rem]`} value={edit.descriptionEn} onChange={set('descriptionEn')} maxLength={700} />
+              <TranslateButton from={edit.descriptionTe} to="en" onDone={(v) => setEdit((d) => ({ ...d, descriptionEn: v.slice(0, 700) }))} />
             </Field>
             <Field label="Description (Telugu)">
               <textarea lang="te" className={`${inputCls} min-h-[5rem]`} value={edit.descriptionTe} onChange={set('descriptionTe')} maxLength={700} />
+              <TranslateButton from={edit.descriptionEn} to="te" onDone={(v) => setEdit((d) => ({ ...d, descriptionTe: v.slice(0, 700) }))} />
             </Field>
             <Field label="Link (optional)" className="md:col-span-2" hint="A map, a livestream, or a poster page — https:// or /posters/…">
               <input className={inputCls} value={edit.link} onChange={set('link')} />

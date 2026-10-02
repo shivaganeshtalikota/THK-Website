@@ -6,6 +6,8 @@ import { useContent, SITE } from '../content'
 import { Button, Card, Field, LiveStatus, Notice, PageHeader, Progress, inputCls } from '../ui'
 import { readImageFile, silhouette } from '../imageTools'
 import LayoutOverlay from '../LayoutOverlay'
+import { aiRead } from '../ai'
+import { AiAction, TranslateButton } from '../AiTools'
 import { loadImage, ensureFonts, renderPoster, renderShareCard, canvasToJpeg, canvasToJpegUnder } from '../../lib/renderPoster'
 import {
   PERSON_SIZES,
@@ -377,6 +379,25 @@ const PosterEditor = () => {
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
+  /**
+   * Gemini reads the artwork and fills in the details. Fields already typed
+   * are left alone; pressed again with everything filled, it replaces them.
+   */
+  const fillFromArtwork = async () => {
+    const got = await aiRead('poster', art.canvas)
+    const keys = ['titleEn', 'title', 'issue', 'date', 'summary'].filter((k) => got[k])
+    if (!keys.length) return 'Gemini could not read anything useful from this artwork. Fill the details in by hand.'
+    setForm((f) => {
+      const allTyped = keys.every((k) => String(f[k] || '').trim())
+      const next = { ...f }
+      for (const k of keys) {
+        if (allTyped || !String(f[k] || '').trim()) next[k] = k === 'issue' ? got[k].slice(0, 24) : got[k]
+      }
+      return next
+    })
+    return 'Filled in from the artwork (anything you had already typed was kept — press again to replace it). Read it over before publishing.'
+  }
+
   return (
     <>
       <Link to="/posters" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-ink-900">
@@ -667,12 +688,25 @@ const PosterEditor = () => {
           </Card>
 
           <Card title="4. Details" subtitle="Shown on the posters page and in link previews.">
+            {art && (
+              <div className="mb-5">
+                <AiAction
+                  onRun={fillFromArtwork}
+                  busyText="Gemini is reading the artwork…"
+                  hint="Gemini reads the artwork and fills in the English title, the Telugu headline, the tag, the date and the summary. Nothing is published until you press Publish."
+                >
+                  Fill in from the artwork
+                </AiAction>
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="English title *" className="sm:col-span-2" hint="Also used for the web address.">
                 <input className={inputCls} value={form.titleEn} onChange={set('titleEn')} placeholder="e.g. Vinayaka Chavithi greetings" />
+                <TranslateButton from={form.title} to="en" kind="title" onDone={(v) => setForm((f) => ({ ...f, titleEn: v }))} />
               </Field>
               <Field label="Telugu headline" className="sm:col-span-2">
                 <input lang="te" className={inputCls} value={form.title} onChange={set('title')} placeholder="వినాయక చవితి శుభాకాంక్షలు" />
+                <TranslateButton from={form.titleEn} to="te" kind="title" onDone={(v) => setForm((f) => ({ ...f, title: v }))} />
               </Field>
               <Field label="Short tag" hint="A word or two, e.g. “Vinayaka Chavithi” or “22A”.">
                 <input className={inputCls} value={form.issue} onChange={set('issue')} maxLength={24} />

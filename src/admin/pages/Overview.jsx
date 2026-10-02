@@ -141,7 +141,7 @@ const Overview = () => {
                     ? 'Dedicated session key set'
                     : 'Recommended: add ADMIN_SESSION_SECRET in Vercel (see Security)'}
                 </Check>
-                <Check ok={data.health.captions}>{data.health.captions ? 'Caption drafting available' : 'Caption drafting is off (no Gemini key)'}</Check>
+                <Check ok={data.health.captions}>{data.health.captions ? 'Gemini is on: fill-in, translation and caption drafting' : 'Gemini is off — add GEMINI_API_KEY in Vercel'}</Check>
               </ul>
             ) : (
               <p className="text-sm text-ink-400">Checking…</p>
