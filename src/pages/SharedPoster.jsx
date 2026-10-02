@@ -108,7 +108,10 @@ const SharedPoster = () => {
       <section className="section bg-ink-950 text-white">
         <div className="container-custom grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-7 xl:col-span-6">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-[34rem] overflow-hidden rounded-sm bg-ink-900 shadow-2xl ring-1 ring-white/10">
+            <div
+              className="relative mx-auto w-full max-w-[34rem] overflow-hidden rounded-sm bg-ink-900 shadow-2xl ring-1 ring-white/10"
+              style={{ aspectRatio: `${poster.width || 4} / ${poster.height || 5}` }}
+            >
               {state !== 'missing' && id && (
                 <img
                   src={sharedPosterSrc(id)}

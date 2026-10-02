@@ -22,9 +22,39 @@
  * it did the day it went out.
  */
 
-/** Every poster is 4:5 at this size — what phone galleries and WhatsApp want. */
+/**
+ * The standard frame: 4:5 at this size — what phone galleries and WhatsApp
+ * want, and what every poster was before the frame could follow the artwork.
+ */
 export const POSTER_W = 2048
 export const POSTER_H = 2560
+
+/**
+ * The shapes a poster can take. Every poster is POSTER_W wide; the height
+ * follows the shape.
+ *
+ * 'artwork' takes the artwork's own proportions, so a 1800x2160 design is a
+ * 2048x2458 poster with nothing cropped. Forcing every design into 4:5 used to
+ * shave the edges off anything else and put a bar the designer had drawn at
+ * the foot out of line with the one painted over it. Kept between square and
+ * 1:2 tall; a landscape artwork becomes a square poster with the artwork
+ * above the name bar.
+ */
+export const SHAPES = {
+  artwork: { label: 'Same as the artwork' },
+  portrait: { label: '4:5 portrait', ratio: 5 / 4 },
+  square: { label: 'Square', ratio: 1 },
+  story: { label: '9:16 tall', ratio: 16 / 9 },
+}
+const MIN_RATIO = 1
+const MAX_RATIO = 2
+
+/** The poster's pixel size for an artwork and a chosen shape. */
+export function frameFor(img, shape = 'artwork') {
+  const own = img.height / img.width
+  const ratio = Math.min(MAX_RATIO, Math.max(MIN_RATIO, SHAPES[shape]?.ratio ?? own))
+  return { w: POSTER_W, h: Math.round((POSTER_W * ratio) / 2) * 2 }
+}
 
 export const TEMPLATE_VERSION = 3
 
@@ -73,8 +103,27 @@ export const PERSON_SIZES = {
   xl: { label: 'Extra large', h: 0.52 },
 }
 
-/** Where the bar starts, as a fraction of the height, when we draw it. */
+/** Where the bar starts on a 4:5 poster, as a fraction of the height. */
 export const BAR_Y = 0.872
+
+/**
+ * Where a painted bar starts on a frame, as a fraction of its height. The bar
+ * is always the same height against the WIDTH (16% of it, which is exactly
+ * where it sat on a 4:5 poster), so a tall 9:16 poster does not get a slab of
+ * a bar and a square one does not get a sliver.
+ */
+export const defaultBarY = (frame) => (frame ? round4(1 - (0.16 * frame.w) / frame.h) : BAR_Y)
+
+/**
+ * How the name and designation sit on the poster.
+ *
+ * 'paint'    a bar is painted across the foot (the themes above)
+ * 'artwork'  the artwork already has a bar at its foot: the text goes on it,
+ *            and nothing is painted
+ * 'none'     no bar at all: the text goes straight onto the artwork, and the
+ *            person stands on the poster's bottom edge
+ */
+export const BAR_MODES = ['paint', 'artwork', 'none']
 
 /**
  * The geometry written into a published poster's manifest entry.
@@ -86,11 +135,28 @@ export const BAR_Y = 0.872
  * @param {{y:number,color:string}|null} o.ownBar  an empty bar found in the
  *        artwork itself — used instead of painting one
  */
-export function templateGeometry({ theme = 'classic', side = 'right', size = 'large', ownBar = null, layer = 'behind', showLogo = true } = {}) {
+export function templateGeometry({
+  theme = 'classic',
+  side = 'right',
+  size = 'large',
+  ownBar = null,
+  barMode = null,
+  textBg = null,
+  layer = 'behind',
+  showLogo = true,
+  frame = null,
+} = {}) {
   const t = THEMES[theme] || THEMES.classic
   const personH = (PERSON_SIZES[size] || PERSON_SIZES.large).h
-  const barY = ownBar ? ownBar.y : BAR_Y
-  const barColor = ownBar ? ownBar.color : t.bar
+  let mode = BAR_MODES.includes(barMode) ? barMode : ownBar ? 'artwork' : 'paint'
+  if (mode === 'artwork' && !ownBar) mode = 'paint'
+  const barY = mode === 'artwork' ? ownBar.y : defaultBarY(frame)
+  // The colour the text is set against: the bar we paint, the artwork's own
+  // bar, or — with no bar — what the artwork looks like where the text goes.
+  const barColor = mode === 'paint' ? t.bar : mode === 'artwork' ? ownBar.color : textBg || '#808080'
+  // Type is sized against the width, the same on every shape: a fraction of
+  // the height that is right on 4:5 is too big on 9:16.
+  const k = frame ? frame.w / frame.h / 0.8 : 1
   // Dark bar, light type; light bar, the theme's type. Decided on the bar
   // actually used, so an artwork's own dark bar never gets red-on-black text.
   const darkBar = luminance(barColor) < 0.35
@@ -101,25 +167,32 @@ export function templateGeometry({ theme = 'classic', side = 'right', size = 'la
     bar: {
       y: round4(barY),
       color: barColor,
-      paint: !ownBar,
-      rule: ownBar ? null : t.rule,
+      paint: mode === 'paint',
+      mode,
+      rule: mode === 'paint' ? t.rule : null,
+      // The stretch of the artwork's bar that is clear: a logo or a mark the
+      // designer put on the bar is left alone, and the name goes beside it.
+      // With no bar the same applies: the mark is still on the artwork.
+      ...(mode !== 'paint' && ownBar && Number.isFinite(ownBar.x0) ? { x0: round4(ownBar.x0), x1: round4(ownBar.x1) } : {}),
     },
     // show: false leaves the party mark off this poster.
     logo: { side: side === 'left' ? 'right' : 'left', w: 0.16, show: showLogo !== false },
     // layer: 'behind' — the bar covers the person's lower edge (the default);
     // 'front' — the person stands on the poster's bottom edge, over the bar.
-    person: { side, h: personH, maxW: 0.6, top: 0.1, shadow: true, layer: layer === 'front' ? 'front' : 'behind' },
+    // With no bar there is nothing to stand behind: the person stands on the
+    // poster's bottom edge, in front, and the name keeps clear of them.
+    person: { side, h: personH, maxW: 0.6, top: 0.1, shadow: true, layer: mode === 'none' || layer === 'front' ? 'front' : 'behind' },
     name: {
       color: darkBar && !isLight(t.name) ? '#FFFFFF' : !darkBar && isLight(t.name) ? '#D0021B' : t.name,
       // The name leads: on the reference posters it is the biggest thing on
       // the bar. A long one still shrinks to fit the width.
-      size: 0.058,
+      size: round4(0.058 * k),
       weight: 800,
     },
     designation: {
       color:
         darkBar && !isLight(t.designation) ? '#FFD400' : !darkBar && isLight(t.designation) ? '#0B7A3B' : t.designation,
-      size: 0.03,
+      size: round4(0.03 * k),
       weight: 700,
     },
   }
@@ -210,15 +283,22 @@ export function chooseSide(img, barY = BAR_Y) {
 }
 
 /**
- * Look for an empty bar the designer already left at the foot of the artwork.
+ * Look for a bar the designer already drew at the foot of the artwork.
  *
  * Plenty of event posters arrive with a plain strip along the bottom meant for
  * exactly this — a name. Painting a second bar over it wastes the design and
- * usually does not quite line up. So the bottom rows are read: a run of rows
- * that are all close to one colour, at least 6% of the height tall, counts as
- * a bar, and its top edge and colour are handed back.
+ * never quite lines up. So the bottom rows are read: a run of rows that are
+ * mostly one colour, at least 4.5% of the height tall, counts as a bar.
  *
- * Returns {y, color} as fractions / hex, or null.
+ * MOSTLY, not entirely: designers like to stand the party mark on that bar,
+ * and an earlier version that demanded a perfectly plain row missed every one
+ * of those and painted a bar straight over the artwork's own. A row counts if
+ * 70% of it is the bar's colour, and the columns where something sits on the
+ * bar are reported, so the name can be kept beside the mark rather than over
+ * it.
+ *
+ * Returns {y, color, x0?, x1?} — top edge, colour, and the clear stretch, as
+ * fractions / hex — or null.
  */
 export function detectOwnBar(canvas) {
   const W = 256
@@ -229,48 +309,95 @@ export function detectOwnBar(canvas) {
   const ctx = c.getContext('2d', { willReadFrequently: true })
   ctx.drawImage(canvas, 0, 0, W, H)
   const px = ctx.getImageData(0, 0, W, H).data
+  const at = (x, y) => {
+    const j = (y * W + x) * 4
+    return [px[j], px[j + 1], px[j + 2]]
+  }
 
-  // Reference colour: the median-ish of the very bottom row's centre.
-  const ref = rowStats(px, W, H - 2)
-  if (!ref.uniform) return null
+  // The bar's colour: the per-channel median of the bottom rows, which a
+  // logo over part of them cannot drag off.
+  const xs0 = Math.round(W * 0.02)
+  const xs1 = Math.round(W * 0.98)
+  const sample = []
+  for (let y = H - 4; y < H - 1; y += 1) for (let x = xs0; x < xs1; x += 1) sample.push(at(x, y))
+  const median = (i) => sample.map((v) => v[i]).sort((a, b) => a - b)[Math.floor(sample.length / 2)]
+  const ref = [median(0), median(1), median(2)]
+
+  const near = (x, y) => colourDistance(at(x, y), ref) <= 34
+  const share = (y) => {
+    let n = 0
+    for (let x = xs0; x < xs1; x += 1) if (near(x, y)) n += 1
+    return n / (xs1 - xs0)
+  }
+  if (share(H - 2) < 0.7) return null
   let top = H - 2
   for (let y = H - 3; y > H * 0.6; y -= 1) {
-    const s = rowStats(px, W, y)
-    if (!s.uniform || colourDistance(s.mean, ref.mean) > 18) break
+    if (share(y) < 0.7) break
     top = y
   }
   const frac = (H - top) / H
-  if (frac < 0.06 || frac > 0.3) return null
-  const hex = `#${ref.mean.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase()}`
-  return { y: top / H, color: hex }
+  if (frac < 0.045 || frac > 0.3) return null
+
+  // The clear stretch: the longest run of columns that are bar colour all the
+  // way down the bar.
+  let best = [0, 0]
+  let run = null
+  for (let x = 0; x <= W; x += 1) {
+    let clear = false
+    if (x < W) {
+      let n = 0
+      let rows = 0
+      for (let y = top + 1; y < H - 1; y += 1) {
+        rows += 1
+        if (near(x, y)) n += 1
+      }
+      clear = rows > 0 && n / rows >= 0.9
+    }
+    if (clear && run === null) run = x
+    if (!clear && run !== null) {
+      if (x - run > best[1] - best[0]) best = [run, x]
+      run = null
+    }
+  }
+  const hex = `#${ref.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase()}`
+  const out = { y: top / H, color: hex }
+  // Only worth reporting when something actually sits on the bar.
+  if (best[1] - best[0] >= W * 0.35 && best[1] - best[0] < W * 0.94) {
+    out.x0 = best[0] / W
+    out.x1 = best[1] / W
+  }
+  return out
 }
 
-function rowStats(px, W, y) {
-  const mean = [0, 0, 0]
-  const x0 = Math.round(W * 0.04)
-  const x1 = Math.round(W * 0.96)
-  for (let x = x0; x < x1; x += 1) {
-    const j = (y * W + x) * 4
-    mean[0] += px[j]
-    mean[1] += px[j + 1]
-    mean[2] += px[j + 2]
+/**
+ * The average colour of the artwork from `y0` (a fraction) to the foot — what
+ * the name is set against when there is no bar, so the type can be chosen to
+ * stand out from it.
+ */
+export function sampleColour(canvas, y0) {
+  const W = 64
+  const H = Math.round((canvas.height / canvas.width) * W)
+  const c = document.createElement('canvas')
+  c.width = W
+  c.height = H
+  const ctx = c.getContext('2d', { willReadFrequently: true })
+  ctx.drawImage(canvas, 0, 0, W, H)
+  const top = Math.min(H - 1, Math.max(0, Math.floor(y0 * H)))
+  const px = ctx.getImageData(0, top, W, H - top).data
+  const sum = [0, 0, 0]
+  for (let j = 0; j < px.length; j += 4) {
+    sum[0] += px[j]
+    sum[1] += px[j + 1]
+    sum[2] += px[j + 2]
   }
-  const n = x1 - x0
-  mean[0] /= n
-  mean[1] /= n
-  mean[2] /= n
-  let off = 0
-  for (let x = x0; x < x1; x += 1) {
-    const j = (y * W + x) * 4
-    if (colourDistance([px[j], px[j + 1], px[j + 2]], mean) > 26) off += 1
-  }
-  return { mean, uniform: off / n < 0.03 }
+  const n = px.length / 4 || 1
+  return `#${sum.map((v) => Math.round(v / n).toString(16).padStart(2, '0')).join('').toUpperCase()}`
 }
 
 const colourDistance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
 
 /**
- * Compose an uploaded event image into the 4:5 poster frame.
+ * Compose an uploaded event image into the poster frame.
  *
  * 'full'      the artwork covers the whole frame (right for artwork that is
  *             already about 4:5, which is most designed posters)
@@ -281,9 +408,11 @@ const colourDistance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2
  * fills in — it carries the image's own colours, so it reads as a deliberate
  * backdrop rather than as letterboxing.
  */
-export function composeArtwork(img, fit = 'auto', barY = BAR_Y) {
-  const W = POSTER_W
-  const H = POSTER_H
+export function composeArtwork(img, fit = 'auto', shape = 'artwork') {
+  const frame = frameFor(img, shape)
+  const W = frame.w
+  const H = frame.h
+  const barY = defaultBarY(frame)
   const canvas = document.createElement('canvas')
   canvas.width = W
   canvas.height = H
@@ -303,7 +432,9 @@ export function composeArtwork(img, fit = 'auto', barY = BAR_Y) {
   ctx.restore()
 
   if (mode === 'full') {
-    // Cover, centred: for ~4:5 artwork this crops a sliver at most.
+    // Cover, centred. With the poster taking the artwork's own shape this
+    // crops nothing; with a shape chosen in the panel, only what that shape
+    // has no room for.
     ctx.drawImage(img, (W - img.width * cover) / 2, (H - img.height * cover) / 2, img.width * cover, img.height * cover)
   } else {
     const areaH = barY * H
@@ -312,7 +443,7 @@ export function composeArtwork(img, fit = 'auto', barY = BAR_Y) {
     const h = img.height * s
     ctx.drawImage(img, (W - w) / 2, (areaH - h) / 2, w, h)
   }
-  return { canvas, mode }
+  return { canvas, mode, frame }
 }
 
 /**

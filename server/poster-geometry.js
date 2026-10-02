@@ -39,6 +39,31 @@ function box(b, min, label) {
   }
 }
 
+/**
+ * The bar: painted, the artwork's own, or none (the text straight on the
+ * artwork). A layout from before the modes existed has only `paint`, and
+ * means what it always meant.
+ */
+function barFrom(b = {}) {
+  const paint = b.paint !== false
+  const mode = pick(b.mode, ['paint', 'artwork', 'none'], paint ? 'paint' : 'artwork')
+  const out = {
+    y: num(b.y, 0.6, 0.96, 'the bar position'),
+    color: colour(b.color, '#FFFFFF'),
+    paint: mode === 'paint',
+    mode,
+    rule: mode === 'paint' && b.rule ? colour(b.rule, null) : null,
+  }
+  // The clear stretch of the artwork's own bar, beside a mark drawn on it.
+  if (mode !== 'paint' && Number.isFinite(Number(b.x0)) && Number.isFinite(Number(b.x1))) {
+    const x0 = num(b.x0, 0, 0.7, 'the bar')
+    const x1 = num(b.x1, x0 + 0.3, 1, 'the bar')
+    out.x0 = x0
+    out.x1 = x1
+  }
+  return out
+}
+
 export function sanitizeGeometry(g) {
   if (!g || typeof g !== 'object') throw new Invalid('The layout was missing. Reload the panel and try again.')
   if (Number(g.templateVersion) !== 3) throw new Invalid('This layout is from an older version of the panel. Reload it.')
@@ -46,12 +71,7 @@ export function sanitizeGeometry(g) {
     templateVersion: 3,
     theme: pick(g.theme, ['classic', 'party', 'night', 'maroon'], 'classic'),
     size: pick(g.size, ['medium', 'large', 'xl'], 'large'),
-    bar: {
-      y: num(g.bar?.y, 0.7, 0.94, 'the bar position'),
-      color: colour(g.bar?.color, '#FFFFFF'),
-      paint: g.bar?.paint !== false,
-      rule: g.bar?.rule ? colour(g.bar.rule, null) : null,
-    },
+    bar: barFrom(g.bar),
     logo: {
       side: pick(g.logo?.side, ['left', 'right'], 'left'),
       w: num(g.logo?.w, 0.08, 0.22, 'the logo size'),
@@ -67,7 +87,7 @@ export function sanitizeGeometry(g) {
     },
     name: {
       color: colour(g.name?.color, '#D0021B'),
-      size: num(g.name?.size, 0.02, 0.08, 'the name size'),
+      size: num(g.name?.size, 0.02, 0.09, 'the name size'),
       weight: 800,
     },
     designation: {

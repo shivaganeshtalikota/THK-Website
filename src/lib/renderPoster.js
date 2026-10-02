@@ -388,8 +388,11 @@ function drawPersonWithCuts(ctx, p, box, W, H, _opts = {}) {
 
 /* -------------------------------------------------------- template 3 */
 
-/** The office chose to put the photo in front of the name bar. */
-const inFront = (g) => g.person?.layer === 'front'
+/**
+ * The person stands in front: the office chose it, or there is no bar to
+ * stand behind.
+ */
+const inFront = (g) => g.person?.layer === 'front' || g.bar?.mode === 'none'
 
 function logoBox(g, logo, W, H) {
   // The office can leave the party mark off a poster.
@@ -397,10 +400,21 @@ function logoBox(g, logo, W, H) {
   const w = g.logo.w * W
   const h = w * (logo.height / logo.width)
   const margin = 0.035 * W
-  const x = g.logo.side === 'right' ? W - margin - w : margin
+  let x = g.logo.side === 'right' ? W - margin - w : margin
+  // A mark the artwork already carries on its bar keeps its place: ours goes
+  // inside the clear stretch beside it, never on top of it.
+  if (Number.isFinite(g.bar?.x0) && g.logo.side === 'left') x = Math.max(x, g.bar.x0 * W + 0.02 * W)
+  if (Number.isFinite(g.bar?.x1) && g.logo.side === 'right') x = Math.min(x, g.bar.x1 * W - 0.02 * W - w)
   // Bottom-aligned inside the bar; tall enough that the top rises above it.
   const y = H - 0.022 * H - h
   return { x, y, w, h }
+}
+
+/** True for a light colour (#RRGGBB), so its shadow should be dark. */
+function isLightHex(hex) {
+  const h = String(hex).replace('#', '')
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.5
 }
 
 function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
@@ -408,10 +422,16 @@ function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
   let barH = H - barTop
   const margin = 0.035 * W
   const gap = 0.03 * W
-  let x0 = margin
-  let x1 = W - margin
-  if (lb && g.logo.side === 'left') x0 = lb.x + lb.w + gap
-  if (lb && g.logo.side === 'right') x1 = lb.x - gap
+  // On the artwork's own bar, only the stretch the designer left clear: a
+  // party mark standing on that bar is theirs, and the name goes beside it.
+  let x0 = Number.isFinite(g.bar.x0) ? Math.max(margin, g.bar.x0 * W + gap / 2) : margin
+  let x1 = Number.isFinite(g.bar.x1) ? Math.min(W - margin, g.bar.x1 * W - gap / 2) : W - margin
+  if (x1 - x0 < 0.3 * W) {
+    x0 = margin
+    x1 = W - margin
+  }
+  if (lb && g.logo.side === 'left') x0 = Math.max(x0, lb.x + lb.w + gap)
+  if (lb && g.logo.side === 'right') x1 = Math.min(x1, lb.x - gap)
   // A person standing in front of the bar covers part of it: the name takes
   // the wider side the person leaves free, so nothing is written on them.
   if (avoid && !g.textBox && avoid.x < x1 && avoid.x + avoid.w > x0) {
@@ -491,12 +511,19 @@ function drawBarText(ctx, g, name, designation, lb, W, H, avoid = null) {
   }
 
   let y = barTop + (barH - total) / 2
+  // With no bar the type sits on the artwork itself, which is never one flat
+  // colour: a soft shadow in the opposite tone keeps every letter legible.
+  const onArtwork = g.bar.mode === 'none'
   ctx.save()
   ctx.textAlign = 'center'
   ctx.textBaseline = 'alphabetic'
   items.forEach((it) => {
     ctx.font = it.f
     ctx.fillStyle = it.color
+    if (onArtwork) {
+      ctx.shadowColor = isLightHex(it.color) ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.75)'
+      ctx.shadowBlur = Math.max(4, 0.008 * H)
+    }
     ctx.fillText(it.text, cx, y + it.up)
     y += it.up + it.down + it.gapAfter
   })

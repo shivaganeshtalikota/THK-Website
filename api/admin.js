@@ -610,7 +610,8 @@ async function posterImages(session, body, required) {
   if (card.length > 600 * 1024) fail(413, 'The preview card is too large.')
   const a = imageSize(artwork)
   const c = imageSize(card)
-  if (!a || a.w !== 2048 || a.h !== 2560) fail(400, 'The artwork must be composed by the panel (2048x2560). Reload and try again.')
+  // 2048 wide; the height follows the poster's shape, from square to 1:2.
+  if (!a || a.w !== 2048 || a.h < 2048 || a.h > 4096) fail(400, 'The artwork must be composed by the panel (2048 pixels wide). Reload and try again.')
   if (!c || c.w !== 1200 || c.h !== 630) fail(400, 'The preview card must be 1200x630.')
   return { artwork, card, size: a }
 }
@@ -680,6 +681,10 @@ ops['poster-update'] = {
         // served immutable, so replacing the bytes in place would leave the
         // old artwork cached for a year in every browser that had seen it.
         p.version = (Number(p.version) || 1) + 1
+        // New artwork can be a new shape: the size shared posters are checked
+        // against has to follow it.
+        p.width = img.size.w
+        p.height = img.size.h
         out.push({ path: `${POSTER_DIR}/${slug}-v${p.version}.jpg`, content: img.artwork })
         out.push({ path: `${POSTER_DIR}/${slug}-card-v${p.version}.jpg`, content: img.card })
       }

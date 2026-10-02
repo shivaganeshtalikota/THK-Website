@@ -8,14 +8,14 @@ import { readImageFile, silhouette } from '../imageTools'
 import LayoutOverlay from '../LayoutOverlay'
 import { loadImage, ensureFonts, renderPoster, renderShareCard, canvasToJpeg, canvasToJpegUnder } from '../../lib/renderPoster'
 import {
-  BAR_Y,
   PERSON_SIZES,
-  POSTER_H,
-  POSTER_W,
+  SHAPES,
   THEMES,
   chooseSide,
   composeArtwork,
+  defaultBarY,
   detectOwnBar,
+  sampleColour,
   slugify,
   templateGeometry,
 } from '../../lib/posterTemplate'
@@ -70,14 +70,16 @@ const sampleCutouts = {}
  */
 function suggestedBoxes(g) {
   const barY = g.bar.y
-  const front = g.person.layer === 'front'
+  const front = g.person.layer === 'front' || g.bar.mode === 'none'
   const w = Math.min(0.56, g.person.maxW)
   const top = Math.max(0, barY - Math.min(g.person.h, barY - 0.04))
   // In front of the bar the photo runs to the poster's bottom edge.
   const photo = { x: g.person.side === 'left' ? 0.02 : g.person.side === 'center' ? (1 - w) / 2 : 1 - 0.02 - w, y: top, w, h: (front ? 1 : barY + 0.012) - top }
   const logoOn = g.logo.show !== false
-  let x0 = logoOn && g.logo.side === 'left' ? 0.035 + g.logo.w + 0.03 : 0.035
-  let x1 = logoOn && g.logo.side === 'right' ? 1 - 0.035 - g.logo.w - 0.03 : 0.965
+  let x0 = Number.isFinite(g.bar.x0) ? Math.max(0.035, g.bar.x0 + 0.015) : 0.035
+  let x1 = Number.isFinite(g.bar.x1) ? Math.min(0.965, g.bar.x1 - 0.015) : 0.965
+  if (logoOn && g.logo.side === 'left') x0 = Math.max(x0, 0.035 + g.logo.w + 0.03)
+  if (logoOn && g.logo.side === 'right') x1 = Math.min(x1, 1 - 0.035 - g.logo.w - 0.03)
   // A person in front of the bar takes part of it: the name goes beside them.
   if (front && g.person.side === 'right') x1 = Math.min(x1, photo.x - 0.02)
   if (front && g.person.side === 'left') x0 = Math.max(x0, photo.x + photo.w + 0.02)
@@ -97,7 +99,11 @@ const PosterEditor = () => {
   const [source, setSource] = useState(null) // uploaded image (new artwork)
   const [art, setArt] = useState(null) // {canvas, mode}
   const [ownBar, setOwnBar] = useState(null)
-  const [design, setDesign] = useState({ theme: 'classic', side: 'auto', size: 'large', fit: 'auto', bar: 'auto', layer: 'behind', logo: 'show' })
+  // bar: 'auto' (the artwork's own bar when there is one, otherwise paint
+  // one), 'paint', 'artwork' or 'none'. shape: see SHAPES.
+  // logo: 'auto' shows the party mark unless the artwork already carries a
+  // mark on its own bar.
+  const [design, setDesign] = useState({ theme: 'classic', side: 'auto', size: 'large', fit: 'auto', bar: 'auto', layer: 'behind', logo: 'auto', shape: 'artwork' })
   const [sample, setSample] = useState(SAMPLE)
   const [person, setPerson] = useState(() => silhouette())
   const [personKind, setPersonKind] = useState('silhouette')
@@ -147,38 +153,50 @@ const PosterEditor = () => {
         side: existing.layout?.chosenBy === 'office' ? existing.person?.side || 'right' : 'auto',
         size: existing.size || 'large',
         fit: existing.layout?.fit || 'auto',
-        bar: existing.bar?.paint === false ? 'own' : 'auto',
+        bar: existing.bar?.mode || (existing.bar?.paint === false ? 'artwork' : 'paint'),
         layer: existing.person?.layer === 'front' ? 'front' : 'behind',
         logo: existing.logo?.show === false ? 'hide' : 'show',
+        shape: 'artwork',
       })
       setBoxes({ photo: existing.photoBox || null, text: existing.textBox || null })
     }
     loadImage(`/posters/${existing.slug}-v${existing.version}.jpg`)
       .then((img) => {
+        // At the size it was published at: posters are not all 4:5 any more.
         const c = document.createElement('canvas')
-        c.width = POSTER_W
-        c.height = POSTER_H
-        c.getContext('2d').drawImage(img, 0, 0, POSTER_W, POSTER_H)
-        setArt({ canvas: c, mode: 'full' })
-        setOwnBar(detectOwnBar(c))
+        c.width = existing.width || img.naturalWidth
+        c.height = existing.height || img.naturalHeight
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height)
+        setArt({ canvas: c, mode: 'full', frame: { w: c.width, h: c.height } })
+        // A poster published on the artwork's own bar keeps that bar exactly
+        // as published — re-reading the artwork could move it a few pixels.
+        const was = existing.bar?.mode === 'artwork' || (existing.bar?.paint === false && !existing.bar?.mode)
+        setOwnBar(was ? { y: existing.bar.y, color: existing.bar.color, x0: existing.bar.x0, x1: existing.bar.x1 } : detectOwnBar(c))
       })
       .catch(() => setError('The published artwork could not be loaded.'))
   }, [existing])
 
-  // Re-compose whenever the upload or the fit changes.
+  // Re-compose whenever the upload, the fit or the shape changes.
   useEffect(() => {
     if (!source) return
-    const composed = composeArtwork(source, design.fit, BAR_Y)
+    const composed = composeArtwork(source, design.fit, design.shape)
     setArt(composed)
-    setOwnBar(detectOwnBar(composed.canvas))
-  }, [source, design.fit])
+    // Fitted above the bar, the foot of the poster is our own blurred fill,
+    // not a bar the designer drew.
+    setOwnBar(composed.mode === 'full' ? detectOwnBar(composed.canvas) : null)
+  }, [source, design.fit, design.shape])
 
   const slug = slugTouched ? form.slug : slugify(form.titleEn)
-  const useOwnBar = ownBar && design.bar !== 'draw'
+  // What the bar actually is on this poster: 'auto' takes the artwork's own
+  // bar when it has one, and the artwork's bar is only possible when it does.
+  const barMode = design.bar === 'auto' || (design.bar === 'artwork' && !ownBar) ? (ownBar ? 'artwork' : 'paint') : design.bar
+  const frame = art ? { w: art.canvas.width, h: art.canvas.height } : null
+  const artworkHasMark = barMode !== 'paint' && Number.isFinite(ownBar?.x0)
+  const logoMode = design.logo === 'auto' ? (artworkHasMark ? 'hide' : 'show') : design.logo
 
   const geometry = useMemo(() => {
     if (!art) return null
-    const barY = useOwnBar ? ownBar.y : BAR_Y
+    const barY = barMode === 'artwork' ? ownBar.y : defaultBarY(frame)
     const auto = chooseSide(art.canvas, barY)
     const side = design.side === 'auto' ? auto.side : design.side
     return {
@@ -186,15 +204,21 @@ const PosterEditor = () => {
         theme: design.theme,
         side,
         size: design.size,
-        ownBar: useOwnBar ? ownBar : null,
+        ownBar: barMode === 'paint' ? null : ownBar,
+        barMode,
+        // With no bar, the type is chosen against what is behind it.
+        textBg: barMode === 'none' ? sampleColour(art.canvas, boxes.text?.y ?? barY) : null,
         layer: design.layer,
-        showLogo: design.logo === 'show',
+        showLogo: logoMode === 'show',
+        frame,
       }),
       ...(boxes.photo ? { photoBox: boxes.photo } : {}),
       ...(boxes.text ? { textBox: boxes.text } : {}),
-      layout: { side, chosenBy: design.side === 'auto' ? 'auto' : 'office', fit: art.mode, ownBar: Boolean(useOwnBar) },
+      layout: { side, chosenBy: design.side === 'auto' ? 'auto' : 'office', fit: art.mode, ownBar: barMode === 'artwork' },
     }
-  }, [art, design, ownBar, useOwnBar, boxes])
+    // frame is derived from art
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [art, design, ownBar, barMode, boxes, logoMode])
 
   const suggestion = useMemo(() => (geometry ? suggestedBoxes(geometry) : null), [geometry])
   const shownBoxes = suggestion ? { photo: boxes.photo || suggestion.photo, text: boxes.text || suggestion.text } : null
@@ -216,7 +240,7 @@ const PosterEditor = () => {
         const c = document.createElement('canvas')
         renderPoster({
           canvas: c,
-          poster: { width: POSTER_W, height: POSTER_H, ...geometry },
+          poster: { width: art.canvas.width, height: art.canvas.height, ...geometry },
           artwork: art.canvas,
           person: sampleCutouts[s.key],
           name: sample.name,
@@ -238,7 +262,7 @@ const PosterEditor = () => {
     if (!geometry || !previewRef.current || !fontsReady) return
     renderPoster({
       canvas: previewRef.current,
-      poster: { width: POSTER_W, height: POSTER_H, ...geometry },
+      poster: { width: art.canvas.width, height: art.canvas.height, ...geometry },
       artwork: art.canvas,
       person,
       name: sample.name,
@@ -384,7 +408,7 @@ const PosterEditor = () => {
                   <span>
                     <FaUpload className="mx-auto text-3xl text-ink-400" aria-hidden="true" />
                     <span className="mt-3 block font-semibold text-ink-800">Upload the event artwork</span>
-                    <span className="mt-1 block text-sm text-ink-500">JPG or PNG, up to 30 MB. Portrait (4:5) fills the poster best.</span>
+                    <span className="mt-1 block text-sm text-ink-500">JPG or PNG, up to 30 MB, any shape — the poster takes the artwork’s own proportions.</span>
                   </span>
                 </button>
               )}
@@ -483,6 +507,24 @@ const PosterEditor = () => {
             </div>
             {source && (
               <div className="mt-4">
+                <p className="text-[0.8rem] font-semibold text-ink-700">Poster shape</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {Object.entries(SHAPES).map(([k, sh]) => (
+                    <Choice key={k} value={k} current={design.shape} onPick={(v) => setDesign((d) => ({ ...d, shape: v }))}>
+                      {sh.label}
+                    </Choice>
+                  ))}
+                </div>
+                {frame && (
+                  <p className="mt-1.5 text-xs text-ink-500">
+                    The poster will be {frame.w}×{frame.h}px
+                    {design.shape === 'artwork' ? ' — the artwork’s own proportions, nothing cropped.' : '.'}
+                  </p>
+                )}
+              </div>
+            )}
+            {source && (
+              <div className="mt-4">
                 <p className="text-[0.8rem] font-semibold text-ink-700">How the artwork fills the poster</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Choice value="auto" current={design.fit} onPick={(v) => setDesign((d) => ({ ...d, fit: v }))}>
@@ -502,30 +544,51 @@ const PosterEditor = () => {
           <Card title="2. Name bar" subtitle="Where the supporter's name and designation go.">
             <p className="text-[0.8rem] font-semibold text-ink-700">Party logo</p>
             <div className="mb-5 mt-2 flex flex-wrap gap-2">
-              <Choice value="show" current={design.logo} onPick={(v) => setDesign((d) => ({ ...d, logo: v }))}>
+              <Choice value="show" current={logoMode} onPick={(v) => setDesign((d) => ({ ...d, logo: v }))}>
                 Show the party logo
               </Choice>
-              <Choice value="hide" current={design.logo} onPick={(v) => setDesign((d) => ({ ...d, logo: v }))}>
+              <Choice value="hide" current={logoMode} onPick={(v) => setDesign((d) => ({ ...d, logo: v }))}>
                 No logo
               </Choice>
             </div>
-            {ownBar && (
+            {design.logo === 'auto' && artworkHasMark && (
+              <p className="-mt-3 mb-5 text-xs text-ink-500">Left off: the artwork already has a mark on its bar.</p>
+            )}
+            <p className="text-[0.8rem] font-semibold text-ink-700">Name bar</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Choice value="paint" current={barMode} onPick={(v) => setDesign((d) => ({ ...d, bar: v }))}>
+                Draw a name bar
+              </Choice>
+              {ownBar && (
+                <Choice value="artwork" current={barMode} onPick={(v) => setDesign((d) => ({ ...d, bar: v }))}>
+                  Use the artwork’s own bar
+                </Choice>
+              )}
+              <Choice value="none" current={barMode} onPick={(v) => setDesign((d) => ({ ...d, bar: v }))}>
+                No bar
+              </Choice>
+            </div>
+            <p className="mb-5 mt-1.5 text-xs leading-relaxed text-ink-500">
+              {barMode === 'paint' &&
+                (ownBar
+                  ? 'A bar is drawn over the foot of the artwork — over the bar the artwork already has.'
+                  : 'A bar is drawn across the foot of the poster for the name and designation.')}
+              {barMode === 'artwork' &&
+                `The artwork already has a bar at the bottom: the name goes on it, nothing is drawn over it${
+                  Number.isFinite(ownBar?.x0) ? ', and it keeps clear of the mark on that bar' : ''
+                }.`}
+              {barMode === 'none' &&
+                'Nothing is drawn: the name and designation go straight onto the artwork, in colours picked to stand out from it, and the person stands on the bottom edge. Use Move or resize to put the name exactly where it should go.'}
+            </p>
+            {barMode === 'artwork' && (
               <div className="mb-4">
                 <Notice tone="info">
                   <FaCircleInfo className="mr-1 inline" aria-hidden="true" />
-                  This artwork already has an empty bar at the bottom. It is used for the name, instead of drawing a new one.
+                  Found a bar in the artwork itself. Pick “Draw a name bar” to cover it instead, or “No bar” to place the name anywhere.
                 </Notice>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Choice value="auto" current={design.bar} onPick={(v) => setDesign((d) => ({ ...d, bar: v }))}>
-                    Use the artwork’s bar
-                  </Choice>
-                  <Choice value="draw" current={design.bar} onPick={(v) => setDesign((d) => ({ ...d, bar: v }))}>
-                    Draw our own bar
-                  </Choice>
-                </div>
               </div>
             )}
-            {!useOwnBar && (
+            {barMode === 'paint' && (
               <div className="grid gap-2 sm:grid-cols-2">
                 {Object.entries(THEMES).map(([key, t]) => (
                   <button
@@ -565,20 +628,26 @@ const PosterEditor = () => {
                 </Choice>
               ))}
             </div>
-            <p className="mt-4 text-[0.8rem] font-semibold text-ink-700">Photo and name bar</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <Choice value="behind" current={design.layer} onPick={(v) => setDesign((d) => ({ ...d, layer: v }))}>
-                Behind the name bar
-              </Choice>
-              <Choice value="front" current={design.layer} onPick={(v) => setDesign((d) => ({ ...d, layer: v }))}>
-                In front of the name bar
-              </Choice>
-            </div>
-            <p className="mt-1.5 text-xs text-ink-500">
-              {design.layer === 'front'
-                ? 'The person stands on the poster’s bottom edge, over the bar; the name moves beside them so it is never covered.'
-                : 'The bar covers the bottom of the photo, like a person standing behind a banner.'}
-            </p>
+            {barMode !== 'none' ? (
+              <>
+                <p className="mt-4 text-[0.8rem] font-semibold text-ink-700">Photo and name bar</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Choice value="behind" current={design.layer} onPick={(v) => setDesign((d) => ({ ...d, layer: v }))}>
+                    Behind the name bar
+                  </Choice>
+                  <Choice value="front" current={design.layer} onPick={(v) => setDesign((d) => ({ ...d, layer: v }))}>
+                    In front of the name bar
+                  </Choice>
+                </div>
+                <p className="mt-1.5 text-xs text-ink-500">
+                  {design.layer === 'front'
+                    ? 'The person stands on the poster’s bottom edge, over the bar; the name moves beside them so it is never covered.'
+                    : 'The bar covers the bottom of the photo, like a person standing behind a banner.'}
+                </p>
+              </>
+            ) : (
+              <p className="mt-4 text-xs text-ink-500">With no bar, the person stands on the poster’s bottom edge and the name keeps clear of them.</p>
+            )}
             <p className="mt-4 text-[0.8rem] font-semibold text-ink-700">Size</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {Object.entries(PERSON_SIZES).map(([k, s]) => (
