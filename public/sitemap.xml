@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.talikotaharikrishna.com/</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/" />
@@ -13,7 +14,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/" />
@@ -22,7 +23,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/about</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/about" />
@@ -31,7 +32,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/about</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/about" />
@@ -40,7 +41,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/political</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/political" />
@@ -49,7 +50,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/political</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/political" />
@@ -58,7 +59,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/kanaka-durga-temple-board</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/kanaka-durga-temple-board" />
@@ -67,7 +68,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/kanaka-durga-temple-board</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/kanaka-durga-temple-board" />
@@ -76,7 +77,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/media</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/media" />
@@ -85,7 +86,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/media</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7000000000000001</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/media" />
@@ -94,7 +95,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/press</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/press" />
@@ -103,7 +104,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/press</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7000000000000001</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/press" />
@@ -111,8 +112,748 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/press" />
   </url>
   <url>
+    <loc>https://www.talikotaharikrishna.com/videos</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos" />
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7000000000000001</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos" />
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/leo-telangana-interview-support-for-chandrababu</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/leo-telangana-interview-support-for-chandrababu" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/leo-telangana-interview-support-for-chandrababu" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/leo-telangana-interview-support-for-chandrababu" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/gPpUGw1h88g.jpg</video:thumbnail_loc>
+      <video:title>Leo Telangana interview: in Telangana, support stays with Chandrababu</video:title>
+      <video:description>Interview as iTDP Telangana State President after N. Chandrababu Naidu’s arrest in September 2023: however much the party’s supporters are troubled, in Telangana their support stays with Chandrababu.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/gPpUGw1h88g</video:player_loc>
+      <video:duration>426</video:duration>
+      <video:publication_date>2023-09-29T02:04:12-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCH0-k8hL9GOXeDBEhWFgxRg">Leo Telangana</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/leo-telangana-interview-support-for-chandrababu</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/leo-telangana-interview-support-for-chandrababu" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/leo-telangana-interview-support-for-chandrababu" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/leo-telangana-interview-support-for-chandrababu" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/gPpUGw1h88g.jpg</video:thumbnail_loc>
+      <video:title>ఇబ్బంది పెట్టినా తెలంగాణలో చంద్రబాబుకే మద్దతు — లియో తెలంగాణ ఇంటర్వ్యూ</video:title>
+      <video:description>సెప్టెంబర్ 2023లో నారా చంద్రబాబు నాయుడు అరెస్టు తర్వాత ఐటీడీపీ తెలంగాణ రాష్ట్ర అధ్యక్షునిగా లియో తెలంగాణకు ఇచ్చిన ఇంటర్వ్యూ: పార్టీ అభిమానులను ఎన్ని ఇబ్బందులు పెట్టినా తెలంగాణలో వారి మద్దతు చంద్రబాబుకే.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/gPpUGw1h88g</video:player_loc>
+      <video:duration>426</video:duration>
+      <video:publication_date>2023-09-29T02:04:12-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCH0-k8hL9GOXeDBEhWFgxRg">Leo Telangana</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/v6-news-itdp-wipro-circle-protest</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/v6-news-itdp-wipro-circle-protest" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/v6-news-itdp-wipro-circle-protest" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/v6-news-itdp-wipro-circle-protest" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/pikT5aJJy7I.jpg</video:thumbnail_loc>
+      <video:title>V6 News: IT employees protest at Wipro Circle over Chandrababu Naidu’s arrest</video:title>
+      <video:description>Television coverage of the protest by IT employees at Wipro Circle, Gachibowli, Hyderabad — the silent protest called by the Telangana TDP’s IT wing, which he leads, after N. Chandrababu Naidu’s arrest.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/pikT5aJJy7I</video:player_loc>
+      <video:duration>54</video:duration>
+      <video:publication_date>2023-09-13T05:21:01-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCDCMjD1XIAsCZsYHNMGVcog">V6 News Telugu</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/v6-news-itdp-wipro-circle-protest</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/v6-news-itdp-wipro-circle-protest" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/v6-news-itdp-wipro-circle-protest" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/v6-news-itdp-wipro-circle-protest" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/pikT5aJJy7I.jpg</video:thumbnail_loc>
+      <video:title>విప్రో సర్కిల్ వద్ద ఐటీ ఉద్యోగుల నిరసన — వీ6 న్యూస్</video:title>
+      <video:description>నారా చంద్రబాబు నాయుడు అరెస్టుకు నిరసనగా హైదరాబాద్ గచ్చిబౌలి విప్రో సర్కిల్ వద్ద ఐటీ ఉద్యోగుల మౌన నిరసనపై వీ6 న్యూస్ కథనం — ఆయన నేతృత్వంలోని తెలంగాణ టీడీపీ ఐటీ విభాగం పిలుపుతో.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/pikT5aJJy7I</video:player_loc>
+      <video:duration>54</video:duration>
+      <video:publication_date>2023-09-13T05:21:01-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCDCMjD1XIAsCZsYHNMGVcog">V6 News Telugu</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/rtv-interview-on-the-kcr-government</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/rtv-interview-on-the-kcr-government" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/rtv-interview-on-the-kcr-government" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/rtv-interview-on-the-kcr-government" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/EyfkvHu_UGM.jpg</video:thumbnail_loc>
+      <video:title>RTV interview: the iTDP state leader on the KCR government</video:title>
+      <video:description>Speaking to RTV as the iTDP state leader in July 2023, he criticised the BRS government of K. Chandrashekar Rao, saying only media that praise the government enjoy freedom in Telangana.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/EyfkvHu_UGM</video:player_loc>
+      <video:duration>416</video:duration>
+      <video:publication_date>2023-07-05T04:45:00-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UC1a3sxGl2zoC_Sbr2Y2S4cg">RTV Telugu</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/rtv-interview-on-the-kcr-government</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/rtv-interview-on-the-kcr-government" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/rtv-interview-on-the-kcr-government" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/rtv-interview-on-the-kcr-government" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/EyfkvHu_UGM.jpg</video:thumbnail_loc>
+      <video:title>కేసీఆర్ ప్రభుత్వంపై ఐటీడీపీ రాష్ట్ర నాయకుడు తాళికోట హరికృష్ణ — ఆర్టీవీ ఇంటర్వ్యూ</video:title>
+      <video:description>జూలై 2023లో ఐటీడీపీ రాష్ట్ర నాయకునిగా ఆర్టీవీతో మాట్లాడుతూ కె. చంద్రశేఖర రావు నేతృత్వంలోని బీఆర్ఎస్ ప్రభుత్వాన్ని విమర్శించారు; తెలంగాణలో ప్రభుత్వాన్ని పొగిడే మీడియాకే స్వేచ్ఛ ఉందన్నారు.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/EyfkvHu_UGM</video:player_loc>
+      <video:duration>416</video:duration>
+      <video:publication_date>2023-07-05T04:45:00-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UC1a3sxGl2zoC_Sbr2Y2S4cg">RTV Telugu</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/rtv-speech-on-the-itdp-social-media-team</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/rtv-speech-on-the-itdp-social-media-team" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/rtv-speech-on-the-itdp-social-media-team" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/rtv-speech-on-the-itdp-social-media-team" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/N2TWmdgpl_Y.jpg</video:thumbnail_loc>
+      <video:title>RTV: speech on the iTDP social media team</video:title>
+      <video:description>A speech on the work of the iTDP social media team — the party wing, he said, that brings people’s problems to the attention of its leaders.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/N2TWmdgpl_Y</video:player_loc>
+      <video:duration>249</video:duration>
+      <video:publication_date>2023-07-03T01:00:13-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UC1a3sxGl2zoC_Sbr2Y2S4cg">RTV Telugu</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/rtv-speech-on-the-itdp-social-media-team</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/rtv-speech-on-the-itdp-social-media-team" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/rtv-speech-on-the-itdp-social-media-team" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/rtv-speech-on-the-itdp-social-media-team" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/N2TWmdgpl_Y.jpg</video:thumbnail_loc>
+      <video:title>ఐటీడీపీ సోషల్ మీడియా బృందంపై తాళికోట హరికృష్ణ ప్రసంగం — ఆర్టీవీ</video:title>
+      <video:description>ఐటీడీపీ సోషల్ మీడియా బృందం పనిపై ప్రసంగం — ప్రజల సమస్యలను పార్టీ నాయకుల దృష్టికి తీసుకెళ్లే విభాగం అదేనని ఆయన అన్నారు.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/N2TWmdgpl_Y</video:player_loc>
+      <video:duration>249</video:duration>
+      <video:publication_date>2023-07-03T01:00:13-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UC1a3sxGl2zoC_Sbr2Y2S4cg">RTV Telugu</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/t_26uwmonIA.jpg</video:thumbnail_loc>
+      <video:title>Sri Kanaka Durga temple’s saree offering to Mahankali Ammavaru, Hyderabad</video:title>
+      <video:description>On behalf of the Sri Durga Malleswara Swamy Varla Devasthanam on Indrakeeladri, Vijayawada, a saree is offered to Mahankali Ammavaru in Hyderabad’s Old City for the Bonalu festival.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/t_26uwmonIA</video:player_loc>
+      <video:duration>24</video:duration>
+      <video:publication_date>2026-08-09T22:30:04-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/kanaka-durga-temple-saree-offering-to-mahankali-ammavaru" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/t_26uwmonIA.jpg</video:thumbnail_loc>
+      <video:title>శ్రీ కనకదుర్గ అమ్మవారి సారే సమర్పణ — హైదరాబాద్ మహంకాళి అమ్మవారికి</video:title>
+      <video:description>విజయవాడ ఇంద్రకీలాద్రిపై కొలువై ఉన్న శ్రీ దుర్గా మల్లేశ్వర స్వామి వార్ల దేవస్థానం తరఫున బోనాల సందర్భంగా హైదరాబాద్ ఓల్డ్ సిటీ మహంకాళి అమ్మవారికి సారే సమర్పణ.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/t_26uwmonIA</video:player_loc>
+      <video:duration>24</video:duration>
+      <video:publication_date>2026-08-09T22:30:04-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/08ZalRdw2b0.jpg</video:thumbnail_loc>
+      <video:title>Welcoming the Kanaka Durga temple’s saree offering, Hyderabad Bonalu</video:title>
+      <video:description>A welcome and felicitation in Hyderabad for the temple board chairman, members, priests and staff who came from Vijayawada to offer a saree to Mahankali Ammavaru in the Old City.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/08ZalRdw2b0</video:player_loc>
+      <video:duration>34</video:duration>
+      <video:publication_date>2026-08-08T00:30:20-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/welcoming-kanaka-durga-temple-saree-offering-hyderabad-bonalu" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/08ZalRdw2b0.jpg</video:thumbnail_loc>
+      <video:title>శ్రీ విజయవాడ కనకదుర్గ అమ్మవారి సారే సమర్పణకు ఘన స్వాగతం — హైదరాబాద్ బోనాలు</video:title>
+      <video:description>హైదరాబాద్ ఓల్డ్ సిటీ మహంకాళి అమ్మవారికి సారే సమర్పించేందుకు విజయవాడ నుంచి వచ్చిన ఆలయ ఛైర్మన్, కమిటీ సభ్యులు, అర్చకులు, దేవస్థాన ఉద్యోగులకు ఘన స్వాగతం, సత్కారం.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/08ZalRdw2b0</video:player_loc>
+      <video:duration>34</video:duration>
+      <video:publication_date>2026-08-08T00:30:20-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/talikota-harikrishna-telugu-desam-party</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-telugu-desam-party" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/talikota-harikrishna-telugu-desam-party" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-telugu-desam-party" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/9J7qTrF9w2Y.jpg</video:thumbnail_loc>
+      <video:title>Talikota Harikrishna — Telugu Desam Party</video:title>
+      <video:description>A short video about Talikota Hari Krishna and his work in the Telugu Desam Party.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/9J7qTrF9w2Y</video:player_loc>
+      <video:duration>29</video:duration>
+      <video:publication_date>2026-08-05T00:15:14-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/talikota-harikrishna-telugu-desam-party</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-telugu-desam-party" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/talikota-harikrishna-telugu-desam-party" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-telugu-desam-party" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/9J7qTrF9w2Y.jpg</video:thumbnail_loc>
+      <video:title>తాళికోట హరికృష్ణ — తెలుగుదేశం పార్టీ</video:title>
+      <video:description>తెలుగుదేశం పార్టీలో తాళికోట హరికృష్ణ కృషిపై షార్ట్ వీడియో.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/9J7qTrF9w2Y</video:player_loc>
+      <video:duration>29</video:duration>
+      <video:publication_date>2026-08-05T00:15:14-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/chandrababu-naidu-birthday-celebrations-2026</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/chandrababu-naidu-birthday-celebrations-2026" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/chandrababu-naidu-birthday-celebrations-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/chandrababu-naidu-birthday-celebrations-2026" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/2RI8IEb9rlU.jpg</video:thumbnail_loc>
+      <video:title>Chandrababu Naidu birthday celebrations, 2026</video:title>
+      <video:description>TDP leaders and workers celebrate the birthday of Andhra Pradesh Chief Minister N. Chandrababu Naidu, with cake-cutting and service programmes such as Annadanam and blood donation.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/2RI8IEb9rlU</video:player_loc>
+      <video:duration>37</video:duration>
+      <video:publication_date>2026-04-24T22:52:37-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/chandrababu-naidu-birthday-celebrations-2026</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/chandrababu-naidu-birthday-celebrations-2026" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/chandrababu-naidu-birthday-celebrations-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/chandrababu-naidu-birthday-celebrations-2026" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/2RI8IEb9rlU.jpg</video:thumbnail_loc>
+      <video:title>చంద్రబాబు నాయుడు గారి పుట్టినరోజు వేడుకలు, 2026</video:title>
+      <video:description>ఆంధ్రప్రదేశ్ ముఖ్యమంత్రి నారా చంద్రబాబు నాయుడు గారి పుట్టినరోజు వేడుకలు — టీడీపీ నాయకులు, కార్యకర్తల సంబరాలు, కేక్ కటింగ్, అన్నదానం, రక్తదానం వంటి సేవా కార్యక్రమాలు.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/2RI8IEb9rlU</video:player_loc>
+      <video:duration>37</video:duration>
+      <video:publication_date>2026-04-24T22:52:37-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/ugadi-greetings-2026</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/ugadi-greetings-2026" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/ugadi-greetings-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/ugadi-greetings-2026" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/QkwsQoqdtiY.jpg</video:thumbnail_loc>
+      <video:title>Ugadi greetings, 2026</video:title>
+      <video:description>Greetings for Ugadi, the Telugu New Year — Sri Parabhava nama samvatsaram.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/QkwsQoqdtiY</video:player_loc>
+      <video:duration>42</video:duration>
+      <video:publication_date>2026-03-18T21:13:05-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/ugadi-greetings-2026</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/ugadi-greetings-2026" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/ugadi-greetings-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/ugadi-greetings-2026" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/QkwsQoqdtiY.jpg</video:thumbnail_loc>
+      <video:title>శ్రీ పరాభవ నామ సంవత్సర ఉగాది శుభాకాంక్షలు</video:title>
+      <video:description>తెలుగు ప్రజల ఆత్మీయ పండుగ ఉగాది — శ్రీ పరాభవ నామ సంవత్సర శుభాకాంక్షలు.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/QkwsQoqdtiY</video:player_loc>
+      <video:duration>42</video:duration>
+      <video:publication_date>2026-03-18T21:13:05-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/sworn-in-as-kanaka-durga-temple-board-member</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/sworn-in-as-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/sworn-in-as-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/sworn-in-as-kanaka-durga-temple-board-member" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/KNbZUOwJzP4.jpg</video:thumbnail_loc>
+      <video:title>Sworn in as a Kanaka Durga temple board member, Indrakeeladri, Vijayawada</video:title>
+      <video:description>Talikota Hari Krishna takes the oath as a member of the trust board of the Sri Kanaka Durga Temple on Indrakeeladri hill, Vijayawada, followed by celebrations with devotees, leaders and supporters.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/KNbZUOwJzP4</video:player_loc>
+      <video:duration>53</video:duration>
+      <video:publication_date>2026-03-16T02:51:23-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/sworn-in-as-kanaka-durga-temple-board-member</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/sworn-in-as-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/sworn-in-as-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/sworn-in-as-kanaka-durga-temple-board-member" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/KNbZUOwJzP4.jpg</video:thumbnail_loc>
+      <video:title>విజయవాడ ఇంద్రకీలాద్రి కనకదుర్గమ్మ ఆలయ బోర్డు సభ్యునిగా ప్రమాణ స్వీకారం</video:title>
+      <video:description>విజయవాడ ఇంద్రకీలాద్రి శ్రీ కనకదుర్గమ్మ ఆలయ ధర్మకర్తల మండలి సభ్యునిగా తాళికోట హరికృష్ణ ప్రమాణ స్వీకారం, అనంతరం భక్తులు, నాయకులు, అభిమానుల సంబరాలు.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/KNbZUOwJzP4</video:player_loc>
+      <video:duration>53</video:duration>
+      <video:publication_date>2026-03-16T02:51:23-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/ntr-vardhanti-bike-rally-2026</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/ntr-vardhanti-bike-rally-2026" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/ntr-vardhanti-bike-rally-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/ntr-vardhanti-bike-rally-2026" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/rOQjRdVLI9A.jpg</video:thumbnail_loc>
+      <video:title>Bike rally marking N.T. Rama Rao’s Vardhanti</video:title>
+      <video:description>Supporters and Telugu Desam Party workers hold a bike rally in tribute to the party’s founder N.T. Rama Rao on his death anniversary.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/rOQjRdVLI9A</video:player_loc>
+      <video:duration>52</video:duration>
+      <video:publication_date>2026-03-15T23:22:52-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/ntr-vardhanti-bike-rally-2026</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/ntr-vardhanti-bike-rally-2026" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/ntr-vardhanti-bike-rally-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/ntr-vardhanti-bike-rally-2026" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/rOQjRdVLI9A.jpg</video:thumbnail_loc>
+      <video:title>ఎన్టీఆర్ వర్ధంతి సందర్భంగా బైక్ ర్యాలీ</video:title>
+      <video:description>పార్టీ వ్యవస్థాపకులు ఎన్.టి. రామారావు వర్ధంతి సందర్భంగా ఆయనకు నివాళిగా అభిమానులు, తెలుగుదేశం కార్యకర్తల బైక్ ర్యాలీ.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/rOQjRdVLI9A</video:player_loc>
+      <video:duration>52</video:duration>
+      <video:publication_date>2026-03-15T23:22:52-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/talikota-harikrishna-kanaka-durga-temple-board-member</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/talikota-harikrishna-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-kanaka-durga-temple-board-member" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/PEO3fq4RMEg.jpg</video:thumbnail_loc>
+      <video:title>Talikota Harikrishna, Kanaka Durga temple board member</video:title>
+      <video:description>A short video on Talikota Hari Krishna’s appointment to the trust board of the Sri Kanaka Durga Temple, Vijayawada.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/PEO3fq4RMEg</video:player_loc>
+      <video:duration>53</video:duration>
+      <video:publication_date>2025-10-15T06:30:39-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/talikota-harikrishna-kanaka-durga-temple-board-member</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/talikota-harikrishna-kanaka-durga-temple-board-member" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/talikota-harikrishna-kanaka-durga-temple-board-member" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/PEO3fq4RMEg.jpg</video:thumbnail_loc>
+      <video:title>కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యులుగా తాళికోట హరికృష్ణ</video:title>
+      <video:description>విజయవాడ శ్రీ కనకదుర్గ ఆలయ ధర్మకర్తల మండలి సభ్యునిగా తాళికోట హరికృష్ణ నియామకంపై షార్ట్ వీడియో.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/PEO3fq4RMEg</video:player_loc>
+      <video:duration>53</video:duration>
+      <video:publication_date>2025-10-15T06:30:39-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025-delegate-registration</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025-delegate-registration" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/mahanadu-kadapa-2025-delegate-registration" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025-delegate-registration" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/-Pk8axazwkM.jpg</video:thumbnail_loc>
+      <video:title>At Mahanadu, Kadapa — delegate registration</video:title>
+      <video:description>Talikota Hari Krishna at the delegate registration of the three-day Telugu Desam Party Mahanadu in Kadapa, 2025.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/-Pk8axazwkM</video:player_loc>
+      <video:duration>99</video:duration>
+      <video:publication_date>2025-06-08T04:08:28-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/mahanadu-kadapa-2025-delegate-registration</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025-delegate-registration" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/mahanadu-kadapa-2025-delegate-registration" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025-delegate-registration" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/-Pk8axazwkM.jpg</video:thumbnail_loc>
+      <video:title>కడప మహానాడు 2025 — ప్రతినిధుల నమోదు</video:title>
+      <video:description>కడపలో జరిగిన మూడు రోజుల తెలుగుదేశం మహానాడు 2025 ప్రతినిధుల నమోదు కార్యక్రమంలో తాళికోట హరికృష్ణ.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/-Pk8axazwkM</video:player_loc>
+      <video:duration>99</video:duration>
+      <video:publication_date>2025-06-08T04:08:28-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/mahanadu-kadapa-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/GmVHGytnKR4.jpg</video:thumbnail_loc>
+      <video:title>At Mahanadu, Kadapa, 2025</video:title>
+      <video:description>Talikota Hari Krishna at the three-day Telugu Desam Party Mahanadu in Kadapa, 2025.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/GmVHGytnKR4</video:player_loc>
+      <video:duration>39</video:duration>
+      <video:publication_date>2025-05-30T00:09:17-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/mahanadu-kadapa-2025</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/mahanadu-kadapa-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/mahanadu-kadapa-2025" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/GmVHGytnKR4.jpg</video:thumbnail_loc>
+      <video:title>కడప మహానాడు 2025లో తాళికోట హరికృష్ణ</video:title>
+      <video:description>కడపలో జరిగిన మూడు రోజుల తెలుగుదేశం మహానాడు 2025లో తాళికోట హరికృష్ణ.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/GmVHGytnKR4</video:player_loc>
+      <video:duration>39</video:duration>
+      <video:publication_date>2025-05-30T00:09:17-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/with-the-people-for-the-people</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/with-the-people-for-the-people" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/with-the-people-for-the-people" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/with-the-people-for-the-people" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/BUqFOCFnM5U.jpg</video:thumbnail_loc>
+      <video:title>With the people, for the people</video:title>
+      <video:description>A short video on Talikota Hari Krishna’s public work with the Telugu Desam Party.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/BUqFOCFnM5U</video:player_loc>
+      <video:duration>28</video:duration>
+      <video:publication_date>2025-05-12T05:30:19-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/with-the-people-for-the-people</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/with-the-people-for-the-people" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/with-the-people-for-the-people" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/with-the-people-for-the-people" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/BUqFOCFnM5U.jpg</video:thumbnail_loc>
+      <video:title>ప్రజలతో, ప్రజల కోసం</video:title>
+      <video:description>తెలుగుదేశం పార్టీతో తాళికోట హరికృష్ణ ప్రజా కార్యక్రమాలపై షార్ట్ వీడియో.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/BUqFOCFnM5U</video:player_loc>
+      <video:duration>28</video:duration>
+      <video:publication_date>2025-05-12T05:30:19-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/standing-tall-for-tdp</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/standing-tall-for-tdp" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/standing-tall-for-tdp" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/standing-tall-for-tdp" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/V1-aY34PF0A.jpg</video:thumbnail_loc>
+      <video:title>Standing tall for TDP</video:title>
+      <video:description>A short video on Talikota Hari Krishna and the Telugu Desam Party.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/V1-aY34PF0A</video:player_loc>
+      <video:duration>32</video:duration>
+      <video:publication_date>2025-05-01T02:55:32-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/standing-tall-for-tdp</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/standing-tall-for-tdp" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/standing-tall-for-tdp" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/standing-tall-for-tdp" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/V1-aY34PF0A.jpg</video:thumbnail_loc>
+      <video:title>తెలుగుదేశం కోసం దృఢంగా</video:title>
+      <video:description>తాళికోట హరికృష్ణ, తెలుగుదేశం పార్టీపై షార్ట్ వీడియో.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/V1-aY34PF0A</video:player_loc>
+      <video:duration>32</video:duration>
+      <video:publication_date>2025-05-01T02:55:32-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/birthday-greetings-to-chandrababu-naidu-2025</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/birthday-greetings-to-chandrababu-naidu-2025" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/birthday-greetings-to-chandrababu-naidu-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/birthday-greetings-to-chandrababu-naidu-2025" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/61vQTrGAMlI.jpg</video:thumbnail_loc>
+      <video:title>Birthday greetings to Chief Minister N. Chandrababu Naidu, 2025</video:title>
+      <video:description>Birthday greetings to Andhra Pradesh Chief Minister N. Chandrababu Naidu.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/61vQTrGAMlI</video:player_loc>
+      <video:duration>114</video:duration>
+      <video:publication_date>2025-04-24T04:39:33-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/birthday-greetings-to-chandrababu-naidu-2025</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/birthday-greetings-to-chandrababu-naidu-2025" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/birthday-greetings-to-chandrababu-naidu-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/birthday-greetings-to-chandrababu-naidu-2025" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/61vQTrGAMlI.jpg</video:thumbnail_loc>
+      <video:title>ముఖ్యమంత్రి నారా చంద్రబాబు నాయుడు గారికి జన్మదిన శుభాకాంక్షలు, 2025</video:title>
+      <video:description>ఆంధ్రప్రదేశ్ ముఖ్యమంత్రి నారా చంద్రబాబు నాయుడు గారికి జన్మదిన శుభాకాంక్షలు.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/61vQTrGAMlI</video:player_loc>
+      <video:duration>114</video:duration>
+      <video:publication_date>2025-04-24T04:39:33-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/tdp-43-years-formation-day-rally</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/tdp-43-years-formation-day-rally" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/tdp-43-years-formation-day-rally" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/tdp-43-years-formation-day-rally" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/iKSWrQ3bbqU.jpg</video:thumbnail_loc>
+      <video:title>Rally marking 43 years of the Telugu Desam Party</video:title>
+      <video:description>A rally for the Telugu Desam Party’s formation day, 43 years after N.T. Rama Rao founded the party in 1982.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/iKSWrQ3bbqU</video:player_loc>
+      <video:duration>41</video:duration>
+      <video:publication_date>2025-04-02T04:59:40-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/tdp-43-years-formation-day-rally</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/tdp-43-years-formation-day-rally" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/tdp-43-years-formation-day-rally" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/tdp-43-years-formation-day-rally" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/iKSWrQ3bbqU.jpg</video:thumbnail_loc>
+      <video:title>తెలుగుదేశం పార్టీ 43 ఏళ్ల ఆవిర్భావ ర్యాలీ</video:title>
+      <video:description>1982లో ఎన్.టి. రామారావు స్థాపించిన తెలుగుదేశం పార్టీ ఆవిర్భావానికి 43 ఏళ్లు — ఆవిర్భావ దినోత్సవ ర్యాలీ.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/iKSWrQ3bbqU</video:player_loc>
+      <video:duration>41</video:duration>
+      <video:publication_date>2025-04-02T04:59:40-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/videos/tdp-foundation-day-flexis-removed-ameerpet</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/tdp-foundation-day-flexis-removed-ameerpet" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/tdp-foundation-day-flexis-removed-ameerpet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/tdp-foundation-day-flexis-removed-ameerpet" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/ntCKNd2qDjk.jpg</video:thumbnail_loc>
+      <video:title>On the removal of TDP Foundation Day flexis, Ameerpet</video:title>
+      <video:description>On TDP Foundation Day flexis taken down by GHMC staff at Ameerpet, Hyderabad, on Ugadi — the day after the party’s Foundation Day.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/ntCKNd2qDjk</video:player_loc>
+      <video:duration>62</video:duration>
+      <video:publication_date>2025-03-30T21:04:43-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/videos/tdp-foundation-day-flexis-removed-ameerpet</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/videos/tdp-foundation-day-flexis-removed-ameerpet" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/videos/tdp-foundation-day-flexis-removed-ameerpet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/videos/tdp-foundation-day-flexis-removed-ameerpet" />
+    <video:video>
+      <video:thumbnail_loc>https://www.talikotaharikrishna.com/photos/video/ntCKNd2qDjk.jpg</video:thumbnail_loc>
+      <video:title>అమీర్‌పేటలో టీడీపీ ఆవిర్భావ దినోత్సవ ఫ్లెక్సీల తొలగింపుపై</video:title>
+      <video:description>తెలుగుదేశం ఆవిర్భావ దినోత్సవం మరుసటి రోజు, ఉగాది నాడు, హైదరాబాద్ అమీర్‌పేటలో పార్టీ ఫ్లెక్సీలను జీహెచ్ఎంసీ సిబ్బంది తొలగించడంపై.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/ntCKNd2qDjk</video:player_loc>
+      <video:duration>62</video:duration>
+      <video:publication_date>2025-03-30T21:04:43-07:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="https://www.youtube.com/channel/UCGGggwMXVxhNY9q9CZ6325Q">Team Haranna</video:uploader>
+    </video:video>
+  </url>
+  <url>
     <loc>https://www.talikotaharikrishna.com/contact</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/contact" />
@@ -121,7 +862,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/contact</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/contact" />
@@ -130,7 +871,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/posters</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters" />
@@ -139,7 +880,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/posters</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7000000000000001</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters" />
@@ -147,8 +888,26 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/posters" />
   </url>
   <url>
+    <loc>https://www.talikotaharikrishna.com/posters/tributes-on-157th-gandhi-jayanti</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/tributes-on-157th-gandhi-jayanti" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/posters/tributes-on-157th-gandhi-jayanti" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/posters/tributes-on-157th-gandhi-jayanti" />
+  </url>
+  <url>
+    <loc>https://www.talikotaharikrishna.com/te/posters/tributes-on-157th-gandhi-jayanti</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/tributes-on-157th-gandhi-jayanti" />
+    <xhtml:link rel="alternate" hreflang="te-IN" href="https://www.talikotaharikrishna.com/te/posters/tributes-on-157th-gandhi-jayanti" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.talikotaharikrishna.com/posters/tributes-on-157th-gandhi-jayanti" />
+  </url>
+  <url>
     <loc>https://www.talikotaharikrishna.com/posters/performance-of-officials-in-telangana-state</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/performance-of-officials-in-telangana-state" />
@@ -157,7 +916,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/posters/performance-of-officials-in-telangana-state</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/performance-of-officials-in-telangana-state" />
@@ -166,7 +925,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/posters/godavari-water</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/godavari-water" />
@@ -175,7 +934,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/posters/godavari-water</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/godavari-water" />
@@ -184,7 +943,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/posters/the-racket-involving-spurious-fertilizers-must-b</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/the-racket-involving-spurious-fertilizers-must-b" />
@@ -193,7 +952,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/posters/the-racket-involving-spurious-fertilizers-must-b</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/the-racket-involving-spurious-fertilizers-must-b" />
@@ -202,7 +961,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/posters/22a-patta-bhumi</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/22a-patta-bhumi" />
@@ -211,7 +970,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/posters/22a-patta-bhumi</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/posters/22a-patta-bhumi" />
@@ -220,7 +979,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/privacy</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/privacy" />
@@ -229,7 +988,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/privacy</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.1</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/privacy" />
@@ -238,7 +997,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/terms</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/terms" />
@@ -247,7 +1006,7 @@
   </url>
   <url>
     <loc>https://www.talikotaharikrishna.com/te/terms</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.1</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.talikotaharikrishna.com/terms" />

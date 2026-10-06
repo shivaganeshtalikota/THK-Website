@@ -69,6 +69,11 @@ const Seo = ({
   type = 'website',
   noindex = false,
   schema,
+  // A watch page: { embedUrl, width, height } for the og:video tags.
+  video = null,
+  // Breadcrumbs between home and this page: [{ name, path }]. Without it the
+  // trail is home > this page.
+  crumbs = null,
 }) => {
   const { pathname } = useLocation()
   const t = useT()
@@ -191,7 +196,9 @@ const Seo = ({
       name: 'robots',
       content: noindex
         ? 'noindex, follow'
-        : 'index, follow, max-image-preview:large, max-snippet:-1',
+        : // max-video-preview:-1 lets a result show a video preview of any
+          // length; without it Google may decline to show one at all.
+          'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     })
 
     if (schema) {
@@ -217,6 +224,21 @@ const Seo = ({
      * is added, and derived from the same `title` the <title> tag uses so the
      * two can never disagree.
      */
+    /*
+     * A watch page tells the platforms the page is a video, and where its
+     * player is: Facebook, WhatsApp and LinkedIn can then play it in place.
+     */
+    if (video) {
+      tags.push(
+        { _tag: 'meta', property: 'og:video', content: video.embedUrl },
+        { _tag: 'meta', property: 'og:video:url', content: video.embedUrl },
+        { _tag: 'meta', property: 'og:video:secure_url', content: video.embedUrl },
+        { _tag: 'meta', property: 'og:video:type', content: 'text/html' },
+        { _tag: 'meta', property: 'og:video:width', content: String(video.width) },
+        { _tag: 'meta', property: 'og:video:height', content: String(video.height) },
+      )
+    }
+
     if (pathname !== '/' && title && !noindex) {
       tags.push({
         _tag: 'script',
@@ -226,14 +248,20 @@ const Seo = ({
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: site.name, item: `${site.url}/` },
-            { '@type': 'ListItem', position: 2, name: title, item: canonical },
+            ...(crumbs || []).map((c, i) => ({
+              '@type': 'ListItem',
+              position: i + 2,
+              name: t(c.name),
+              item: clean(localePath(c.path, lang)),
+            })),
+            { '@type': 'ListItem', position: 2 + (crumbs?.length || 0), name: t(title), item: canonical },
           ],
         }),
       })
     }
 
     return { title: fullTitle, tags }
-  }, [pathname, title, description, image, type, noindex, schema, preloadPhoto, t])
+  }, [pathname, title, description, image, type, noindex, schema, preloadPhoto, t, video, crumbs])
 
   useHead(head)
 

@@ -4,7 +4,7 @@ import Link, { LocaleNavLink as NavLink } from './LocaleLink'
 // fa6 renames the FA5 icons: FaTimes -> FaXmark.
 import { FaBars, FaXmark } from 'react-icons/fa6'
 import { nav, social, site } from '../data/site'
-import { useT } from '../i18n/useT'
+import { useT, useLang } from '../i18n/useT'
 import LanguageToggle from './LanguageToggle'
 import { socialGlyph } from './socialGlyph'
 
@@ -88,6 +88,7 @@ const MobilePanel = ({ isOpen, onNavigate }) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const t = useT()
+  const te = useLang() === 'te'
   /*
    * Eight links (News joined in September 2026) do not fit beside the
    * wordmark, the language toggle and the button below 1280px in English,
@@ -148,7 +149,11 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop nav */}
-          <ul className="hidden items-center gap-5 xl:flex 2xl:gap-7">
+          {/* Nine links, a language switch and a button share one row from 1280px.
+              Telugu labels run longer, so their spacing and size step down a
+              touch — measured: at 1280px the Telugu row otherwise overflowed
+              by 36px and clipped the button. */}
+          <ul className={`hidden items-center xl:flex ${te ? 'gap-3 2xl:gap-5' : 'gap-4 2xl:gap-6'}`}>
             {nav.map((link) => (
               <li key={link.path}>
                 <NavLink
@@ -156,7 +161,7 @@ const Navbar = () => {
                   end={link.path === '/'}
                   className={({ isActive }) =>
                     [
-                      'relative whitespace-nowrap py-2 font-sans text-[0.82rem] font-medium transition-colors duration-200',
+                      `relative whitespace-nowrap py-2 font-sans ${te ? 'text-[0.78rem]' : 'text-[0.82rem]'} font-medium transition-colors duration-200`,
                       'after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:bg-ink-900',
                       'after:transition-all after:duration-300 hover:text-ink-900',
                       isActive
@@ -172,7 +177,7 @@ const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <ul className="hidden items-center gap-0.5 md:flex xl:hidden 2xl:flex">
+            <ul className="hidden items-center gap-0.5 md:flex xl:hidden">
               {social.map((s) => {
                 const Glyph = socialGlyph(s.name)
                 return (
@@ -197,7 +202,7 @@ const Navbar = () => {
 
             <Link
               to="/contact"
-              className="tap-round hidden whitespace-nowrap rounded-sm bg-ink-900 px-5 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink-800 xl:inline-flex"
+              className="tap-round hidden whitespace-nowrap rounded-sm bg-ink-900 px-4 py-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink-800 xl:inline-flex"
             >
               {t('Get Involved')}
             </Link>

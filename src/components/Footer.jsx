@@ -26,6 +26,7 @@ const Footer = () => {
       links: [
         { name: 'Media & Updates', path: '/media' },
         { name: 'In the news', path: '/press' },
+        { name: 'Videos', path: '/videos' },
         { name: 'Campaign Posters', path: '/posters' },
         { name: 'Contact', path: '/contact' },
         { name: 'Privacy Policy', path: '/privacy' },

@@ -151,6 +151,7 @@ const Home = () => {
                 ['/kanaka-durga-temple-board', t('Trust Board Member'), t('Sri Kanaka Durga Temple, Indrakeeladri, Vijayawada — since 11 October 2025')],
                 ['/political', t('iTDP Telangana State President'), t('Telugu Desam Party')],
                 ['/press', t('In the news'), t('Newspaper cuttings, online reports and TV interviews')],
+                ['/videos', t('Videos'), t('TV interviews, the temple board oath, Mahanadu and party events')],
                 ['/posters', t('Campaign posters'), t('Put your own photo and name on the campaign')],
               ].map(([to, title, text]) => (
                 <li key={to}>

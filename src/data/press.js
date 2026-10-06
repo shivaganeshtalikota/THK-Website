@@ -233,44 +233,7 @@ export const officialRecord = {
  * in public/photos/video (the site loads no third-party images); the video
  * plays in the page through youtube-nocookie.com.
  */
-export const interviews = [
-  {
-    id: 'gPpUGw1h88g',
-    date: '2023-09-29',
-    channel: 'Leo Telangana',
-    kind: 'Interview',
-    title: 'ఇబ్బంది పెట్టినా తెలంగాణలో చంద్రబాబుకే మద్దతు',
-    summary: 'Interview as iTDP president after N. Chandrababu Naidu’s arrest: however much the party’s supporters are troubled, in Telangana their support stays with Chandrababu.',
-    minutes: 7,
-  },
-  {
-    id: 'pikT5aJJy7I',
-    date: '2023-09-13',
-    channel: 'V6 News',
-    kind: 'News report',
-    title: 'TDP IT Wing Employees Protest Over Chandra Babu Arrest At Wipro Circle',
-    summary: 'Television coverage of the protest by IT employees at Wipro Circle, Gachibowli — the silent protest called by the Telangana TDP’s IT wing, which he leads.',
-    minutes: 1,
-  },
-  {
-    id: 'EyfkvHu_UGM',
-    date: '2023-07-05',
-    channel: 'RTV Telugu',
-    kind: 'Interview',
-    title: 'iTDP State Leader Talikota Harikrishna on the KCR government',
-    summary: 'Speaking to RTV as the iTDP state leader, he criticised the BRS government of K. Chandrashekar Rao, saying only media that praise the government enjoy freedom in Telangana.',
-    minutes: 7,
-  },
-  {
-    id: 'N2TWmdgpl_Y',
-    date: '2023-07-03',
-    channel: 'RTV Telugu',
-    kind: 'Speech',
-    title: 'Talikota Harikrishna on the iTDP social media team',
-    summary: 'A speech on the work of the iTDP social media team — the party wing, he said, that brings people’s problems to the attention of its leaders.',
-    minutes: 4,
-  },
-]
+// The interviews are in src/data/videos.js now, with a watch page each.
 
 export const pressImage = (slug) => `/press/${slug}.jpg`
 export const pressThumb = (slug) => `/press/${slug}-640.webp`

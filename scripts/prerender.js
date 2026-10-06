@@ -56,6 +56,13 @@ const posterSlugs = (() => {
   return [...new Set([...published, ...builtIn])]
 })()
 
+/**
+ * One watch page per video (src/data/videos.js), read out of the source the
+ * same way as the poster slugs: a video added there is prerendered without
+ * anyone remembering to list it here.
+ */
+const videoSlugs = [...readFileSync(join(ROOT, 'src', 'data', 'videos.js'), 'utf8').matchAll(/^\s*slug:\s*'([^']+)'/gm)].map((m) => m[1])
+
 const EN_ROUTES = [
   '/',
   '/about',
@@ -63,6 +70,8 @@ const EN_ROUTES = [
   '/kanaka-durga-temple-board',
   '/media',
   '/press',
+  '/videos',
+  ...videoSlugs.map((slug) => `/videos/${slug}`),
   '/contact',
   '/posters',
   ...posterSlugs.map((slug) => `/posters/${slug}`),

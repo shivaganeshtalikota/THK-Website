@@ -24,6 +24,9 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
+// Plain data with no app imports, so it loads in Node as it is.
+const { allVideos, CHANNELS } = await import('../src/data/videos.js')
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
 const FROM_DIST = process.argv.includes('--from-dist')
@@ -84,6 +87,16 @@ const routes = [
   { path: '/kanaka-durga-temple-board', priority: '0.9', changefreq: 'monthly', file: 'kanaka-durga-temple-board/index.html' },
   { path: '/media', priority: '0.8', changefreq: 'weekly', file: 'media/index.html' },
   { path: '/press', priority: '0.8', changefreq: 'weekly', file: 'press/index.html' },
+  { path: '/videos', priority: '0.8', changefreq: 'monthly', file: 'videos/index.html' },
+  // The watch pages carry a <video:video> entry each: the video sitemap is how
+  // Google is told directly which page a video lives on.
+  ...allVideos.map((v) => ({
+    path: `/videos/${v.slug}`,
+    priority: '0.7',
+    changefreq: 'yearly',
+    file: `videos/${v.slug}/index.html`,
+    video: v,
+  })),
   { path: '/contact', priority: '0.7', changefreq: 'monthly', file: 'contact/index.html' },
   { path: '/posters', priority: '0.8', changefreq: 'weekly', file: 'posters/index.html' },
   ...posterSlugs.map((slug) => ({
@@ -182,6 +195,21 @@ const body = localised
     </image:image>`
       )
       .join('')
+    const v = r.video
+    const te = r.path.startsWith('/te/')
+    const videoXml = v
+      ? `
+    <video:video>
+      <video:thumbnail_loc>${xmlEscape(`${ORIGIN}/photos/video/${v.id}.jpg`)}</video:thumbnail_loc>
+      <video:title>${xmlEscape(te ? v.titleTe : v.title)}</video:title>
+      <video:description>${xmlEscape(te ? v.descriptionTe : v.description)}</video:description>
+      <video:player_loc>https://www.youtube.com/embed/${v.id}</video:player_loc>
+      <video:duration>${v.seconds}</video:duration>
+      <video:publication_date>${v.uploadDate}</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:uploader info="${xmlEscape(CHANNELS[v.channel].url)}">${xmlEscape(CHANNELS[v.channel].name)}</video:uploader>
+    </video:video>`
+      : ''
     const altXml = (r.alternates ?? [])
       .map(
         (a) =>
@@ -193,7 +221,7 @@ const body = localised
     <loc>${ORIGIN}${r.path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
-    <priority>${r.priority}</priority>${altXml}${imageXml}
+    <priority>${r.priority}</priority>${altXml}${imageXml}${videoXml}
   </url>`
   })
   .join('\n')
@@ -201,6 +229,7 @@ const body = localised
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${body}
 </urlset>

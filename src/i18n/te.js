@@ -1284,4 +1284,48 @@ export const te = {
     'శ్రీ కనకదుర్గ దేవస్థానం ధర్మకర్తల మండలి సభ్యులు, తెలుగుదేశం పార్టీ నాయకులు తాళికోట హరికృష్ణ కార్యాలయం ప్రచురించినది.',
   '26 September 2025':
     '2025 సెప్టెంబరు 26',
+
+  // ---- added 2026-10-06 ----
+  'video':
+    'వీడియో',
+  'Videos':
+    'వీడియోలు',
+  'Short':
+    'షార్ట్',
+  'Breadcrumb':
+    'మార్గం',
+  'Published':
+    'ప్రచురణ',
+  'Length':
+    'నిడివి',
+  'Channel':
+    'ఛానల్',
+  'Watch on YouTube':
+    'యూట్యూబ్‌లో చూడండి',
+  'More videos':
+    'మరిన్ని వీడియోలు',
+  'All videos':
+    'అన్ని వీడియోలు',
+  'All videos, with the TV interviews':
+    'టీవీ ఇంటర్వ్యూలతో సహా అన్ని వీడియోలు',
+  'Team Haranna is a supporter-run channel, not operated by the office.':
+    'టీమ్ హరన్న అభిమానులు నడుపుతున్న ఛానల్; కార్యాలయం నిర్వహించేది కాదు.',
+  'Interviews and television coverage on Telugu news channels. Each has its own page, where it plays.':
+    'తెలుగు వార్తా ఛానళ్లలో ఇంటర్వ్యూలు, టీవీ కథనాలు. ప్రతి వీడియోకు దాని సొంత పేజీ ఉంది — అక్కడే ప్లే అవుతుంది.',
+  'Interviews & news reports':
+    'ఇంటర్వ్యూలు & వార్తా కథనాలు',
+  'Interviews and television coverage on Telugu news channels.':
+    'తెలుగు వార్తా ఛానళ్లలో ఇంటర్వ్యూలు, టీవీ కథనాలు.',
+  'From Team Haranna':
+    'టీమ్ హరన్న నుంచి',
+  'Videos — Interviews and Coverage':
+    'వీడియోలు — ఇంటర్వ్యూలు, కథనాలు',
+  'Videos of Talikota Hari Krishna: TV interviews and news reports, the Kanaka Durga temple board oath, the temple’s Bonalu saree offering, Mahanadu and party events.':
+    'తాళికోట హరికృష్ణ వీడియోలు: టీవీ ఇంటర్వ్యూలు, వార్తా కథనాలు, కనకదుర్గ ఆలయ ధర్మకర్తల మండలి ప్రమాణ స్వీకారం, బోనాలకు ఆలయ సారే సమర్పణ, మహానాడు, పార్టీ కార్యక్రమాలు.',
+  'Interviews on Telugu news channels, and video of his temple service and party work. Each video has its own page.':
+    'తెలుగు వార్తా ఛానళ్లలో ఇంటర్వ్యూలు, ఆయన ఆలయ సేవ, పార్టీ కార్యక్రమాల వీడియోలు. ప్రతి వీడియోకు సొంత పేజీ ఉంది.',
+
+  // ---- added 2026-10-06 ----
+  'TV interviews, the temple board oath, Mahanadu and party events':
+    'టీవీ ఇంటర్వ్యూలు, ఆలయ ధర్మకర్తల మండలి ప్రమాణ స్వీకారం, మహానాడు, పార్టీ కార్యక్రమాలు',
 }

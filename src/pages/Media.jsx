@@ -1,6 +1,6 @@
 import Link from '../components/LocaleLink'
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { FaArrowRight, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
+import { FaArrowRight, FaXmark, FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 import PostsFeed from '../components/PostsFeed'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
@@ -9,6 +9,7 @@ import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
 import { photos, gallery, galleryGroups } from '../data/photos'
 import { videos, channel } from '../data/videos'
+import VideoCard from '../components/VideoCard'
 import { albums, albumFrames } from '../data/albums'
 import EventAlbum from '../components/EventAlbum'
 import uploads from '../data/uploads.json'
@@ -357,66 +358,18 @@ const Media = () => {
           <ul className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {videos.slice(0, 9).map((v, i) => (
               <Reveal as="li" key={v.id} delay={Math.min(i, 5) * 0.05}>
-                <a
-                  href={`https://www.youtube.com/watch?v=${v.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block"
-                >
-                  <div className="relative overflow-hidden bg-ink-800">
-                    {/*
-                      Real alt text, not alt="". These nine stills were the only
-                      images on the site a crawler could not read, and Google
-                      Images ranks almost entirely on alt text — they were
-                      invisible to it.
-
-                      The visible title below is aria-hidden to pay for it. A
-                      screen reader would otherwise hear the title twice: once
-                      from this alt and once from the paragraph, since both sit
-                      inside the same link. This way the link announces exactly
-                      once, and the crawler still gets a described image.
-                    */}
-                    <img
-                      src={`/photos/video/${v.id}.webp`}
-                      alt={
-                        v.title.includes('Talikota')
-                          ? `Video still — ${v.title}`
-                          : `Video still — ${v.title}, Talikota Hari Krishna`
-                      }
-                      width="640"
-                      height="360"
-                      loading="lazy"
-                      decoding="async"
-                      className="aspect-video w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
-                    />
-                    <span
-                      className="absolute inset-0 grid place-items-center bg-ink-950/25 transition-colors group-hover:bg-ink-950/10"
-                      aria-hidden="true"
-                    >
-                      <span className="grid h-14 w-14 place-items-center rounded-full bg-brand-500/95 text-ink-900 transition-transform duration-300 group-hover:scale-110">
-                        <FaPlay className="ml-0.5" />
-                      </span>
-                    </span>
-                  </div>
-                  <p
-                    aria-hidden="true"
-                    className="mt-4 font-sans text-sm font-medium leading-snug text-white transition-colors group-hover:text-brand-300"
-                  >
-                    {t(v.title)}
-                  </p>
-                  <span className="sr-only">{t("Watch on YouTube (opens in a new tab)")}</span>
-                  {v.telugu && (
-                    <p lang="te" className="mt-1.5 line-clamp-2 text-xs text-white/55">
-                      {v.telugu}
-                    </p>
-                  )}
-                  <time dateTime={v.published} className="mt-2 block text-xs text-white/45">
-                    {formatDate(v.published, lang)}
-                  </time>
-                </a>
+                {/* To the video's own watch page on this site, which is the
+                    page search engines index the video from. */}
+                <VideoCard video={v} showChannel={false} />
               </Reveal>
             ))}
           </ul>
+          <p className="mt-10 text-sm text-white/55">
+            {t('Team Haranna is a supporter-run channel, not operated by the office.')}{' '}
+            <Link to="/videos" className="font-semibold text-brand-400 underline-offset-4 hover:underline">
+              {t('All videos, with the TV interviews')}
+            </Link>
+          </p>
         </div>
       </section>
 

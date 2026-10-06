@@ -46,6 +46,7 @@ const PAGES = [
   ['/about', 'Biography, the offices he has held, core values, and frequently asked questions.'],
   ['/political', 'His party work: TSNV State Organising Secretary, TSNV State General Secretary, then iTDP Telangana State President; the party, its principles, and the September 2023 Wipro Circle mobilisation.'],
   ['/media', 'Photographs and video coverage of party, constituency, temple and cultural work.'],
+  ['/videos', 'Every video, each on its own page: TV interviews and news reports (Leo Telangana, V6 News, RTV), the temple board oath, the temple’s Bonalu saree offering, Mahanadu and party events.'],
   ['/press', 'Newspaper cuttings that report his work: the Jawahar Nagar dumping yard, two divisions for Nagaram, party and temple activity.'],
   ['/contact', 'How to reach the office.'],
 ]

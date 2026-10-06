@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { FaArrowRight, FaChevronLeft, FaChevronRight, FaNewspaper, FaPlay, FaUpRightFromSquare, FaXmark, FaLandmark } from 'react-icons/fa6'
+import { FaArrowRight, FaChevronLeft, FaChevronRight, FaNewspaper, FaUpRightFromSquare, FaXmark, FaLandmark } from 'react-icons/fa6'
 import Link from '../components/LocaleLink'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
 import { site } from '../data/site'
-import { cuttings, pressIssues, onlineReports, officialRecord, interviews } from '../data/press'
+import { cuttings, pressIssues, onlineReports, officialRecord } from '../data/press'
+import { CHANNELS, interviewVideos } from '../data/videos'
+import VideoCard from '../components/VideoCard'
 import { useT, useLang } from '../i18n/useT'
 
 const formatDate = (iso, lang = 'en') =>
@@ -152,62 +154,6 @@ const Viewer = ({ items, index, onClose, onStep, meta }) => {
 }
 
 /**
- * A YouTube video, played in the page (youtube-nocookie.com: no tracking
- * cookies until play). Once the video itself has focus, the browser gives
- * key presses to YouTube, not to this page — so the close button is large
- * and labelled, and a tap anywhere outside the video closes it too.
- */
-const Player = ({ video, onClose }) => {
-  const t = useT()
-  const closeRef = useRef(null)
-  useEffect(() => {
-    closeRef.current?.focus()
-    const onKey = (e) => (e.key === 'Escape' || e.key === 'Esc') && onClose()
-    window.addEventListener('keydown', onKey, true)
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      window.removeEventListener('keydown', onKey, true)
-      document.body.style.overflow = prev
-    }
-  }, [onClose])
-  return (
-    <div
-      data-overlay="player"
-      className="fixed inset-0 z-[70] grid cursor-zoom-out place-items-center bg-ink-950 p-3 sm:p-8"
-      role="dialog"
-      aria-modal="true"
-      aria-label={video.title}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="w-full max-w-5xl cursor-auto">
-        <div className="mb-3 flex items-center justify-between gap-4 text-white">
-          <p className="min-w-0 truncate text-sm font-semibold">
-            {video.channel} · {video.title}
-          </p>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/20"
-          >
-            <FaXmark aria-hidden="true" /> {t('Close')}
-          </button>
-        </div>
-        <div className="aspect-video w-full bg-black">
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
-            title={video.title}
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            className="h-full w-full"
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/**
  * /press — what the newspapers, television and the web have reported.
  */
 const Press = () => {
@@ -215,11 +161,10 @@ const Press = () => {
   const lang = useLang()
   const [topic, setTopic] = useState('all')
   const [open, setOpen] = useState(null) // index into `shown`
-  const [video, setVideo] = useState(null)
 
   const shown = useMemo(() => (topic === 'all' ? cuttings : cuttings.filter((c) => c.topic === topic)), [topic])
   const outlets = useMemo(
-    () => [...new Set([...cuttings.map((c) => c.paper), ...onlineReports.map((o) => o.outlet), ...interviews.map((v) => v.channel)])],
+    () => [...new Set([...cuttings.map((c) => c.paper), ...onlineReports.map((o) => o.outlet), ...interviewVideos.map((v) => CHANNELS[v.channel].name)])],
     [],
   )
 
@@ -275,16 +220,9 @@ const Press = () => {
         url: o.url,
         mentions: { '@id': `${site.url}/#person` },
       })),
-      ...interviews.map((v) => ({
-        '@type': 'VideoObject',
-        name: v.title,
-        description: v.summary,
-        uploadDate: v.date,
-        thumbnailUrl: `${site.url}/photos/video/${v.id}.webp`,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${v.id}`,
-        contentUrl: `https://www.youtube.com/watch?v=${v.id}`,
-        about: { '@id': `${site.url}/#person` },
-      })),
+      // The interviews are NOT described here: each has its own watch page,
+      // and a VideoObject on a page that is not about that video is what
+      // Search Console flagged ("Video isn't on a watch page").
     ],
   }
 
@@ -443,36 +381,12 @@ const Press = () => {
               <p className="eyebrow">{t('On camera')}</p>
               <h2 className="mt-5 font-display text-display text-white">{t('Interviews & TV')}</h2>
             </div>
-            <p className="text-white/70 lg:col-span-7">{t('Interviews and television coverage on Telugu news channels. They play here, on this page.')}</p>
+            <p className="text-white/70 lg:col-span-7">{t('Interviews and television coverage on Telugu news channels. Each has its own page, where it plays.')}</p>
           </Reveal>
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {interviews.map((v) => (
+            {interviewVideos.map((v) => (
               <li key={v.id}>
-                <button type="button" onClick={() => setVideo(v)} className="group block w-full text-left">
-                  <span className="relative block overflow-hidden bg-ink-800">
-                    <img
-                      src={`/photos/video/${v.id}.webp`}
-                      alt={`${v.channel}: ${v.title} — Talikota Hari Krishna`}
-                      width="640"
-                      height="360"
-                      loading="lazy"
-                      decoding="async"
-                      className="aspect-video w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <span className="absolute inset-0 grid place-items-center bg-ink-950/20" aria-hidden="true">
-                      <span className="grid h-12 w-12 place-items-center rounded-full bg-brand-500 text-ink-900 transition-transform group-hover:scale-110">
-                        <FaPlay className="ml-0.5" />
-                      </span>
-                    </span>
-                  </span>
-                  <span className="mt-3 block font-sans text-micro uppercase text-brand-400">
-                    {t(v.kind)} · {v.channel} · {formatDate(v.date, lang)}
-                  </span>
-                  <span lang={/[ఀ-౿]/.test(v.title) ? 'te' : undefined} className="mt-2 block text-sm font-semibold leading-snug text-white">
-                    {v.title}
-                  </span>
-                  <span className="mt-1.5 block text-xs leading-relaxed text-white/60">{t(v.summary)}</span>
-                </button>
+                <VideoCard video={v} />
               </li>
             ))}
           </ul>
@@ -520,7 +434,6 @@ const Press = () => {
       </section>
 
       {open !== null && <Viewer items={shown} index={open} onClose={close} onStep={step} meta={meta} />}
-      {video && <Player video={video} onClose={() => setVideo(null)} />}
     </>
   )
 }

@@ -672,6 +672,7 @@ export const nav = [
   { name: 'Political Leadership', path: '/political' },
   { name: 'Media', path: '/media' },
   { name: 'News', path: '/press' },
+  { name: 'Videos', path: '/videos' },
   { name: 'Posters', path: '/posters' },
   { name: 'Contact', path: '/contact' },
 ]

@@ -29,6 +29,8 @@ import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
 import Posters from './pages/Posters'
+import Videos from './pages/Videos'
+import VideoWatch from './pages/VideoWatch'
 import PosterStudio from './pages/PosterStudio'
 import SharedPoster from './pages/SharedPoster'
 import AskPanel from './components/AskPanel'
@@ -48,6 +50,10 @@ const PAGES = [
   { path: '/kanaka-durga-temple-board', element: <Community /> },
   { path: '/media', element: <Media /> },
   { path: '/press', element: <Press /> },
+  // Every video, and one watch page per video — the pages Google indexes
+  // videos from (see src/data/videos.js).
+  { path: '/videos', element: <Videos /> },
+  { path: '/videos/:slug', element: <VideoWatch /> },
   { path: '/contact', element: <Contact /> },
   { path: '/posters', element: <Posters /> },
   // One editor, addressed by slug, so a new campaign poster is a data entry
