@@ -61,6 +61,33 @@ export async function preparePhoto(file) {
 }
 
 /**
+ * An iTDP programme photograph, prepared in the browser before upload:
+ *   display   up to 2000px on the long edge, JPEG — what the album and the
+ *             full-screen viewer show, and what people download
+ *   thumb     480px wide, JPEG — the album grid
+ *
+ * Drawing through a canvas also drops every byte of metadata, GPS location
+ * included, before anything leaves the phone. Browsers apply the EXIF
+ * orientation when decoding into an <img>, so the result is upright.
+ *
+ * Programme albums run to hundreds of photos in a 10 GB bucket, which is why
+ * these are sized for the web rather than kept as camera originals: a
+ * 2000px JPEG is ~0.5 MB against ~6 MB for the original.
+ */
+export async function prepareProgramPhoto(file) {
+  if (file.size > MAX_PHOTO_BYTES) throw new Error(`${file.name} is over 30 MB.`)
+  if (!/^image\//.test(file.type) && !/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name)) throw new Error(`${file.name} is not a photo.`)
+  const img = await readImageFile(file)
+  let display = await toJpeg(scaled(img, 2000), 0.85)
+  // A rare, extremely detailed photo can still be heavy; bring it under 2.5 MB.
+  if (display.size > 2.5 * 1024 * 1024) display = await toJpeg(scaled(img, 1600), 0.8)
+  // 480px WIDE: scaled() takes the long side, which for a portrait photo is
+  // the height, so ask for the height that gives a 480px width.
+  const thumb = await toJpeg(scaled(img, Math.round((480 * Math.max(img.width, img.height)) / img.width)), 0.72)
+  return { display, thumb, width: img.width, height: img.height }
+}
+
+/**
  * A neutral stand-in figure for previewing where a person will stand — head
  * and shoulders, cut at the chest like a typical supporter's photo, so the
  * preview shows how the real thing will sit on the bar.
