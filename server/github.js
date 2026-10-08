@@ -56,6 +56,20 @@ async function api(path, init = {}) {
     },
   })
   if (res.status === 422 && init.method === 'PATCH') throw new ConflictError('branch moved')
+  // The token itself is the problem (expired, revoked, or lost its access to
+  // the repository): say so in the console, where the office can act on it,
+  // instead of the generic "That did not work". Nothing about the token is
+  // revealed — only that a new one is needed.
+  if (res.status === 401 || res.status === 403) {
+    console.error(`GitHub ${init.method || 'GET'} ${path} -> ${res.status}: ${(await res.text()).slice(0, 300)}`)
+    const err = new Error(
+      res.status === 401
+        ? 'The website’s GitHub key (GITHUB_TOKEN in Vercel) has expired or been revoked, so the console cannot read or save anything. Create a new token on GitHub, replace GITHUB_TOKEN in Vercel, and redeploy.'
+        : 'The website’s GitHub key (GITHUB_TOKEN in Vercel) no longer has permission to this repository. Give it Contents: read and write on THK-Website, or create a new one, then redeploy.',
+    )
+    err.status = 503
+    throw err
+  }
   if (!res.ok) {
     // GitHub's message can carry repository detail; it goes to the log, never
     // to the browser.
